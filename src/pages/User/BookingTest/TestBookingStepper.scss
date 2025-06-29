@@ -1,0 +1,65 @@
+.test-booking-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin: 0 auto 16px auto;
+  max-width: 520px;
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    .circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      color: #a259ff;
+      font-weight: 700;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+      transition: background 0.2s, color 0.2s;
+    }
+    span {
+      font-size: 13px;
+      color: #6b7280;
+      font-weight: 500;
+    }
+    &.active {
+      .circle {
+        background: linear-gradient(135deg, #a259ff, #f65687);
+        color: #fff;
+      }
+      span {
+        color: #a259ff;
+        font-weight: 700;
+      }
+    }
+    &.done {
+      .circle {
+        background: #a259ff;
+        color: #fff;
+        opacity: 0.7;
+      }
+      span {
+        color: #a259ff;
+        opacity: 0.7;
+      }
+    }
+    &:hover {
+      .circle {
+        box-shadow: 0 0 0 3px #f3e8ff;
+      }
+    }
+  }
+  .line {
+    width: 80px;
+    height: 2px;
+    background: #e5e7eb;
+    margin: 0 8px 18px 8px;
+  }
+} 

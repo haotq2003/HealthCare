@@ -1,0 +1,449 @@
+// Variables
+$primary-purple: #a259ff;
+$primary-pink: #f65687;
+$dark-text: #22223b;
+$medium-text: #6b7280;
+$light-text: #9ca3af;
+$success-green: #10b981;
+$danger-red: #f87171;
+$background-light: #fafaff;
+$white: #fff;
+$light-purple: #f3e8ff;
+$border-light: #e5e7eb;
+$surface-light: #f8fafc;
+
+// Spacing system
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 12px;
+$spacing-lg: 16px;
+$spacing-xl: 20px;
+$spacing-2xl: 24px;
+$spacing-3xl: 32px;
+$spacing-4xl: 40px;
+$spacing-5xl: 48px;
+$spacing-6xl: 64px;
+
+// Border radius system
+$radius-sm: 6px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+$radius-full: 999px;
+
+// Shadow system
+$shadow-sm: 0 1px 2px rgba(162, 89, 255, 0.05);
+$shadow-md: 0 2px 8px rgba(162, 89, 255, 0.08);
+$shadow-lg: 0 4px 16px rgba(162, 89, 255, 0.12);
+$shadow-xl: 0 8px 32px rgba(162, 89, 255, 0.18);
+
+// Typography
+$font-xs: 0.75rem;
+$font-sm: 0.875rem;
+$font-base: 1rem;
+$font-lg: 1.125rem;
+$font-xl: 1.25rem;
+
+// Mixins
+@mixin gradient-primary {
+  background: linear-gradient(135deg, $primary-purple, $primary-pink);
+}
+
+@mixin gradient-primary-reverse {
+  background: linear-gradient(135deg, $primary-pink, $primary-purple);
+}
+
+@mixin transition-smooth {
+  transition: all 0.2s ease-in-out;
+}
+
+@mixin card-hover {
+  &:hover {
+    box-shadow: $shadow-xl;
+    transform: translateY(-2px);
+  }
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// Main component
+.test-booking-page {
+  background: $background-light;
+  min-height: 100vh;
+  padding: $spacing-3xl 0 $spacing-6xl 0;
+
+  // Container mixin for consistent max-width
+  %container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 $spacing-lg;
+  }
+
+  // Tabs Section
+  .test-booking-tabs {
+    @extend %container;
+    display: flex;
+    justify-content: flex-start;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-2xl;
+
+    button {
+      background: $white;
+      border: none;
+      border-radius: $radius-md $radius-md 0 0;
+      padding: $spacing-md $spacing-3xl;
+      font-size: $font-base;
+      color: $dark-text;
+      font-weight: 600;
+      cursor: pointer;
+      @include transition-smooth;
+      position: relative;
+
+      &.active {
+        @include gradient-primary;
+        color: $white;
+        box-shadow: $shadow-lg;
+        
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -2px;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: inherit;
+        }
+      }
+
+      &:not(.active) {
+        &:hover {
+          background: $light-purple;
+          color: $primary-purple;
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+
+  // Filter Section
+  .test-booking-filter {
+    @extend %container;
+    background: $white;
+    border-radius: $radius-xl;
+    box-shadow: $shadow-md;
+    padding: $spacing-2xl;
+    margin-bottom: $spacing-3xl;
+
+    .filter-title {
+      @include flex-center;
+      justify-content: flex-start;
+      font-weight: 700;
+      color: $primary-purple;
+      font-size: $font-lg;
+      margin-bottom: $spacing-lg;
+      gap: $spacing-sm;
+
+      .icon {
+        font-size: 1.2em;
+      }
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: $spacing-lg;
+
+      select {
+        border: 1.5px solid $border-light;
+        border-radius: $radius-md;
+        padding: $spacing-md $spacing-lg;
+        font-size: $font-base;
+        color: $dark-text;
+        background: $surface-light;
+        font-weight: 500;
+        @include transition-smooth;
+        cursor: pointer;
+
+        &:focus {
+          border-color: $primary-purple;
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(162, 89, 255, 0.1);
+        }
+
+        &:hover {
+          border-color: lighten($primary-purple, 20%);
+        }
+      }
+    }
+  }
+
+  // Test Cards Grid
+  .test-booking-list {
+    @extend %container;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: $spacing-2xl;
+    
+    .test-card {
+      background: $white;
+      border-radius: $radius-xl;
+      box-shadow: $shadow-md;
+      padding: $spacing-2xl;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      @include transition-smooth;
+      border: 2px solid transparent;
+      height: fit-content;
+      
+      @include card-hover;
+
+      &.selected {
+        border-color: $primary-purple;
+        box-shadow: $shadow-lg;
+        
+        &::before {
+          content: '✓';
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          width: 24px;
+          height: 24px;
+          background: $primary-purple;
+          color: $white;
+          border-radius: 50%;
+          @include flex-center;
+          font-size: $font-xs;
+          font-weight: bold;
+          z-index: 1;
+        }
+      }
+
+      // Card Header
+      .test-card-header {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        margin-bottom: $spacing-lg;
+        flex-wrap: wrap;
+
+        .test-icon {
+          font-size: 1.5em;
+          color: $primary-purple;
+        }
+
+        .test-type {
+          background: $light-purple;
+          color: $primary-purple;
+          font-size: $font-xs;
+          font-weight: 600;
+          border-radius: $radius-sm;
+          padding: $spacing-xs $spacing-md;
+          white-space: nowrap;
+        }
+
+        .test-badge {
+          background: $danger-red;
+          color: $white;
+          font-size: $font-xs;
+          font-weight: 600;
+          border-radius: $radius-sm;
+          padding: $spacing-xs $spacing-md;
+          white-space: nowrap;
+        }
+      }
+
+      // Card Content
+      .test-card-title {
+        font-size: $font-lg;
+        font-weight: 700;
+        color: $dark-text;
+        margin-bottom: $spacing-sm;
+        line-height: 1.3;
+      }
+
+      .test-card-desc {
+        color: $medium-text;
+        font-size: $font-sm;
+        margin-bottom: $spacing-lg;
+        line-height: 1.5;
+        flex-grow: 1;
+        min-height: 3em; // Ensures consistent height
+      }
+
+      // Card Meta Info
+      .test-card-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: $font-sm;
+        color: $dark-text;
+        margin-bottom: $spacing-sm;
+        padding: $spacing-sm 0;
+        border-top: 1px solid lighten($border-light, 3%);
+        border-bottom: 1px solid lighten($border-light, 3%);
+
+        .test-price {
+          color: $success-green;
+          font-weight: 700;
+          font-size: $font-base;
+        }
+      }
+
+      .test-card-result {
+        font-size: $font-sm;
+        color: $medium-text;
+        margin-bottom: $spacing-lg;
+        font-style: italic;
+      }
+
+      // Action Button
+      .test-card-add {
+        @include gradient-primary;
+        color: $white;
+        border: none;
+        border-radius: $radius-lg;
+        padding: $spacing-md 0;
+        font-size: $font-base;
+        font-weight: 600;
+        cursor: pointer;
+        @include transition-smooth;
+        box-shadow: $shadow-md;
+        margin-top: auto; // Push to bottom
+
+        &:hover:not(:disabled) {
+          @include gradient-primary-reverse;
+          box-shadow: $shadow-lg;
+          transform: translateY(-1px);
+        }
+
+        &:disabled,
+        &.selected {
+          background: lighten($border-light, 3%);
+          color: $medium-text;
+          cursor: not-allowed;
+          box-shadow: none;
+          transform: none;
+        }
+      }
+    }
+  }
+}
+
+// Continue Button (if used elsewhere)
+.continue-btn {
+  @include flex-center;
+  @include gradient-primary;
+  color: $white;
+  font-weight: 700;
+  font-size: $font-lg;
+  border: none;
+  border-radius: $radius-full;
+  padding: $spacing-lg $spacing-4xl;
+  margin-top: $spacing-2xl;
+  box-shadow: $shadow-lg;
+  cursor: pointer;
+  @include transition-smooth;
+  letter-spacing: 0.3px;
+
+  &:hover:not(:disabled) {
+    @include gradient-primary-reverse;
+    box-shadow: $shadow-xl;
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    background: $border-light;
+    color: $light-text;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .test-booking-page {
+    .test-booking-list {
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: $spacing-xl;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .test-booking-page {
+    padding: $spacing-lg 0 $spacing-4xl 0;
+    
+    %container {
+      padding: 0 $spacing-md;
+    }
+
+    .test-booking-tabs {
+      button {
+        padding: $spacing-sm $spacing-xl;
+        font-size: $font-sm;
+      }
+    }
+
+    .test-booking-filter {
+      padding: $spacing-lg;
+      
+      .filter-row {
+        grid-template-columns: 1fr;
+        gap: $spacing-md;
+      }
+    }
+
+    .test-booking-list {
+      grid-template-columns: 1fr;
+      gap: $spacing-lg;
+      
+      .test-card {
+        padding: $spacing-xl;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .test-booking-page {
+    .test-booking-tabs {
+      flex-wrap: wrap;
+      gap: $spacing-xs;
+      
+      button {
+        padding: $spacing-sm $spacing-lg;
+        font-size: $font-sm;
+        flex: 1;
+        min-width: 140px;
+      }
+    }
+
+    .test-booking-filter {
+      padding: $spacing-md;
+    }
+
+    .test-booking-list {
+      .test-card {
+        padding: $spacing-lg;
+        
+        .test-card-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: $spacing-sm;
+        }
+      }
+    }
+  }
+}

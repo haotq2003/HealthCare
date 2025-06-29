@@ -1,0 +1,344 @@
+.consultant-booking-page {
+  padding: 20px;
+  max-width: 100%;
+  margin: 0 auto;
+  min-height: 100vh;
+
+  .booking-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .back-button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #666;
+    cursor: pointer;
+    margin-bottom: 16px;
+    padding: 8px 0;
+
+    &:hover {
+      color: #a259ff;
+    }
+  }
+
+  .consultant-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(238, 238, 238, 0.8);
+    padding: 24px;
+    margin-bottom: 32px;
+
+    .consultant-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+
+      .consultant-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #a259ff, #f65687);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: #fff;
+        margin-right: 16px;
+      }
+
+      .consultant-details {
+        flex: 1;
+
+        .consultant-name {
+          font-weight: 700;
+          font-size: 18px;
+          margin-bottom: 4px;
+        }
+
+        .consultant-specialty {
+          color: #a259ff;
+          font-weight: 500;
+          margin-bottom: 4px;
+        }
+
+        .consultant-meta {
+          font-size: 14px;
+          color: #888;
+          margin-bottom: 4px;
+        }
+
+        .consultant-price {
+          font-size: 16px;
+          color: #009966;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .consultant-description {
+      color: #555;
+      line-height: 1.5;
+    }
+  }
+
+  .booking-details {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(238, 238, 238, 0.8);
+    padding: 24px;
+    max-width: 80%;
+
+    h3 {
+      margin: 0 0 20px 0;
+      color: #333;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .date-section {
+      margin-bottom: 32px;
+
+      .calendar {
+        background: #f8f9fa;
+        border: 2px solid #e1e5e9;
+        border-radius: 12px;
+        padding: 20px;
+
+        .calendar-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 20px;
+
+          .nav-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            color: #666;
+
+            &:hover {
+              background: #e9ecef;
+              color: #a259ff;
+            }
+          }
+
+          .month-year {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+          }
+        }
+
+        .calendar-grid {
+          .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+
+            .weekday {
+              text-align: center;
+              font-size: 12px;
+              color: #666;
+              font-weight: 600;
+              padding: 8px 4px;
+              text-transform: uppercase;
+            }
+          }
+
+          .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+
+            .day {
+              aspect-ratio: 1;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 14px;
+              cursor: pointer;
+              border-radius: 8px;
+              transition: all 0.2s ease;
+              border: 2px solid transparent;
+              background: #fff;
+              color: #333;
+
+              &.other-month {
+                color: #ccc;
+                cursor: default;
+              }
+
+              &:hover:not(.other-month) {
+                background: #f3e8ff;
+                border-color: #a259ff;
+                color: #a259ff;
+                transform: translateY(-1px);
+              }
+
+              &.selected {
+                background: linear-gradient(135deg, #a259ff, #f65687);
+                color: white;
+                border-color: #a259ff;
+                box-shadow: 0 2px 8px rgba(162, 89, 255, 0.3);
+                font-weight: 600;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .time-section {
+      margin-bottom: 32px;
+
+      .time-slots {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+
+        .time-slot {
+          padding: 12px 16px;
+          border-radius: 12px;
+          border: 2px solid #e1e5e9;
+          background: #f8f9fa;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-align: center;
+          font-size: 14px;
+
+          &:hover {
+            border-color: #a259ff;
+            background: #f3e8ff;
+            transform: translateY(-1px);
+          }
+
+          &.selected {
+            border: 2px solid #a259ff;
+            background: linear-gradient(135deg, #a259ff, #f65687);
+            color: white;
+            box-shadow: 0 4px 12px rgba(162, 89, 255, 0.2);
+          }
+        }
+      }
+
+      .time-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        background: #f8f9fa;
+        border: 2px dashed #e1e5e9;
+        border-radius: 12px;
+        color: #666;
+
+        .clock-icon {
+          margin-bottom: 16px;
+          color: #ccc;
+        }
+
+        p {
+          margin: 0;
+          font-size: 16px;
+        }
+      }
+    }
+
+
+  }
+      .continue-button {
+      width: 100%;
+      padding: 16px 24px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      &:not(.disabled) {
+        background: linear-gradient(135deg, #a259ff, #f65687);
+        color: #fff;
+
+        &:hover {
+          background: linear-gradient(135deg, #a259ff, #f65687);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(162, 89, 255, 0.3);
+        }
+      }
+
+      &.disabled {
+        background: #e1e5e9;
+        color: #6c757d;
+        cursor: not-allowed;
+      }
+    }
+
+  .error {
+    text-align: center;
+    color: #e74c3c;
+    font-size: 18px;
+    padding: 40px 20px;
+  }
+
+  // Responsive design
+  @media (max-width: 768px) {
+    padding: 16px;
+
+    .consultant-card {
+      padding: 20px;
+      margin-bottom: 24px;
+
+      .consultant-info {
+        .consultant-avatar {
+          width: 56px;
+          height: 56px;
+          font-size: 28px;
+          margin-right: 12px;
+        }
+
+        .consultant-details {
+          .consultant-name {
+            font-size: 16px;
+          }
+        }
+      }
+    }
+
+    .booking-details {
+      padding: 20px;
+      max-width: none;
+
+      .date-section {
+        .calendar {
+          padding: 16px;
+
+          .calendar-header {
+            .month-year {
+              font-size: 16px;
+            }
+          }
+        }
+      }
+
+      .time-section {
+        .time-slots {
+          .time-slot {
+            padding: 10px 14px;
+            font-size: 13px;
+          }
+        }
+      }
+    }
+  }
+}
