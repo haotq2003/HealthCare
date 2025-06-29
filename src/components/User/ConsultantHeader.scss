@@ -1,0 +1,114 @@
+.consultant-header {
+  text-align: center;
+
+  .consultant-header-content {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 24px;
+
+    .consultant-header-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 8px;
+      letter-spacing: -0.025em;
+
+      @media (max-width: 768px) {
+        font-size: 24px;
+      }
+    }
+
+    .consultant-header-subtitle {
+      color: #6b7280;
+      font-size: 16px;
+      margin-bottom: 24px;
+      font-weight: 400;
+
+      @media (max-width: 768px) {
+        font-size: 14px;
+      }
+    }
+
+    .consultant-header-stepper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 24px;
+      gap: 0;
+
+      .consultant-header-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        position: relative;
+
+        .consultant-header-step-icon {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #e5e7eb;
+          color: #9ca3af;
+          transition: all 0.3s ease;
+        }
+
+        .consultant-header-step-title {
+          font-size: 12px;
+          color: #6b7280;
+          font-weight: 500;
+          text-align: center;
+          max-width: 80px;
+        }
+
+        &.active {
+          .consultant-header-step-icon {
+            background: linear-gradient(135deg, #a259ff, #f65687);
+            color: white;
+          }
+          
+          .consultant-header-step-title {
+            color: #a855f7;
+            font-weight: 600;
+          }
+        }
+      }
+
+      .consultant-header-step-line {
+        width: 80px;
+        height: 2px;
+        background: #e5e7eb;
+        margin: 0 16px;
+        margin-bottom: 24px;
+        transition: all 0.3s ease;
+
+        &.active {
+          background: linear-gradient(135deg, #a259ff, #f65687);
+        }
+      }
+    }
+  }
+}
+
+// Responsive improvements
+@media (max-width: 768px) {
+  .consultant-header {
+    .consultant-header-content {
+      padding: 0 16px;
+
+      .consultant-header-stepper {
+        flex-direction: column;
+        gap: 16px;
+
+        .consultant-header-step-line {
+          width: 2px;
+          height: 20px;
+          margin: 0;
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+} 
