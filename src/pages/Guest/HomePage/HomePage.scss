@@ -39,13 +39,13 @@
         cursor: pointer;
       }
       .primary-btn {
-         background: linear-gradient(135deg, #a259ff, #f65687);
+        background: #2563EB;
         color: #fff;
         &:hover { background: #7c3aed; }
       }
       .secondary-btn {
         background: #fff;
-        color: #a259ff;
+        color: #2563EB;
         border: 2px solid #a259ff;
         &:hover { background: #7effb2; color: #3d246c; }
       }
@@ -312,7 +312,7 @@
       cursor: pointer;
     }
     .primary-btn {
-       background: linear-gradient(135deg, #a259ff, #f65687);
+       background: #2563EB;
       color: #fff;
       &:hover { background: #7c3aed; color: #fff; }
     }

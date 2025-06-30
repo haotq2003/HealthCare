@@ -39,7 +39,7 @@
         width: 64px;
         height: 64px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #a259ff, #f65687);
+        background: #2563EB;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -182,7 +182,7 @@
               }
 
               &.selected {
-                background: linear-gradient(135deg, #a259ff, #f65687);
+                background: #2563EB;
                 color: white;
                 border-color: #a259ff;
                 box-shadow: 0 2px 8px rgba(162, 89, 255, 0.3);
@@ -222,7 +222,7 @@
 
           &.selected {
             border: 2px solid #a259ff;
-            background: linear-gradient(135deg, #a259ff, #f65687);
+            background: #2563EB;
             color: white;
             box-shadow: 0 4px 12px rgba(162, 89, 255, 0.2);
           }
@@ -267,11 +267,11 @@
       letter-spacing: 0.5px;
 
       &:not(.disabled) {
-        background: linear-gradient(135deg, #a259ff, #f65687);
+        background: #2563EB;
         color: #fff;
 
         &:hover {
-          background: linear-gradient(135deg, #a259ff, #f65687);
+          background:#2563EB;
           transform: translateY(-2px);
           box-shadow: 0 8px 20px rgba(162, 89, 255, 0.3);
         }

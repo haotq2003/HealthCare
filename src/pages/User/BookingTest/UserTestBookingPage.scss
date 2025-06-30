@@ -46,11 +46,11 @@ $font-xl: 1.25rem;
 
 // Mixins
 @mixin gradient-primary {
-  background: linear-gradient(135deg, $primary-purple, $primary-pink);
+  background: #2563EB;
 }
 
 @mixin gradient-primary-reverse {
-  background: linear-gradient(135deg, $primary-pink, $primary-purple);
+  background: #2563EB;
 }
 
 @mixin transition-smooth {
@@ -209,7 +209,7 @@ $font-xl: 1.25rem;
       @include card-hover;
 
       &.selected {
-        border-color: $primary-purple;
+        border-color: #2563EB;
         box-shadow: $shadow-lg;
         
         &::before {
@@ -219,7 +219,7 @@ $font-xl: 1.25rem;
           right: -8px;
           width: 24px;
           height: 24px;
-          background: $primary-purple;
+          background: #2563EB;
           color: $white;
           border-radius: 50%;
           @include flex-center;
@@ -329,7 +329,7 @@ $font-xl: 1.25rem;
 
         &:disabled,
         &.selected {
-          background: lighten($border-light, 3%);
+          background: #2563EB;
           color: $medium-text;
           cursor: not-allowed;
           box-shadow: none;
