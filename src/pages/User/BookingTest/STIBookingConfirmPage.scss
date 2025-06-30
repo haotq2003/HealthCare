@@ -52,7 +52,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+  background:  #2563EB;
   color: #fff;
   display: flex;
   align-items: center;
@@ -62,7 +62,7 @@
   margin: 0 auto 4px;
 
   &.active {
-    background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+    background:  #2563EB;
   }
 }
 
@@ -87,7 +87,7 @@
 
 // Header styles
 .sti-booking-header {
-  background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+  background:  #2563EB;
   color: #fff;
   border-radius: 12px;
   padding: 16px;
@@ -272,12 +272,12 @@
   }
 
   &--primary {
-    background: #a259ff;
+    background: #2563EB;
     color: #fff;
     border: none;
 
     &:hover {
-      background: #9333ea;
+      background:#2563EB;
     }
   }
 

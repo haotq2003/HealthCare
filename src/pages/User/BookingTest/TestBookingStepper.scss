@@ -15,7 +15,7 @@
       height: 36px;
       border-radius: 50%;
       background: #e5e7eb;
-      color: #a259ff;
+      color: #2563EB;
       font-weight: 700;
       font-size: 1.1rem;
       display: flex;
@@ -31,7 +31,7 @@
     }
     &.active {
       .circle {
-        background: linear-gradient(135deg, #a259ff, #f65687);
+        background: #2563EB;
         color: #fff;
       }
       span {

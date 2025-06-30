@@ -1,22 +1,23 @@
-.header {
+.header1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 18px 40px;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(180, 120, 255, 0.07);
+  background: #2563EB;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.07);
 }
-.logo {
+.logo1 {
   display: flex;
   align-items: center;
   font-size: 2rem;
   font-weight: bold;
-  color: linear-gradient(90deg, #350f66 0%, #2e6645 100%);
+  color: white;
   gap: 10px;
 }
+
 .brand {
   font-size: 1.5rem;
-  color: linear-gradient(90deg, #350f66 0%, #2e6645 100%);
+  color:linear-gradient(135deg, #3b82f6, #1d4ed8);
   font-weight: 700;
   letter-spacing: 1px;
 }
@@ -26,14 +27,14 @@
   gap: 28px;
 }
 .nav a {
-  color: #3d246c;
+  color: #ffffff;
   text-decoration: none;
   font-size: 1.1rem;
   font-weight: 500;
   transition: color 0.2s;
 }
 .nav a:hover {
-  color: #a259ff;
+  color: #3b82f6;
 }
 
 // User menu styles
@@ -59,12 +60,12 @@
 }
 
 .login-btn {
-  background: linear-gradient(135deg, #a259ff, #f65687);
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: #fff !important;
   &:hover {
-    background: #7c3aed;
+    background: #2563eb;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
   }
 }
 
@@ -84,7 +85,7 @@
 
 // Logout button styles
 .logout-btn {
-  background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: #fff;
   border: none;
   padding: 7px 12px;

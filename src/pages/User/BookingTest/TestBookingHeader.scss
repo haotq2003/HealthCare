@@ -41,7 +41,6 @@
         align-items: center;
         justify-content: center;
         margin-bottom: 4px;
-        transition: background 0.2s, color 0.2s;
       }
       
       span {
@@ -49,10 +48,10 @@
         color: #6b7280;
         font-weight: 500;
       }
-      
+      //#2563EB;
       &.active {
         .circle {
-          background: linear-gradient(135deg, #a259ff, #f65687);
+          background: #2563EB;
           color: #fff;
         }
         span {

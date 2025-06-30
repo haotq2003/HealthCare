@@ -65,7 +65,7 @@
 
         &.active {
           .consultant-header-step-icon {
-            background: linear-gradient(135deg, #a259ff, #f65687);
+            background: #2563EB;
             color: white;
           }
           
@@ -85,7 +85,7 @@
         transition: all 0.3s ease;
 
         &.active {
-          background: linear-gradient(135deg, #a259ff, #f65687);
+          background: #2563EB;
         }
       }
     }

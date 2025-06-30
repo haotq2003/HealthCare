@@ -1,5 +1,5 @@
 // Variables
-$primary-gradient: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+$primary-gradient:  #2563EB;
 $blue-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
 $white: #ffffff;
 $background: #f5f5f5;
@@ -49,7 +49,7 @@ $pink-accent: #ec4899;
 
 // Header
 .header {
-  background: $primary-gradient;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: $white;
   padding: 16px 20px;
   position: relative;
@@ -93,7 +93,7 @@ $pink-accent: #ec4899;
 
 // Sub header
 .sti-booking-sub-header {
-  background: $primary-gradient;
+  background: #2563EB;
   color: $white;
   padding: 16px 20px;
   border-radius: 12px;
@@ -313,7 +313,7 @@ $pink-accent: #ec4899;
   }
 
   &.selected {
-    background: $pink-accent;
+    background: #2563EB;
     color: $white;
   }
 
@@ -369,7 +369,7 @@ $pink-accent: #ec4899;
 
     &.selected {
       border: 2px solid $pink-accent;
-      background: $primary-gradient;
+      background: #2563EB;
       color: $white;
       box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2);
     }
@@ -390,7 +390,7 @@ $pink-accent: #ec4899;
   margin-top: 24px;
 
   &:not(.disabled) {
-    background: $primary-gradient;
+    background: #2563EB;
     color: $white;
 
     &:hover {

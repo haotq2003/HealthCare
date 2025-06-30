@@ -25,7 +25,7 @@
       .logo-icon {
         width: 32px;
         height: 32px;
-        background: linear-gradient(135deg, #a259ff, #f65687);
+        background: #2563EB;
         border-radius: 8px;
         display: flex;
         align-items: center;
@@ -89,7 +89,7 @@
           }
 
           &.active {
-            background: linear-gradient(135deg, #a259ff, #f65687);
+            background: #2563EB;
             color: white;
             font-weight: 600;
             box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
@@ -168,7 +168,7 @@
           }
 
           &.active {
-            background: linear-gradient(135deg, #a259ff, #f65687);
+            // background: #2563EB;
             color: white;
             font-weight: 600;
             box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);

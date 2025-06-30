@@ -49,8 +49,8 @@ const Header = () => {
   };
 
   return (
-    <header className="header">
-      <div className="logo">
+    <header className="header1">
+      <div className="logo1">
         <span role="img" aria-label="logo">💜</span>
         <Link to="/" className="brand">HealthCare</Link>
       </div>
