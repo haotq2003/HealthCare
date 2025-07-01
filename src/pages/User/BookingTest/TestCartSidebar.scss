@@ -1,7 +1,7 @@
 .test-cart-fab {
-  position: fixed;
-  top: 32px;
-  right: 32px;
+  position: relative;
+  top: -10px;
+  right: auto;
   background: #2563EB;
   color: #fff;
   width: 56px;
@@ -139,8 +139,8 @@
     }
   }
   .test-cart-fab {
-    right: 16px;
-    top: 16px;
+    right: auto;
+    top: auto;
     bottom: auto;
   }
 } 
