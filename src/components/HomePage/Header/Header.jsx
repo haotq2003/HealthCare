@@ -1,51 +1,37 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext.jsx";
+import { User, Settings, LogOut, UserCircle } from 'lucide-react';
 import './Header.scss';
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const userDropdownRef = useRef(null);
 
-  // Check if user is on login or register page
-  const isOnAuthPage = location.pathname === '/login' || location.pathname === '/register';
-
-  // Handle login/register button click
-  const handleAuthClick = () => {
-    if (isAuthenticated) {
-      // If authenticated, show user menu or logout
-      console.log('User is authenticated, show user menu');
-      // TODO: Implement user menu dropdown
-    } else {
-      // If not authenticated, navigate to login page
-      navigate('/login');
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
+        setUserDropdownOpen(false);
+      }
     }
-  };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
-  // Handle logout
+  const userNavLinks = [
+    { to: "/user/home", label: "Trang chủ" },
+    { to: "/user/booking", label: "Đặt lịch tư vấn" },
+    { to: "/user/test-booking", label: "Đặt lịch xét nghiệm" },
+  ];
+
   const handleLogout = () => {
     logout();
     navigate('/');
-  };
-
-  // Get button text based on authentication state
-  const getAuthButtonText = () => {
-    if (isAuthenticated) {
-      return user?.name || 'Tài khoản';
-    }
-    return 'Đăng nhập/Đăng ký';
-  };
-
-  // Get button link based on current page
-  const getAuthButtonLink = () => {
-    if (isAuthenticated) {
-      return '/dashboard'; // TODO: Replace with actual user dashboard route
-    }
-    if (isOnAuthPage) {
-      return '/'; // If on auth page, go back to home
-    }
-    return '/login';
   };
 
   return (
@@ -55,37 +41,23 @@ const Header = () => {
         <Link to="/" className="brand">HealthCare</Link>
       </div>
       <nav className="nav">
-        <Link to="/">Trang chủ</Link>
-        <a href="#services">Dịch vụ</a>
-        <a href="#about">Về chúng tôi</a>
-        <a href="#contact">Liên hệ</a>
-        
-        {isAuthenticated ? (
-          <div className="user-menu">
-            <Link 
-              to={getAuthButtonLink()} 
-              className="auth-btn user-btn"
-              onClick={handleAuthClick}
-            >
-              {getAuthButtonText()}
-            </Link>
-            <button 
-              className="logout-btn"
-              onClick={handleLogout}
-              title="Đăng xuất"
-            >
-              🚪
-            </button>
-          </div>
-        ) : (
-          <Link 
-            to={getAuthButtonLink()} 
-            className="auth-btn login-btn"
-            onClick={handleAuthClick}
-          >
-            {getAuthButtonText()}
+        {userNavLinks.map(link => (
+          <Link key={link.to} to={link.to} className="header-nav-link">
+            {link.label}
           </Link>
-        )}
+        ))}
+        <div className="user-dropdown-wrapper" ref={userDropdownRef}>
+          <button className="user-icon-btn" onClick={() => setUserDropdownOpen(v => !v)}>
+            <UserCircle size={24} />
+          </button>
+          {userDropdownOpen && (
+            <div className="user-dropdown">
+              <Link to="/user/profile" className="dropdown-item"><User size={18} /> Hồ sơ</Link>
+              <Link to="/user/setting" className="dropdown-item"><Settings size={18} /> Cài đặt</Link>
+              <button className="dropdown-item" onClick={handleLogout}><LogOut size={18} /> Đăng xuất</button>
+            </div>
+          )}
+        </div>
       </nav>
     </header>
   );

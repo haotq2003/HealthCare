@@ -1,11 +1,11 @@
 import React from "react";
-import UserSidebar from "../components/User/UserSidebar";
+import Header from "../components/HomePage/Header/Header";
 import "./UserLayout.scss";
 import { Outlet } from "react-router-dom";
 
 const UserLayout = () => (
   <div className="user-layout">
-    <UserSidebar />
+    <Header />
     <main className="user-main-content">
       <Outlet />
     </main>
