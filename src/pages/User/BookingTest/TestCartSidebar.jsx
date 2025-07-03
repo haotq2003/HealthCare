@@ -8,10 +8,6 @@ const TestCartSidebar = ({ selectedTests, testList, onRemove, onContinue, open, 
 
   return (
     <>
-      <div className={`test-cart-fab${open ? " open" : ""}`} onClick={() => setOpen(!open)}>
-        🛒
-        {selectedTests.length > 0 && <span className="cart-badge">{selectedTests.length}</span>}
-      </div>
       <div className={`test-cart-sidebar${open ? " open" : ""}`}>
         <div className="cart-header">
           <span>Giỏ xét nghiệm</span>

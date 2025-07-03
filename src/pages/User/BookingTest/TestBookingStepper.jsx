@@ -5,7 +5,7 @@ import "./TestBookingStepper.scss";
 const steps = [
   { label: "Chọn xét nghiệm", path: "/user/test-booking" },
   { label: "Chọn lịch hẹn", path: "/user/test-booking/schedule" },
-  { label: "Xác nhận", path: "/user/test-booking/confirm" },
+  { label: "Xác nhận lịch", path: "/user/test-booking/confirm" },
 ];
 
 const TestBookingStepper = ({ activeStep = 1 }) => {
