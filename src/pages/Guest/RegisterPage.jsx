@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AuthLayout from '../../components/Auth/AuthLayout';
+import { AuthService } from '../../services/AuthService';
+import toast from 'react-hot-toast';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -35,91 +37,117 @@ const RegisterPage = () => {
     }
   };
 
-  const validateForm = () => {
-    const newErrors = {};
+const validateForm = () => {
+  const newErrors = {};
 
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'Họ là bắt buộc';
+  if (!formData.firstName.trim()) {
+    newErrors.firstName = 'Họ là bắt buộc';
+  } else if (formData.firstName.length + formData.lastName.length > 100) {
+    newErrors.firstName = 'Họ và tên không được vượt quá 100 ký tự';
+  }
+
+  if (!formData.lastName.trim()) {
+    newErrors.lastName = 'Tên là bắt buộc';
+  }
+
+  if (!formData.email) {
+    newErrors.email = 'Email là bắt buộc';
+  } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    newErrors.email = 'Email không hợp lệ';
+  } else if (formData.email.length > 256) {
+    newErrors.email = 'Email không được vượt quá 256 ký tự';
+  }
+
+  if (!formData.phone) {
+    newErrors.phone = 'Số điện thoại là bắt buộc';
+  } else if (!/^(?:\+84|0)(3|5|7|8|9)\d{8}$/.test(formData.phone)) {
+    newErrors.phone = 'Số điện thoại không hợp lệ';
+  }
+
+  if (!formData.password) {
+    newErrors.password = 'Mật khẩu là bắt buộc';
+  } else if (formData.password.length < 6) {
+    newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
+  } else if (
+    !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-])/.test(formData.password)
+  ) {
+    newErrors.password = 'Mật khẩu phải chứa chữ hoa, chữ thường, số và ký tự đặc biệt';
+  }
+
+  if (!formData.confirmPassword) {
+    newErrors.confirmPassword = 'Xác nhận mật khẩu là bắt buộc';
+  } else if (formData.password !== formData.confirmPassword) {
+    newErrors.confirmPassword = 'Mật khẩu xác nhận không khớp';
+  }
+
+  if (!formData.dateOfBirth) {
+    newErrors.dateOfBirth = 'Ngày sinh là bắt buộc';
+  } else {
+    const dob = new Date(formData.dateOfBirth);
+    const today = new Date();
+    if (dob > today) {
+      newErrors.dateOfBirth = 'Ngày sinh không được lớn hơn ngày hiện tại';
     }
+  }
 
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Tên là bắt buộc';
-    }
+  if (!formData.gender) {
+    newErrors.gender = 'Giới tính là bắt buộc';
+  }
 
-    if (!formData.email) {
-      newErrors.email = 'Email là bắt buộc';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email không hợp lệ';
-    }
+  if (!formData.agreeToTerms) {
+    newErrors.agreeToTerms = 'Bạn phải đồng ý với điều khoản sử dụng';
+  }
 
-    if (!formData.phone) {
-      newErrors.phone = 'Số điện thoại là bắt buộc';
-    } else if (!/^[0-9]{10,11}$/.test(formData.phone.replace(/\s/g, ''))) {
-      newErrors.phone = 'Số điện thoại không hợp lệ';
-    }
+  setErrors(newErrors);
 
-    if (!formData.password) {
-      newErrors.password = 'Mật khẩu là bắt buộc';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Mật khẩu phải có ít nhất 8 ký tự';
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-      newErrors.password = 'Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường và 1 số';
-    }
+  // Hiện toast lỗi đầu tiên
+  const firstErrorKey = Object.keys(newErrors)[0];
+  if (firstErrorKey) {
+    toast.error(newErrors[firstErrorKey], { autoClose: 3000 });
+  }
 
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Xác nhận mật khẩu là bắt buộc';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Mật khẩu xác nhận không khớp';
-    }
+  return Object.keys(newErrors).length === 0;
+};
 
-    if (!formData.dateOfBirth) {
-      newErrors.dateOfBirth = 'Ngày sinh là bắt buộc';
-    } else {
-      const birthDate = new Date(formData.dateOfBirth);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-      if (age < 18) {
-        newErrors.dateOfBirth = 'Bạn phải từ 18 tuổi trở lên';
-      }
-    }
 
-    if (!formData.gender) {
-      newErrors.gender = 'Giới tính là bắt buộc';
-    }
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!formData.agreeToTerms) {
-      newErrors.agreeToTerms = 'Bạn phải đồng ý với điều khoản sử dụng';
-    }
+  if (!validateForm()) return;
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  setIsLoading(true);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
+  try {
+    const dob = formData.dateOfBirth;
+    const parsedDate = new Date(dob);
+    if (isNaN(parsedDate.getTime())) {
+      toast.error('Ngày sinh không hợp lệ');
+      setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
-    
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Handle successful registration
-      console.log('Registration successful:', formData);
-      
-      // Show success message or redirect to verification page
-      // navigate('/verify-email');
-      
-    } catch (error) {
-      setErrors({ general: 'Đăng ký thất bại. Vui lòng thử lại.' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const requestData = {
+      FullName: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
+      Email: formData.email,
+      PhoneNumber: formData.phone,
+      Password: formData.password,
+      ConfirmPassword: formData.confirmPassword,
+      DateOfBirth: dob,
+      Gender: formData.gender === 'male' ? 0 : formData.gender === 'female' ? 1 : 2,
+      Role: 1,
+    };
+
+    console.log('requestData:', requestData);
+    const res = await AuthService.register(requestData);
+    toast.success(res.message || 'Đăng ký thành công');
+  } catch (error) {
+    console.error('Register failed:', error);
+    setErrors({ general: error.message || 'Đăng ký thất bại. Vui lòng thử lại.' });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const handleSocialRegister = (provider) => {
     console.log(`Register with ${provider}`);

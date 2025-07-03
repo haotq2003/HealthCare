@@ -32,7 +32,7 @@ const Header = () => {
   // Get button text based on authentication state
   const getAuthButtonText = () => {
     if (isAuthenticated) {
-      return user?.name || 'Tài khoản';
+      return user?.fullName  || 'Tài khoản';
     }
     return 'Đăng nhập/Đăng ký';
   };
@@ -56,10 +56,10 @@ const Header = () => {
       </div>
       <nav className="nav">
         <Link to="/">Trang chủ</Link>
-        <a href="#services">Dịch vụ</a>
-        <a href="#about">Về chúng tôi</a>
-        <a href="#contact">Liên hệ</a>
-        
+        <a href="services">Dịch vụ</a>
+        <a href="about">Về chúng tôi</a>
+        <a href="contact">Liên hệ</a>
+        <a href="blog">Blog</a>
         {isAuthenticated ? (
           <div className="user-menu">
             <Link 
