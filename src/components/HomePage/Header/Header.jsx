@@ -27,11 +27,31 @@ const Header = () => {
     { to: "/user/home", label: "Trang chủ" },
     { to: "/user/booking", label: "Đặt lịch tư vấn" },
     { to: "/user/test-booking", label: "Đặt lịch xét nghiệm" },
+      { to: "/blog", label: "Blog" },
   ];
 
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  // Get button text based on authentication state
+  const getAuthButtonText = () => {
+    if (isAuthenticated) {
+      return user?.fullName  || 'Tài khoản';
+    }
+    return 'Đăng nhập/Đăng ký';
+  };
+
+  // Get button link based on current page
+  const getAuthButtonLink = () => {
+    if (isAuthenticated) {
+      return '/dashboard'; // TODO: Replace with actual user dashboard route
+    }
+    if (isOnAuthPage) {
+      return '/'; // If on auth page, go back to home
+    }
+    return '/login';
   };
 
   return (
@@ -47,9 +67,14 @@ const Header = () => {
           </Link>
         ))}
         <div className="user-dropdown-wrapper" ref={userDropdownRef}>
-          <button className="user-icon-btn" onClick={() => setUserDropdownOpen(v => !v)}>
-            <UserCircle size={24} />
-          </button>
+       <button className="user-icon-btn" onClick={() => setUserDropdownOpen(v => !v)}>
+  {isAuthenticated ? (
+    <span className="flex gap-3"><UserCircle size={24} />{user?.fullName || "Tài khoản"}</span>
+  ) : (
+    <UserCircle size={24} />
+  )}
+</button>
+
           {userDropdownOpen && (
             <div className="user-dropdown">
               <Link to="/user/profile" className="dropdown-item"><User size={18} /> Hồ sơ</Link>

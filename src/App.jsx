@@ -27,21 +27,30 @@ import ConsultantListPage from "./pages/User/BookingConsultant/ConsultantListPag
 import ConsultantBookingPage from "./pages/User/BookingConsultant/ConsultantBookingPage";
 import ConsultantBookingConfirmPage from "./pages/User/BookingConsultant/ConsultantBookingConfirmPage";
 import STIBookingConfirmPage from "./pages/User/BookingTest/STIBookingConfirmPage";
+import BlogPage from "./pages/Guest/BlogPage/BlogPage.jsx";
+import BlogDetailPage from "./pages/Guest/BlogPage/BlogDetailPage.jsx";
+import QuestionsPage from "./pages/Consultant/QuestionsPage.jsx";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
+    
     <AuthProvider>
+     <Toaster position="top-right" reverseOrder={false} />
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
+          <Route path="blog" element={<BlogPage/>} />
+             <Route path="blog/:id" element={<BlogDetailPage/>} />
         </Route>
 
         <Route path="/consultant" element={<ConsultantLayout />}>
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="schedule" element={<SchedulePage />} />
+          <Route path="questions" element={<QuestionsPage />} />
         </Route>
 
         <Route path="/user" element={<UserLayout />}>
