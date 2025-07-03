@@ -6,6 +6,7 @@ import "./App.css";
 // Layouts
 import MainLayout from "./layouts/MainLayout";
 import ConsultantLayout from "./components/Consultant/ConsultantLayout";
+import ManagerLayout from "./components/Manager/ManagerLayout";
 
 // Guest Pages
 import HomePage from "./pages/Guest/HomePage/HomePage";
@@ -32,6 +33,12 @@ import BlogDetailPage from "./pages/Guest/BlogPage/BlogDetailPage.jsx";
 import QuestionsPage from "./pages/Consultant/QuestionsPage.jsx";
 import { Toaster } from "react-hot-toast";
 
+// Manager Pages
+import BlogManagePage from "./pages/Manager/BlogManagePage.jsx";
+import ConsultantManagePage from "./pages/Manager/ConsultantManagePage.jsx";
+import ManagerDashboardPage from "./pages/Manager/DashboardPage.jsx";
+import FeedbackPage from "./pages/Manager/FeedbackPage.jsx";
+
 function App() {
   return (
     
@@ -52,6 +59,12 @@ function App() {
           <Route path="schedule" element={<SchedulePage />} />
           <Route path="questions" element={<QuestionsPage />} />
         </Route>
+        <Route path="/consultant" element={<ConsultantLayout />}>
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="schedule" element={<SchedulePage />} />
+          <Route path="questions" element={<QuestionsPage />} />
+        </Route>
 
         <Route path="/user" element={<UserLayout />}>
           <Route path="home" element={<UserHomePage />} />
@@ -62,6 +75,13 @@ function App() {
           <Route path="test-booking/schedule" element={<STIBookingTest />} />
           <Route path="test-booking/confirm" element={<STIBookingConfirmPage />} />
           <Route path="faq" element={<UserFAQPage />} />
+        </Route>
+
+        <Route path="/manager" element={<ManagerLayout />}>
+          <Route path="dashboard" element={<ManagerDashboardPage />} />
+          <Route path="consultants" element={<ConsultantManagePage />} />
+          <Route path="blogs" element={<BlogManagePage />} />
+          <Route path="feedback" element={<FeedbackPage />} />
         </Route>
       </Routes>
     </AuthProvider>
