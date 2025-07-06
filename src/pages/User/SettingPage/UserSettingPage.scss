@@ -1,0 +1,391 @@
+// Custom SweetAlert styles
+.swal2-popup {
+  font-family: 'Inter', sans-serif;
+  border-radius: 16px;
+  
+  .swal2-title {
+    color: #111111;
+    font-weight: 600;
+  }
+  
+  .swal2-content {
+    color: #6b7280;
+  }
+  
+  .swal2-confirm {
+    background: linear-gradient(135deg, #2563EB 0%, #60a5fa 100%) !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    padding: 0.75rem 1.5rem !important;
+    
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+  }
+  
+  .swal2-cancel {
+    background: #f3f4f6 !important;
+    color: #374151 !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    padding: 0.75rem 1.5rem !important;
+    
+    &:hover {
+      background: #e5e7eb !important;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// Toast notification styles
+.swal2-toast {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
+  
+  .swal2-title {
+    color: #111111;
+    font-size: 0.9rem;
+  }
+  
+  .swal2-content {
+    color: #6b7280;
+    font-size: 0.8rem;
+  }
+}
+
+.user-setting-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2563EB 0%, #60a5fa 100%);
+  color: #111111;
+
+  .setting-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    color: white;
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      color: white;
+    }
+
+    p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin: 0;
+      color: white;
+    }
+  }
+
+  .setting-content {
+    .setting-section {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 25px rgba(37, 99, 235, 0.08);
+      transition: all 0.3s ease;
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e0e7ef;
+
+        h2 {
+          margin: 0;
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #111111;
+        }
+      }
+
+      .setting-grid {
+        display: grid;
+        gap: 1.5rem;
+
+        .setting-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem;
+          background: #f1f5fd;
+          border-radius: 12px;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: #e0e7ef;
+            transform: translateY(-2px);
+          }
+
+          .setting-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            color: #111111;
+
+            .setting-icon {
+              color: #2563EB;
+            }
+          }
+
+          // Toggle Switch Styles
+          .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+
+            input {
+              opacity: 0;
+              width: 0;
+              height: 0;
+
+              &:checked + .toggle-slider {
+                background: linear-gradient(135deg, #2563EB 0%, #60a5fa 100%);
+              }
+
+              &:checked + .toggle-slider:before {
+                transform: translateX(26px);
+              }
+            }
+
+            .toggle-slider {
+              position: absolute;
+              cursor: pointer;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: #ccc;
+              transition: 0.3s;
+              border-radius: 24px;
+
+              &:before {
+                position: absolute;
+                content: "";
+                height: 18px;
+                width: 18px;
+                left: 3px;
+                bottom: 3px;
+                background: #fff;
+                transition: 0.3s;
+                border-radius: 50%;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+              }
+            }
+          }
+        }
+      }
+
+      .password-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid #e0e7ef;
+
+        h3 {
+          margin: 0 0 1.5rem 0;
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: #111111;
+        }
+
+        .password-form {
+          display: grid;
+          gap: 1.5rem;
+
+          .password-field {
+            label {
+              display: block;
+              margin-bottom: 0.5rem;
+              font-weight: 500;
+              color: #111111;
+            }
+
+            .password-hint {
+              display: block;
+              margin-top: 0.5rem;
+              font-size: 0.8rem;
+              color: #6b7280;
+              font-style: italic;
+            }
+
+            .password-input-wrapper {
+              position: relative;
+              display: flex;
+              align-items: center;
+
+              .password-input {
+                width: 100%;
+                padding: 0.75rem;
+                padding-right: 3rem;
+                border: 2px solid #e0e7ef;
+                border-radius: 8px;
+                font-size: 0.95rem;
+                transition: border-color 0.3s ease;
+                color: #111111;
+                background: #ffffff;
+
+                &:focus {
+                  outline: none;
+                  border-color: #2563EB;
+                  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+                }
+
+                &::placeholder {
+                  color: #9ca3af;
+                }
+              }
+
+              .password-toggle {
+                position: absolute;
+                right: 0.75rem;
+                background: none;
+                border: none;
+                color: #6b7280;
+                cursor: pointer;
+                padding: 0.25rem;
+                border-radius: 4px;
+                transition: color 0.3s ease;
+
+                &:hover {
+                  color: #2563EB;
+                }
+              }
+            }
+
+            .password-input {
+              width: 100%;
+              padding: 0.75rem;
+              border: 2px solid #e0e7ef;
+              border-radius: 8px;
+              font-size: 0.95rem;
+              transition: border-color 0.3s ease;
+              color: #111111;
+              background: #ffffff;
+
+              &:focus {
+                outline: none;
+                border-color: #2563EB;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+              }
+
+              &::placeholder {
+                color: #9ca3af;
+              }
+            }
+          }
+
+          .btn-update-password {
+            background: linear-gradient(135deg, #2563EB 0%, #60a5fa 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+
+            &:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            }
+
+            &:active {
+              transform: translateY(0);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .user-setting-page {
+    padding: 1rem;
+
+    .setting-header {
+      h1 {
+        font-size: 2rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+    }
+
+    .setting-content {
+      .setting-section {
+        padding: 1.5rem;
+
+        .setting-grid {
+          .setting-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Animation for transitions
+.user-setting-page,
+.setting-section,
+.setting-item,
+.password-input {
+  transition: all 0.3s ease;
+}
+
+// Focus styles for accessibility
+.password-input:focus,
+.btn-update-password:focus {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .user-setting-page {
+    .setting-header {
+      h1 {
+        font-size: 1.75rem;
+      }
+    }
+
+    .setting-content {
+      .setting-section {
+        padding: 1rem;
+
+        .section-header {
+          h2 {
+            font-size: 1.1rem;
+          }
+        }
+
+        .setting-grid {
+          .setting-item {
+            padding: 0.75rem;
+
+            .setting-label {
+              font-size: 0.85rem;
+            }
+          }
+        }
+      }
+    }
+  }
+} 

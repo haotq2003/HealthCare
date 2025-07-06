@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Settings localStorage</title>
+</head>
+<body>
+    <h1>Test Settings localStorage</h1>
+    <div>
+        <h2>Current localStorage:</h2>
+        <pre id="current-settings"></pre>
+    </div>
+    <div>
+        <h2>Test Controls:</h2>
+        <button onclick="setTestSettings()">Set Test Settings</button>
+        <button onclick="clearSettings()">Clear Settings</button>
+        <button onclick="showSettings()">Show Settings</button>
+    </div>
+
+    <script>
+        function showSettings() {
+            const settings = localStorage.getItem('userSettings');
+            document.getElementById('current-settings').textContent = settings || 'No settings found';
+        }
+
+        function setTestSettings() {
+            const testSettings = {
+                notifications: {
+                    appointmentReminders: false,
+                    cycleTracking: false
+                }
+            };
+            localStorage.setItem('userSettings', JSON.stringify(testSettings));
+            showSettings();
+        }
+
+        function clearSettings() {
+            localStorage.removeItem('userSettings');
+            showSettings();
+        }
+
+        // Show settings on load
+        showSettings();
+    </script>
+</body>
+</html> 
