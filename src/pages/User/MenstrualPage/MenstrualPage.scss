@@ -1,0 +1,872 @@
+.menstrual-period-tracker {
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #eff6ff, #e0e7ff);
+  padding: 1rem;
+}
+
+.menstrual-container {
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+.menstrual-header {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  .menstrual-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+
+    .menstrual-header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .menstrual-header-right {
+      .menstrual-history-button {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+
+        &:hover {
+          background: #1d4ed8;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .menstrual-history-button-icon {
+          width: 1.25rem;
+          height: 1.25rem;
+        }
+      }
+    }
+  }
+
+  .menstrual-header-icon {
+    width: 3rem;
+    height: 3rem;
+    background: #2563eb;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .menstrual-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      color: white;
+    }
+  }
+
+  .menstrual-header-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  .menstrual-header-subtitle {
+    color: #6b7280;
+  }
+
+  .menstrual-sync-button {
+    background: #2563eb;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background: #1d4ed8;
+    }
+  }
+}
+
+.menstrual-main-content {
+  .menstrual-grid-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+    gap: 1.5rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+    }
+
+    @media (min-width: 1024px) {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 2rem;
+    }
+  }
+}
+
+.menstrual-calendar-container {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 768px) {
+    min-height: 350px;
+  }
+
+  .menstrual-calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+
+    .menstrual-calendar-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .menstrual-calendar-controls {
+      display: flex;
+      gap: 0.5rem;
+
+      .menstrual-control-button {
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        transition: background-color 0.2s;
+
+        &:hover {
+          background: #f3f4f6;
+        }
+
+        .menstrual-control-icon {
+          width: 1.25rem;
+          height: 1.25rem;
+          color: #6b7280;
+        }
+      }
+    }
+  }
+
+  .menstrual-calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+
+    .menstrual-weekday {
+      padding: 0.75rem;
+      text-align: center;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #6b7280;
+    }
+  }
+
+  .menstrual-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+    flex: 1;
+
+    .menstrual-calendar-day {
+      position: relative;
+      padding: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 0.5rem;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      cursor: pointer;
+
+      &.menstrual-other-month {
+        color: #d1d5db;
+      }
+
+      &.menstrual-current-month {
+        color: #374151;
+      }
+
+      &.menstrual-today {
+        border: 2px solid #2563eb;
+        background: #eff6ff;
+        color: #1e40af;
+        font-weight: 600;
+      }
+
+      &.period {
+        background: linear-gradient(135deg, #fecaca, #fca5a5);
+        color: #991b1b;
+        border: 1px solid #f87171;
+        font-weight: 600;
+
+        &:hover {
+          background: linear-gradient(135deg, #fca5a5, #f87171);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+        }
+      }
+
+      &.fertile {
+        background: linear-gradient(135deg, #bbf7d0, #86efac);
+        color: #166534;
+        border: 1px solid #4ade80;
+        font-weight: 600;
+
+        &:hover {
+          background: linear-gradient(135deg, #86efac, #4ade80);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(34, 197, 94, 0.3);
+        }
+      }
+
+      &.ovulation {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        border: 1px solid #1d4ed8;
+        font-weight: 700;
+
+        &:hover {
+          background: linear-gradient(135deg, #2563eb, #1d4ed8);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+        }
+      }
+
+      &.normal {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+
+        &:hover {
+          background: #f9fafb;
+          border-color: #d1d5db;
+          transform: translateY(-1px);
+        }
+      }
+
+      .menstrual-ovulation-indicator {
+        position: absolute;
+        top: -0.25rem;
+        right: -0.25rem;
+        width: 0.75rem;
+        height: 0.75rem;
+        background: #facc15;
+        border-radius: 9999px;
+        animation: pulse 2s infinite;
+        border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+
+  .menstrual-calendar-legend {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    .menstrual-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .menstrual-legend-indicator {
+        width: 1rem;
+        height: 1rem;
+        border-radius: 9999px;
+
+        &.period {
+          background: #fee2e2;
+          border: 1px solid #fecaca;
+        }
+
+        &.fertile {
+          background: #dcfce7;
+          border: 1px solid #bbf7d0;
+        }
+
+        &.ovulation {
+          background: #2563eb;
+        }
+      }
+
+      span {
+        font-size: 0.875rem;
+        color: #374151;
+      }
+    }
+  }
+}
+
+.menstrual-sidebar-section {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 768px) {
+    min-height: 350px;
+  }
+
+  .menstrual-section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1rem;
+  }
+
+  .menstrual-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .menstrual-input-field {
+      .menstrual-input-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.5rem;
+      }
+
+              .menstrual-input {
+          width: 100%;
+          padding: 0.5rem 1rem;
+          border: 1px solid #d1d5db;
+          border-radius: 0.5rem;
+          transition: all 0.2s;
+
+          &:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #2563eb;
+            border-color: transparent;
+          }
+        }
+
+        .menstrual-textarea {
+          width: 100%;
+          padding: 0.5rem 1rem;
+          border: 1px solid #d1d5db;
+          border-radius: 0.5rem;
+          transition: all 0.2s;
+          resize: vertical;
+          min-height: 80px;
+          font-family: inherit;
+
+          &:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #2563eb;
+            border-color: transparent;
+          }
+
+          &::placeholder {
+            color: #9ca3af;
+          }
+        }
+    }
+
+    .menstrual-save-button {
+      width: 100%;
+      background: #2563eb;
+      color: white;
+      font-weight: 500;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: background-color 0.2s;
+
+      .menstrual-button-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+
+      &:hover {
+        background: #1d4ed8;
+      }
+    }
+  }
+
+  .menstrual-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .menstrual-stat-item {
+      padding: 1rem;
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.2s;
+
+      &.period {
+        background: linear-gradient(135deg, #fdf2f8, #fce7f3);
+        border: 1px solid #fbcfe8;
+      }
+
+      &.fertile {
+        background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+        border: 1px solid #bbf7d0;
+      }
+
+      &.ovulation {
+        background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        border: 1px solid #bfdbfe;
+      }
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .menstrual-stat-icon {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        &.period {
+          background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+
+          .menstrual-icon {
+            color: #db2777;
+          }
+        }
+
+        &.fertile {
+          background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+
+          .menstrual-icon {
+            color: #15803d;
+          }
+        }
+
+        &.ovulation {
+          background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+
+          .menstrual-icon {
+            color: #2563eb;
+          }
+        }
+
+        .menstrual-icon {
+          width: 1.5rem;
+          height: 1.5rem;
+        }
+      }
+
+      .menstrual-stat-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.25rem;
+      }
+
+      .menstrual-stat-date {
+        font-size: 0.75rem;
+        color: #6b7280;
+        font-weight: 500;
+      }
+
+      .menstrual-stat-note {
+        font-size: 0.625rem;
+        color: #9ca3af;
+        font-style: italic;
+        margin-top: 0.125rem;
+      }
+    }
+  }
+
+  .menstrual-insights {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .menstrual-insight-item {
+      padding: 1rem;
+      border-radius: 0.5rem;
+
+      &.cycle {
+        background: linear-gradient(to right, #eff6ff, #e0e7ff);
+        border: 1px solid #bfdbfe;
+      }
+
+      &.next-cycle {
+        background: linear-gradient(to right, #faf5ff, #f3e8ff);
+        border: 1px solid #e9d5ff;
+      }
+
+      &.notes {
+        background: linear-gradient(to right, #fef3c7, #fde68a);
+        border: 1px solid #fcd34d;
+      }
+
+      &.preview {
+        background: linear-gradient(to right, #ecfdf5, #d1fae5);
+        border: 1px solid #a7f3d0;
+      }
+
+      .menstrual-insight-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+
+        .menstrual-insight-icon {
+          width: 1.25rem;
+          height: 1.25rem;
+        }
+
+        .menstrual-insight-title {
+          font-size: 0.875rem;
+          font-weight: 500;
+
+          .cycle & {
+            color: #1e3a8a;
+          }
+
+          .next-cycle & {
+            color: #6b21a8;
+          }
+
+          .notes & {
+            color: #92400e;
+          }
+
+          .preview & {
+            color: #065f46;
+          }
+        }
+      }
+
+      .menstrual-insight-text {
+        font-size: 0.75rem;
+
+        .cycle & {
+          color: #1e40af;
+        }
+
+        .next-cycle & {
+          color: #7e22ce;
+        }
+
+        .notes & {
+          color: #92400e;
+        }
+
+        .preview & {
+          color: #065f46;
+        }
+      }
+    }
+
+
+  }
+
+  .menstrual-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    background: #f9fafb;
+    border-radius: 0.5rem;
+    border: 1px dashed #d1d5db;
+  }
+
+  .menstrual-no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    color: #6b7280;
+    background: #f9fafb;
+    border-radius: 0.5rem;
+    border: 1px dashed #d1d5db;
+
+    p {
+      margin: 0.25rem 0;
+      font-size: 0.875rem;
+
+      &:first-child {
+        font-weight: 600;
+        color: #374151;
+      }
+    }
+  }
+}
+
+
+
+
+
+// Modal Styles
+.menstrual-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+
+  .menstrual-modal-content {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    max-width: 90vw;
+    max-height: 90vh;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    .menstrual-modal-header {
+      padding: 1.5rem 2rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .menstrual-modal-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        .menstrual-modal-icon {
+          width: 1.5rem;
+          height: 1.5rem;
+        }
+
+        h3 {
+          margin: 0;
+          font-size: 1.25rem;
+          font-weight: 600;
+        }
+      }
+
+      .menstrual-modal-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        transition: all 0.2s;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+      }
+    }
+
+    .menstrual-modal-body {
+      flex: 1;
+      overflow: auto;
+      padding: 1.5rem 2rem;
+
+      .menstrual-modal-subtitle {
+        margin-bottom: 1.5rem;
+        font-size: 0.875rem;
+        color: #6b7280;
+        opacity: 0.9;
+      }
+
+      .menstrual-modal-table-container {
+        overflow-x: auto;
+
+        .menstrual-modal-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 0.875rem;
+
+          thead {
+            background: #f8fafc;
+            border-bottom: 2px solid #e2e8f0;
+
+            th {
+              padding: 1rem 0.75rem;
+              text-align: left;
+              font-weight: 600;
+              color: #374151;
+              font-size: 0.75rem;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+              border-bottom: 1px solid #e2e8f0;
+              white-space: nowrap;
+
+              &:first-child {
+                padding-left: 0;
+              }
+
+              &:last-child {
+                padding-right: 0;
+              }
+            }
+          }
+
+          tbody {
+            .menstrual-modal-table-row {
+              border-bottom: 1px solid #f1f5f9;
+              transition: all 0.2s;
+
+              &:hover {
+                background: #f8fafc;
+              }
+
+              &:nth-child(even) {
+                background: #fafbfc;
+              }
+
+              .menstrual-modal-table-cell {
+                padding: 1rem 0.75rem;
+                vertical-align: middle;
+                border-bottom: 1px solid #f1f5f9;
+
+                &:first-child {
+                  padding-left: 0;
+                  font-weight: 600;
+                  color: #6b7280;
+                  text-align: center;
+                }
+
+                &:last-child {
+                  padding-right: 0;
+                  text-align: center;
+                }
+
+                .menstrual-date-cell {
+                  display: flex;
+                  align-items: center;
+                  gap: 0.5rem;
+                  color: #374151;
+                  font-weight: 500;
+
+                  &.ovulation {
+                    color: #dc2626;
+                    font-weight: 600;
+                  }
+                }
+
+                .menstrual-cycle-length {
+                  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+                  color: white;
+                  padding: 0.25rem 0.5rem;
+                  border-radius: 0.375rem;
+                  font-size: 0.75rem;
+                  font-weight: 600;
+                }
+
+                .menstrual-period-length {
+                  background: linear-gradient(135deg, #ec4899, #be185d);
+                  color: white;
+                  padding: 0.25rem 0.5rem;
+                  border-radius: 0.375rem;
+                  font-size: 0.75rem;
+                  font-weight: 600;
+                }
+
+                .menstrual-fertile-window {
+                  display: flex;
+                  align-items: center;
+                  gap: 0.25rem;
+                  font-size: 0.75rem;
+                  color: #059669;
+
+                  .menstrual-fertile-separator {
+                    color: #6b7280;
+                    font-weight: 600;
+                  }
+                }
+
+                .menstrual-notes-cell {
+                  max-width: 150px;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                  color: #6b7280;
+                  font-style: italic;
+                  cursor: help;
+                }
+
+                .menstrual-no-notes {
+                  color: #9ca3af;
+                  font-style: italic;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .menstrual-modal-empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem;
+        text-align: center;
+        color: #6b7280;
+
+        p {
+          font-size: 1rem;
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
