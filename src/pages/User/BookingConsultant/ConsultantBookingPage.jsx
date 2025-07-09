@@ -1,56 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import ConsultantHeader from "../../../components/User/ConsultantHeader";
 import "./ConsultantBookingPage.scss"; // Updated import path
+import { ConsultantService } from "../../../services/ConsultantService";
+import { SlotService } from "../../../services/SlotService";
 
-const consultants = [
-  {
-    id: 1,
-    name: "TS. Nguyễn Thị Lan",
-    specialty: "Sức khỏe tâm thần",
-    experience: 18,
-    rating: 5,
-    price: 600000,
-    desc: "Chuyên gia tâm lý tình dục hàng đầu. Tư vấn về các vấn đề tâm lý liên quan đến tình dục, hôn nhân và các rối loạn tình dục.",
-  },
-  {
-    id: 2,
-    name: "BS. Nguyễn Thị Hoa",
-    specialty: "Sức khỏe sinh sản",
-    experience: 12,
-    rating: 4.9,
-    price: 500000,
-    desc: "Chuyên gia hàng đầu về sức khỏe sinh sản phụ nữ với hơn 12 năm kinh nghiệm.",
-  },
-  {
-    id: 3,
-    name: "BS. Phạm Văn Đức",
-    specialty: "Kế hoạch hóa gia đình",
-    experience: 15,
-    rating: 4.9,
-    price: 550000,
-    desc: "Chuyên gia kế hoạch hóa gia đình với kinh nghiệm lâu năm.",
-  },
-  {
-    id: 4,
-    name: "BS. Trần Minh Tuấn",
-    specialty: "Tư vấn STIs",
-    experience: 10,
-    rating: 4.8,
-    price: 400000,
-    desc: "Chuyên gia tư vấn các bệnh lây truyền qua đường tình dục.",
-  },
-  {
-    id: 5,
-    name: "ThS. Lê Thị Mai",
-    specialty: "Giáo dục giới tính",
-    experience: 10,
-    rating: 4.7,
-    price: 450000,
-    desc: "Chuyên gia giáo dục giới tính với phương pháp tư vấn hiện đại.",
-  },
-];
+
 
 const hours = [
   "08:00",
@@ -66,12 +22,16 @@ const hours = [
 const ConsultantBookingPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const consultant = consultants.find((c) => c.id === Number(id));
+ 
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [availableSlots, setAvailableSlots] = useState([]);
 
+ const [loading, setLoading] = useState(true);
+ 
+  const [consultant, setConsultant] = useState(null);
   const months = [
     "Tháng Một",
     "Tháng Hai",
@@ -89,13 +49,29 @@ const ConsultantBookingPage = () => {
 
   const daysOfWeek = ["Th 2", "Th 3", "Th 4", "Th 5", "Th 6", "Th 7", "CN"];
 
+
+   useEffect(() => {
+    const fetchConsultant = async () => {
+      try {
+        const res = await ConsultantService.getConsultantDetail(id); 
+        console.log(res)
+        setConsultant(res);
+      } catch (error) {
+        console.error("Không lấy được thông tin bác sĩ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) fetchConsultant();
+  }, [id]);
   const getDaysInMonth = (month, year) => {
     return new Date(year, month + 1, 0).getDate();
   };
 
   const getFirstDayOfMonth = (month, year) => {
     const firstDay = new Date(year, month, 1).getDay();
-    return firstDay === 0 ? 6 : firstDay - 1; // Convert Sunday (0) to 6, Monday (1) to 0, etc.
+    return firstDay === 0 ? 6 : firstDay - 1; 
   };
 
   const generateCalendarDays = () => {
@@ -155,20 +131,30 @@ const ConsultantBookingPage = () => {
     }
   };
 
-  const handleDateSelect = (day, isCurrentMonth) => {
-    if (isCurrentMonth) {
-      setSelectedDate(day);
-      // Format date for navigation
-      const year = currentYear;
-      const month = String(currentMonth + 1).padStart(2, "0");
-      const dayStr = String(day).padStart(2, "0");
-      const formattedDate = `${year}-${month}-${dayStr}`;
-      console.log("Selected date:", formattedDate);
-    }
-  };
+  const handleDateSelect = async (day, isCurrentMonth) => {
+  if (isCurrentMonth) {
+    setSelectedDate(day);
 
-  const handleTimeSelect = (time) => {
-    setSelectedTime(time);
+    const year = currentYear;
+    const month = String(currentMonth + 1).padStart(2, "0");
+    const dayStr = String(day).padStart(2, "0");
+    const formattedDate = `${year}-${month}-${dayStr}`;
+    console.log("Selected date:", formattedDate);
+
+    try {
+      const res = await SlotService.getSlotByDateAndConsultant(consultant.id, formattedDate);
+      console.log("Available slots:", res);
+      setAvailableSlots(res.data.items); // Update state
+    } catch (err) {
+      console.error("Lỗi khi lấy slot:", err);
+      setAvailableSlots([]); // Clear on error
+    }
+  }
+};
+
+
+  const handleTimeSelect = (slot) => {
+    setSelectedTime(slot);
   };
 
   const handleContinue = () => {
@@ -178,8 +164,8 @@ const ConsultantBookingPage = () => {
       const dayStr = String(selectedDate).padStart(2, "0");
       const formattedDate = `${year}-${month}-${dayStr}`;
       navigate(
-        `/user/booking/${consultant.id}/confirm?date=${formattedDate}&hour=${selectedTime}`
-      );
+      `/user/booking/${consultant.id}/confirm?date=${formattedDate}&hour=${selectedTime.id}&slotId=${selectedTime.id}&slotStart=${selectedTime.slotStart}&slotEnd=${selectedTime.slotEnd}`
+    );
     }
   };
 
@@ -205,14 +191,12 @@ const ConsultantBookingPage = () => {
               </span>
             </div>
             <div className="consultant-details">
-              <div className="consultant-name">{consultant.name}</div>
-              <div className="consultant-specialty">{consultant.specialty}</div>
+              <div className="consultant-name">{consultant?.fullName}</div>
+              <div className="consultant-specialty">{consultant?.bio}</div>
               <div className="consultant-meta">
-                ⭐ {consultant.rating} | {consultant.experience} năm kinh nghiệm
+                ⭐ {consultant.rating} | {consultant?.experienceYears} năm kinh nghiệm
               </div>
-              <div className="consultant-price">
-                {consultant.price.toLocaleString()}đ/giờ
-              </div>
+            
             </div>
           </div>
           <div className="consultant-description">{consultant.desc}</div>
@@ -269,19 +253,25 @@ const ConsultantBookingPage = () => {
           <div className="time-section">
             <h3>🕐 Chọn giờ tư vấn</h3>
             {selectedDate ? (
-              <div className="time-slots">
-                {hours.map((time) => (
-                  <button
-                    key={time}
-                    className={`time-slot ${
-                      selectedTime === time ? "selected" : ""
-                    }`}
-                    onClick={() => handleTimeSelect(time)}
-                  >
-                    {time}
-                  </button>
-                ))}
-              </div>
+             <div className="time-slots">
+  {availableSlots.length === 0 ? (
+    <p>🚫 Không có khung giờ trống cho ngày này.</p>
+  ) : (
+    availableSlots.map((slot) => (
+      <button
+        key={slot.id}
+        className={`time-slot ${
+          selectedTime?.id === slot.id ? "selected" : ""
+        }`}
+        onClick={() => handleTimeSelect(slot)}
+        disabled={slot.isBooked}
+      >
+        {slot.slotStart.slice(0, 5)} - {slot.slotEnd.slice(0, 5)}
+      </button>
+    ))
+  )}
+</div>
+
             ) : (
               <div className="time-placeholder">
                 <Clock size={48} className="clock-icon" />

@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, User, Phone, Mail, MapPin, Filter, Search, Eye, MessageCircle, Video, Phone as PhoneIcon } from 'lucide-react';
+import { ConsultantService } from '../../services/ConsultantService';
+import { Modal, Box, Typography, TextField, Button } from "@mui/material";
+import toast from 'react-hot-toast';
 
 const ConsultationPage = () => {
   const [appointments, setAppointments] = useState([]);
@@ -7,6 +10,9 @@ const ConsultationPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [loading, setLoading] = useState(true);
+const [openModal, setOpenModal] = useState(false);
+const [selectedConsultationId, setSelectedConsultationId] = useState(null);
+const [resultInput, setResultInput] = useState('');
 
   // Mock data cho các cuộc hẹn
   const mockAppointments = [
@@ -81,18 +87,53 @@ const ConsultationPage = () => {
       address: 'TP.HCM'
     }
   ];
+  const handleOpenModal = (id) => {
+  setSelectedConsultationId(id);
+  setOpenModal(true);
+};
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setAppointments(mockAppointments);
+
+
+  fetchAppointments();
+}, []);
+  const fetchAppointments = async () => {
+    try {
+      setLoading(true);
+      const res = await ConsultantService.getConsultantByStatus('Confirmed');
+      console.log(res.items)
+      setAppointments(res.items);
+    } catch (err) {
+      console.error(err);
+    } finally {
       setLoading(false);
-    }, 1000);
-  }, []);
+    }
+  };
+const handleSubmitResult = async () => {
+  try {
+    await ConsultantService.resultConsultation(selectedConsultationId, resultInput);
+    await fetchAppointments(); 
+    toast.success("Ghi kết quả thành công");
+
+    // Cập nhật UI hoặc refetch
+    setAppointments((prev) =>
+      prev.map((app) =>
+        app.id === selectedConsultationId ? { ...app, result: resultInput } : app
+      )
+    );
+
+    setOpenModal(false);
+    setResultInput('');
+  } catch (err) {
+    console.error(err);
+  
+  }
+};
+
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'confirmed':
+      case 'Confirmed':
         return 'bg-green-100 text-green-800 border-green-200';
       case 'pending':
         return 'bg-yellow-100 text-yellow-800 border-yellow-200';
@@ -105,7 +146,7 @@ const ConsultationPage = () => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'confirmed':
+      case 'Confirmed':
         return 'Đã xác nhận';
       case 'pending':
         return 'Chờ xác nhận';
@@ -143,10 +184,10 @@ const ConsultationPage = () => {
   };
 
   const filteredAppointments = appointments.filter(appointment => {
-    const matchesStatus = filterStatus === 'all' || appointment.status === filterStatus;
-    const matchesSearch = appointment.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         appointment.topic.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesStatus && matchesSearch;
+   
+    const matchesSearch = appointment.userFullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         appointment.reason.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
   });
 
   const formatDate = (dateString) => {
@@ -182,63 +223,33 @@ const ConsultationPage = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Quản lý cuộc hẹn</h1>
         <p className="text-gray-600">Xem và quản lý tất cả các cuộc hẹn tư vấn của bạn</p>
       </div>
+<Modal open={openModal} onClose={() => setOpenModal(false)}>
+  <Box sx={{
+    position: 'absolute', top: '50%', left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400, bgcolor: 'background.paper',
+    borderRadius: 2, boxShadow: 24, p: 4
+  }}>
+    <Typography variant="h6" gutterBottom>
+      Nhập kết quả tư vấn
+    </Typography>
+    <TextField
+      fullWidth
+      multiline
+      rows={4}
+      value={resultInput}
+      onChange={(e) => setResultInput(e.target.value)}
+      placeholder="Nhập nội dung tư vấn..."
+    />
+    <Box mt={2} display="flex" justifyContent="flex-end" gap={1}>
+      <Button onClick={() => setOpenModal(false)}>Hủy</Button>
+      <Button onClick={handleSubmitResult} variant="contained" color="primary">Xác nhận</Button>
+    </Box>
+  </Box>
+</Modal>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Calendar className="w-6 h-6 text-blue-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Tổng cuộc hẹn</p>
-              <p className="text-2xl font-bold text-gray-900">{appointments.length}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Clock className="w-6 h-6 text-green-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Đã xác nhận</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {appointments.filter(a => a.status === 'confirmed').length}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Clock className="w-6 h-6 text-yellow-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Chờ xác nhận</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {appointments.filter(a => a.status === 'pending').length}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <Clock className="w-6 h-6 text-red-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Đã hủy</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {appointments.filter(a => a.status === 'cancelled').length}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      
 
       {/* Filters */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
@@ -256,18 +267,7 @@ const ConsultationPage = () => {
             </div>
           </div>
           
-          <div className="flex gap-4">
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">Tất cả trạng thái</option>
-              <option value="confirmed">Đã xác nhận</option>
-              <option value="pending">Chờ xác nhận</option>
-              <option value="cancelled">Đã hủy</option>
-            </select>
-          </div>
+          
         </div>
       </div>
 
@@ -294,7 +294,7 @@ const ConsultationPage = () => {
                     
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">{appointment.patientName}</h3>
+                        <h3 className="text-lg font-semibold text-gray-900">{appointment.userFullName}</h3>
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(appointment.status)}`}>
                           {getStatusText(appointment.status)}
                         </span>
@@ -304,35 +304,21 @@ const ConsultationPage = () => {
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
                             <Clock className="w-4 h-4 text-gray-400" />
-                            <span>{formatDate(appointment.date)} - {appointment.time}</span>
+                            <span>{formatDate(appointment.availableDate)} - {appointment.slotStart}</span>
                           </div>
-                          <div className="flex items-center gap-2">
+                          {/* <div className="flex items-center gap-2">
                             <MapPin className="w-4 h-4 text-gray-400" />
                             <span>{appointment.address}</span>
-                          </div>
+                          </div> */}
                         </div>
                         
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            {getTypeIcon(appointment.type)}
-                            <span>{getTypeText(appointment.type)}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Phone className="w-4 h-4 text-gray-400" />
-                            <span>{appointment.patientPhone}</span>
-                          </div>
-                        </div>
+                        
                       </div>
                       
-                      <div className="mt-4">
-                        <h4 className="font-medium text-gray-900 mb-1">Chủ đề tư vấn:</h4>
-                        <p className="text-gray-600">{appointment.topic}</p>
-                        {appointment.notes && (
-                          <div className="mt-2">
-                            <h4 className="font-medium text-gray-900 mb-1">Ghi chú:</h4>
-                            <p className="text-gray-600">{appointment.notes}</p>
-                          </div>
-                        )}
+                      <div className="mt-4 flex gap-5">
+                        <h4 className="font-medium text-gray-900 mb-1">Ghi chú: </h4>
+                        <p className="text-gray-600">{appointment.reason}</p>
+                        
                       </div>
                     </div>
                   </div>
@@ -340,27 +326,12 @@ const ConsultationPage = () => {
 
                 {/* Actions */}
                 <div className="flex flex-col sm:flex-row gap-2">
-                  <button className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                  <button onClick={() => handleOpenModal(appointment.id)} className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                     <Eye className="w-4 h-4 mr-2" />
-                    Xem chi tiết
+                    Ghi kết quả
                   </button>
                   
-                  {appointment.status === 'pending' && (
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => handleStatusChange(appointment.id, 'confirmed')}
-                        className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-                      >
-                        Xác nhận
-                      </button>
-                      <button 
-                        onClick={() => handleStatusChange(appointment.id, 'cancelled')}
-                        className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                      >
-                        Từ chối
-                      </button>
-                    </div>
-                  )}
+               
                 </div>
               </div>
             </div>

@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import ConsultantHeader from "../../../components/User/ConsultantHeader";
 import "./ConsultantBookingConfirmPage.scss";
 import { ConsultantService } from "../../../services/ConsultantService";
+import toast from "react-hot-toast";
 
 
 
@@ -16,9 +17,11 @@ const ConsultantBookingConfirmPage = () => {
   const { id } = useParams();
   const query = useQuery();
   const navigate = useNavigate();
-  const consultant = consultants.find(c => c.id === Number(id));
+const [consultant, setConsultant] = useState(null);
   const date = query.get("date");
-  const hour = query.get("hour");
+  const hour = query.get("slotStart");
+  const slotId = query.get("hour"); // Lấy slotId từ query parameter
+  const [loading,setLoading] = useState(true);
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -28,19 +31,21 @@ const ConsultantBookingConfirmPage = () => {
   const [submitted, setSubmitted] = useState(false);
 
 
-  useEffect(()=>{
-fetchConsultants()
-  },[])
+  useEffect(() => {
+    const fetchConsultant = async () => {
+      try {
+        const res = await ConsultantService.getConsultantDetail(id); 
+        console.log(res)
+        setConsultant(res);
+      } catch (error) {
+        console.error("Không lấy được thông tin bác sĩ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const fetchConsultants = async () =>{
-    try {
-      const res = await ConsultantService.getConsultantList();
-      console.log(res)
-      setConsultants(res);
-    } catch (error) {
-      console.error("Error fetching consultant list:", error);
-    }
-  }
+    if (id) fetchConsultant();
+  }, [id]);
 
   if (!consultant || !date || !hour) {
     return <div className="error-message">Thiếu thông tin đặt lịch.</div>;
@@ -50,13 +55,21 @@ fetchConsultants()
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitted(true);
-    setTimeout(() => {
-      alert("Đặt lịch thành công!");
+    
+    try {
+      // Gọi API createConsultation với slotId và reason
+      await ConsultantService.createConsultation(slotId, form.reason);
+      
+      toast.success("Đặt lịch thành công!");
       navigate("/user/booking");
-    }, 1000);
+    } catch (error) {
+      console.error("Lỗi khi đặt lịch:", error);
+      toast.error("Đặt lịch thất bại. Vui lòng thử lại!");
+      setSubmitted(false);
+    }
   };
 
 
@@ -86,11 +99,11 @@ fetchConsultants()
 
             <div className="consultant-booking-confirm-consultant-card">
               <div className="consultant-booking-confirm-consultant-avatar">
-                {consultant.name.charAt(0)}
+                {consultant?.fullName}
               </div>
               <div className="consultant-booking-confirm-consultant-details">
-                <h4 className="consultant-booking-confirm-consultant-name">{consultant.name}</h4>
-                <p className="consultant-booking-confirm-consultant-specialty">{consultant.specialty}</p>
+                <h4 className="consultant-booking-confirm-consultant-name">{consultant?.fullName}</h4>
+                <p className="consultant-booking-confirm-consultant-specialty">{consultant?.bio}</p>
               </div>
             </div>
 
@@ -128,18 +141,7 @@ fetchConsultants()
                 </div>
               </div>
 
-              <div className="consultant-booking-confirm-detail-item consultant-booking-confirm-price-item">
-                <div className="consultant-booking-confirm-detail-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <line x1="12" y1="1" x2="12" y2="23" stroke="currentColor" strokeWidth="2"/>
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  </svg>
-                </div>
-                <div className="consultant-booking-confirm-detail-content">
-                  <span className="consultant-booking-confirm-detail-label">Chi phí tư vấn</span>
-                  <span className="consultant-booking-confirm-detail-value consultant-booking-confirm-price">{consultant.price.toLocaleString()} VND</span>
-                </div>
-              </div>
+              
             </div>
           </div>
 
@@ -154,92 +156,46 @@ fetchConsultants()
               <h3 className="consultant-booking-confirm-card-title">Thông tin cá nhân</h3>
             </div>
 
-            <form className="consultant-booking-confirm-user-form" onSubmit={handleSubmit}>
-              <div className="consultant-booking-confirm-form-grid">
-                <div className="consultant-booking-confirm-form-group">
-                  <label htmlFor="name">Họ và tên <span className="consultant-booking-confirm-required">*</span></label>
-                  <div className="consultant-booking-confirm-input-wrapper">
-                    <input
-                      id="name"
-                      name="name"
-                      value={form.name}
-                      onChange={handleChange}
-                      required
-                      className="consultant-booking-confirm-form-input"
-                      placeholder="Nhập họ và tên của bạn"
-                    />
-                  </div>
-                </div>
-                
-                <div className="consultant-booking-confirm-form-group">
-                  <label htmlFor="phone">Số điện thoại <span className="consultant-booking-confirm-required">*</span></label>
-                  <div className="consultant-booking-confirm-input-wrapper">
-                    <input
-                      id="phone"
-                      name="phone"
-                      value={form.phone}
-                      onChange={handleChange}
-                      required
-                      pattern="0[0-9]{9}"
-                      placeholder="09xxxxxxxx"
-                      className="consultant-booking-confirm-form-input"
-                    />
-                  </div>
-                </div>
-              </div>
-              
-              <div className="consultant-booking-confirm-form-group">
-                <label htmlFor="email">Email</label>
-                <div className="consultant-booking-confirm-input-wrapper">
-                  <input
-                    id="email"
-                    name="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    type="email"
-                    placeholder="your.email@example.com"
-                    className="consultant-booking-confirm-form-input"
-                  />
-                </div>
-              </div>
-              
-              <div className="consultant-booking-confirm-form-group">
-                <label htmlFor="reason">Lý do tư vấn</label>
-                <div className="consultant-booking-confirm-input-wrapper">
-                  <textarea
-                    id="reason"
-                    name="reason"
-                    value={form.reason}
-                    onChange={handleChange}
-                    placeholder="Mô tả ngắn gọn vấn đề của bạn để chuyên gia chuẩn bị tốt hơn..."
-                    className="consultant-booking-confirm-form-textarea"
-                  />
-                </div>
-              </div>
-              
-              <div className="consultant-booking-confirm-form-actions">
-                <button
-                  type="submit"
-                  className={`consultant-booking-confirm-submit-button ${submitted ? 'consultant-booking-confirm-loading' : ''}`}
-                  disabled={submitted}
-                >
-                  {submitted ? (
-                    <>
-                      <div className="consultant-booking-confirm-spinner"></div>
-                      Đang xử lý...
-                    </>
-                  ) : (
-                    <>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M9 12L11 14L15 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
-                      </svg>
-                      Xác nhận đặt lịch
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
+         <form className="consultant-booking-confirm-user-form" onSubmit={handleSubmit}>
+  <div className="consultant-booking-confirm-form-group">
+    <label htmlFor="reason">Lý do tư vấn</label>
+    <div className="consultant-booking-confirm-input-wrapper">
+      <textarea
+        id="reason"
+        name="reason"
+        value={form.reason}
+        onChange={handleChange}
+        placeholder="Mô tả ngắn gọn vấn đề của bạn để chuyên gia chuẩn bị tốt hơn..."
+        className="consultant-booking-confirm-form-textarea"
+        required
+      />
+    </div>
+  </div>
+
+  <div className="consultant-booking-confirm-form-actions">
+    <button
+      type="submit"
+      className={`consultant-booking-confirm-submit-button ${submitted ? 'consultant-booking-confirm-loading' : ''}`}
+      disabled={submitted}
+    >
+      {submitted ? (
+        <>
+          <div className="consultant-booking-confirm-spinner"></div>
+          Đang xử lý...
+        </>
+      ) : (
+        <>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M9 12L11 14L15 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
+          </svg>
+          Xác nhận đặt lịch
+        </>
+      )}
+    </button>
+  </div>
+</form>
+
           </div>
         </div>
       </div>
