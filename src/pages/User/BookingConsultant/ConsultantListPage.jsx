@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Filter } from "lucide-react";
 import ConsultantHeader from "../../../components/User/ConsultantHeader";
 import ConsultantCard from "../../../components/User/Consultant/ConsultantCard";
 import "./ConsultantListPage.scss";
+import { ConsultantService } from "../../../services/ConsultantService";
 
 const consultants = [
   {
@@ -48,6 +49,7 @@ const consultants = [
   },
 ];
 
+
 const specialties = [
   "Tất cả chuyên môn",
   ...Array.from(new Set(consultants.map((c) => c.specialty))),
@@ -57,24 +59,43 @@ const ConsultantListPage = () => {
   const [filter, setFilter] = useState("Tất cả chuyên môn");
   const navigate = useNavigate();
   const filtered = filter === "Tất cả chuyên môn" ? consultants : consultants.filter(c => c.specialty === filter);
+  const [consultant, setConsultant] = useState([]);
+useEffect(()=>{
+fetchConsultants()
+  },[])
 
+  const fetchConsultants = async () =>{
+    try {
+      const res = await ConsultantService.getConsultantList();
+      console.log(res)
+         setConsultant(res.items);
+    } catch (error) {
+      console.error("Error fetching consultant list:", error);
+    }
+  }
   return (
     <div className="consultant-list-page">
       <ConsultantHeader activeStep={1} />
 
-      <div className="filter-box">
+      {/* <div className="filter-box">
         <Filter size={16} />
         <span>Tìm kiếm chuyên gia</span>
         <select value={filter} onChange={e => setFilter(e.target.value)}>
           {specialties.map(s => <option key={s}>{s}</option>)}
         </select>
-      </div>
+      </div> */}
       
-      <div className="consultant-list">
-        {filtered.map(c => (
-          <ConsultantCard key={c.id} consultant={c} onClick={() => navigate(`/user/booking/${c.id}`)} />
-        ))}
-      </div>
+    <div className="consultant-list">
+  {Array.isArray(consultant) &&
+    consultant.map(c => (
+      <ConsultantCard
+        key={c.id}
+        consultant={c}
+        onClick={() => navigate(`/user/booking/${c.id}`)}
+      />
+    ))}
+</div>
+
     </div>
   );
 };

@@ -1,46 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import ConsultantHeader from "../../../components/User/ConsultantHeader";
 import "./ConsultantBookingConfirmPage.scss";
+import { ConsultantService } from "../../../services/ConsultantService";
 
-const consultants = [
-  {
-    id: 1,
-    name: "TS. Nguyễn Thị Lan",
-    specialty: "Sức khỏe tâm thần",
-    price: 600000,
-  },
-  {
-    id: 2,
-    name: "BS. Nguyễn Thị Hoa",
-    specialty: "Sức khỏe sinh sản",
-    price: 500000,
-  },
-  {
-    id: 3,
-    name: "BS. Phạm Văn Đức",
-    specialty: "Kế hoạch hóa gia đình",
-    price: 550000,
-  },
-  {
-    id: 4,
-    name: "BS. Trần Minh Tuấn",
-    specialty: "Tư vấn STIs",
-    price: 400000,
-  },
-  {
-    id: 5,
-    name: "ThS. Lê Thị Mai",
-    specialty: "Giáo dục giới tính",
-    price: 450000,
-  },
-];
+
+
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
 const ConsultantBookingConfirmPage = () => {
+  const [consultants, setConsultants] = useState([]);
   const { id } = useParams();
   const query = useQuery();
   const navigate = useNavigate();
@@ -54,6 +26,21 @@ const ConsultantBookingConfirmPage = () => {
     reason: "",
   });
   const [submitted, setSubmitted] = useState(false);
+
+
+  useEffect(()=>{
+fetchConsultants()
+  },[])
+
+  const fetchConsultants = async () =>{
+    try {
+      const res = await ConsultantService.getConsultantList();
+      console.log(res)
+      setConsultants(res);
+    } catch (error) {
+      console.error("Error fetching consultant list:", error);
+    }
+  }
 
   if (!consultant || !date || !hour) {
     return <div className="error-message">Thiếu thông tin đặt lịch.</div>;
@@ -71,6 +58,8 @@ const ConsultantBookingConfirmPage = () => {
       navigate("/user/booking");
     }, 1000);
   };
+
+
 
   return (
     <div className="consultant-booking-confirm-container">
