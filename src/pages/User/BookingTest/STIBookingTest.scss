@@ -322,6 +322,14 @@ $pink-accent: #ec4899;
   }
 }
 
+.day.disabled {
+  background: #f0f0f0;
+  color: #bdbdbd;
+  cursor: not-allowed;
+  border: none;
+  opacity: 1;
+}
+
 // Time section
 .time-placeholder {
   display: flex;

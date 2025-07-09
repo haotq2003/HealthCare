@@ -20,12 +20,6 @@ const TestBookingHeader = ({
       <div className="header-action-row">
         <div className="header-action-row-inner">
           <TestBookingStepper activeStep={activeStep} />
-          {activeStep === 1 && (
-            <div className={`test-cart-fab${cartOpen ? " open" : ""}`} onClick={() => setCartOpen(!cartOpen)}>
-              <ShoppingCart size={32} />
-              {selectedTests.length > 0 && <span className="cart-badge">{selectedTests.length}</span>}
-            </div>
-          )}
         </div>
       </div>
     </div>

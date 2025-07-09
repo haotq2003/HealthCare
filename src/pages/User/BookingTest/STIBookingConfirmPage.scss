@@ -245,10 +245,16 @@
   }
 }
 
+.sti-booking-notice-list li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 // Button styles
 .sti-booking-form-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 12px;
 }
 

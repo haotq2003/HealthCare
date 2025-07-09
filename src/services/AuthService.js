@@ -61,4 +61,26 @@ export const AuthService = {
       throw new Error(error.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại.");
     }
   },
+
+  changePassword: async ({ oldPassword, newPassword, confirmPassword }) => {
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) throw new Error('Bạn chưa đăng nhập.');
+      const res = await axios.post(
+        `${API_URL}/api/Authentication/change-password`,
+        { oldPassword, newPassword, confirmPassword },
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      return {
+        success: true,
+        message: res.data.message || 'Đổi mật khẩu thành công!'
+      };
+    } catch (error) {
+      let msg = error.response?.data?.message || error.message || 'Đổi mật khẩu thất bại.';
+      return {
+        success: false,
+        message: msg
+      };
+    }
+  },
 };

@@ -182,6 +182,134 @@
   }
 }
 
+.password-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e0e7ef;
+
+  h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111111;
+  }
+
+  .password-form {
+    display: grid;
+    gap: 1.5rem;
+
+    .password-field {
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #111111;
+      }
+
+      .password-hint {
+        display: block;
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
+        color: #6b7280;
+        font-style: italic;
+      }
+
+      .password-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        .password-input {
+          width: 100%;
+          padding: 0.75rem;
+          padding-right: 3rem;
+          border: 2px solid #e0e7ef;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          transition: border-color 0.3s ease;
+          color: #111111;
+          background: #ffffff;
+
+          &:focus {
+            outline: none;
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+          }
+
+          &::placeholder {
+            color: #9ca3af;
+          }
+        }
+
+        .password-toggle {
+          position: absolute;
+          right: 0.75rem;
+          background: none;
+          border: none;
+          color: #6b7280;
+          cursor: pointer;
+          padding: 0.25rem;
+          border-radius: 4px;
+          transition: color 0.3s ease;
+
+          &:hover {
+            color: #2563EB;
+          }
+        }
+      }
+
+      .password-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e0e7ef;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: border-color 0.3s ease;
+        color: #111111;
+        background: #ffffff;
+
+        &:focus {
+          outline: none;
+          border-color: #2563EB;
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+        }
+
+        &::placeholder {
+          color: #9ca3af;
+        }
+      }
+    }
+
+    .btn-update-password {
+      background: linear-gradient(135deg, #2563EB 0%, #60a5fa 100%);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+}
+
+// Focus styles for accessibility
+.password-input:focus,
+.btn-update-password:focus {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
+
 // Responsive design
 @media (max-width: 768px) {
   .user-profile-page {
