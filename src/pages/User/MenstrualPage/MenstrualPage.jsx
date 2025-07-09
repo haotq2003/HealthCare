@@ -399,14 +399,8 @@ const MenstrualPage = () => {
           icon: 'success',
           title: 'Thành công!',
           html: `
-            <div style="text-align: left; margin-top: 1rem;">
+            <div style="text-align: center; margin-top: 1rem;">
               <p><strong>Chu kỳ đã được tạo thành công!</strong></p>
-              <div style="margin-top: 1rem;">
-                <p><strong>Kỳ kinh nguyệt:</strong> ${new Date(result.startDate).toLocaleDateString('vi-VN')} - ${new Date(result.endDate).toLocaleDateString('vi-VN')}</p>
-                <p><strong>Dễ thụ thai:</strong> ${new Date(result.fertileWindowStart).toLocaleDateString('vi-VN')} - ${new Date(result.fertileWindowEnd).toLocaleDateString('vi-VN')}</p>
-                <p><strong>Ngày rụng trứng:</strong> ${new Date(result.ovulationDate).toLocaleDateString('vi-VN')}</p>
-                ${result.notes ? `<p><strong>Ghi chú:</strong> ${result.notes}</p>` : ''}
-              </div>
             </div>
           `,
           confirmButtonText: 'Đồng ý',
