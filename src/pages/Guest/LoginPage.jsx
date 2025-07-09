@@ -81,7 +81,7 @@ const handleSubmit = async (e) => {
           navigate('/consultant/dashboard');
           break;
         case 'staff':
-          navigate('/staff/dashboard');
+          navigate('/staff');
           break;
         case 'customer':
         case 'user':

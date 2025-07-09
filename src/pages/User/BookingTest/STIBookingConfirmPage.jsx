@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import Swal from 'sweetalert2';
 import { useNavigate, useLocation } from "react-router-dom";
-import { Calendar, Clock, Coins } from "lucide-react";
+import { Calendar, Clock, Coins, AlertCircle, CheckCircle } from "lucide-react";
 import "./STIBookingConfirmPage.scss";
+import { API_URL } from '../../../config/apiURL';
 
 const getWeekday = (dateStr) => {
   const weekdays = [
@@ -23,28 +25,73 @@ const STIBookingConfirmPage = () => {
   const params = new URLSearchParams(location.search);
   const date = params.get("date");
   const time = params.get("time");
+  const selectedTest = location.state?.selectedTest;
+  const healthTestName = location.state?.healthTestName;
+  const healthTestId = location.state?.id;
   // Giả lập tổng chi phí, bạn có thể lấy từ state hoặc API nếu cần
   const totalPrice = "1.250k VND";
 
-  // Form state
-  const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    age: "",
-    gender: "",
-    note: "",
-  });
+  // Lấy currentUser từ localStorage
+  const currentUser = (() => {
+    try {
+      return JSON.parse(localStorage.getItem('currentUser'));
+    } catch {
+      return null;
+    }
+  })();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const getAge = (dob) => {
+    if (!dob) return '';
+    const birthYear = new Date(dob).getFullYear();
+    const nowYear = new Date().getFullYear();
+    return nowYear - birthYear;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Gửi dữ liệu đặt lịch lên server
-    alert("Đặt lịch thành công! (Demo)");
-    navigate("/user/test-booking");
+    if (!selectedTest || !date || !time) {
+      Swal.fire('Lỗi', 'Thiếu thông tin xét nghiệm hoặc thời gian!', 'error');
+      return;
+    }
+    // Chuẩn bị dữ liệu
+    const testDate = new Date(`${date}T${time}:00.000Z`).toISOString();
+    const slotStart = time+':00';
+    const duration = selectedTest.slotDurationInMinutes ?? 30;
+    const [h, m] = time.split(':').map(Number);
+    const d = new Date(2000,1,1,h,m);
+    d.setMinutes(d.getMinutes() + duration);
+    const slotEnd = d.toTimeString().slice(0,8);
+    try {
+      const payload = {
+        testDate,
+        slotStart,
+        slotEnd,
+        healthTestId: selectedTest.id
+      };
+      const confirm = await Swal.fire({
+        title: 'Xác nhận đặt lịch',
+        text: 'Bạn có chắc chắn muốn đặt lịch xét nghiệm với thông tin này?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Đồng ý',
+        cancelButtonText: 'Hủy'
+      });
+      if (!confirm.isConfirmed) return;
+      const res = await fetch(`${API_URL}/api/TestSlots`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        Swal.fire('Thành công', 'Đặt lịch xét nghiệm thành công!', 'success').then(() => {
+          navigate('/user/test-booking');
+        });
+      } else {
+        Swal.fire('Lỗi', 'Đặt lịch thất bại!', 'error');
+      }
+    } catch (err) {
+      Swal.fire('Lỗi', 'Không thể kết nối máy chủ!', 'error');
+    }
   };
 
   return (
@@ -91,22 +138,26 @@ const STIBookingConfirmPage = () => {
           <div className="sti-booking-info-row">
             <div className="sti-booking-info-item">
               <Calendar size={20} className="sti-booking-icon" />
-              <span className="sti-booking-info-value">
-                {date ? new Date(date).toLocaleDateString("vi-VN") : "--/--/----"}
-              </span>
-              <span className="sti-booking-info-meta">
-                {date ? getWeekday(date) : ""}
-              </span>
+              <span className="sti-booking-info-meta">Ngày xét nghiệm</span>
+              <span className="sti-booking-info-value">{date ? new Date(date).toLocaleDateString("vi-VN") : "--/--/----"}</span>
             </div>
             <div className="sti-booking-info-item">
               <Clock size={20} className="sti-booking-icon" />
-              <span className="sti-booking-info-value">{time || "--:--"}</span>
               <span className="sti-booking-info-meta">Giờ xét nghiệm</span>
+              <span className="sti-booking-info-value">{time || "--:--"}</span>
             </div>
             <div className="sti-booking-info-item">
               <Coins size={20} className="sti-booking-icon" />
-              <span className="sti-booking-info-value">{totalPrice}</span>
               <span className="sti-booking-info-meta">Tổng chi phí</span>
+              <span className="sti-booking-info-value">{totalPrice}</span>
+            </div>
+            <div className="sti-booking-info-item">
+              <span className="sti-booking-info-meta">Tên gói xét nghiệm</span>
+              <span className="sti-booking-info-value">{healthTestName || selectedTest?.name || '--'}</span>
+            </div>
+            <div className="sti-booking-info-item">
+              <span className="sti-booking-info-meta">Thời lượng</span>
+              <span className="sti-booking-info-value">{selectedTest?.time || (selectedTest?.slotDurationInMinutes ? `${selectedTest.slotDurationInMinutes} phút` : '--')}</span>
             </div>
           </div>
 
@@ -115,22 +166,16 @@ const STIBookingConfirmPage = () => {
             <div className="sti-booking-form-group">
               <label className="sti-booking-label">Họ và tên *</label>
               <input 
-                name="name" 
-                value={form.name} 
-                onChange={handleChange} 
-                required 
-                placeholder="Nhập họ và tên" 
+                value={currentUser?.fullName || ''}
+                disabled
                 className="sti-booking-input"
               />
             </div>
             <div className="sti-booking-form-group">
               <label className="sti-booking-label">Số điện thoại *</label>
               <input 
-                name="phone" 
-                value={form.phone} 
-                onChange={handleChange} 
-                required 
-                placeholder="Nhập số điện thoại" 
+                value={currentUser?.phoneNumber || ''}
+                disabled
                 className="sti-booking-input"
               />
             </div>
@@ -140,23 +185,16 @@ const STIBookingConfirmPage = () => {
             <div className="sti-booking-form-group">
               <label className="sti-booking-label">Email</label>
               <input 
-                name="email" 
-                value={form.email} 
-                onChange={handleChange} 
-                type="email" 
-                placeholder="Nhập email" 
+                value={currentUser?.email || ''}
+                disabled
                 className="sti-booking-input"
               />
             </div>
             <div className="sti-booking-form-group sti-booking-form-group--small">
               <label className="sti-booking-label">Tuổi</label>
               <input 
-                name="age" 
-                value={form.age} 
-                onChange={handleChange} 
-                type="number" 
-                min="0" 
-                placeholder="Nhập tuổi" 
+                value={getAge(currentUser?.dateOfBirth)}
+                disabled
                 className="sti-booking-input"
               />
             </div>
@@ -164,25 +202,19 @@ const STIBookingConfirmPage = () => {
 
           <div className="sti-booking-form-group sti-booking-form-group--full">
             <label className="sti-booking-label">Giới tính</label>
-            <select 
-              name="gender" 
-              value={form.gender} 
-              onChange={handleChange} 
-              className="sti-booking-select"
-            >
-              <option value="">Chọn giới tính</option>
-              <option value="Nam">Nam</option>
-              <option value="Nữ">Nữ</option>
-              <option value="Khác">Khác</option>
-            </select>
+            <input
+              value={currentUser?.gender || ''}
+              disabled
+              className="sti-booking-input"
+            />
           </div>
 
           <div className="sti-booking-form-group sti-booking-form-group--full">
             <label className="sti-booking-label">Ghi chú đặc biệt</label>
             <textarea 
               name="note" 
-              value={form.note} 
-              onChange={handleChange} 
+              value={currentUser?.note || ''}
+              disabled
               placeholder="Thông tin bổ sung về tình trạng sức khỏe hoặc yêu cầu đặc biệt" 
               className="sti-booking-textarea"
             />
@@ -190,12 +222,15 @@ const STIBookingConfirmPage = () => {
 
           {/* Lưu ý */}
           <div className="sti-booking-notice">
-            <b>Lưu ý quan trọng:</b>
+            <b style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ display: 'flex', alignItems: 'center' }}><AlertCircle size={20} style={{ color: '#f59e42' }} /></span>
+              Lưu ý quan trọng:
+            </b>
             <ul className="sti-booking-notice-list">
-              <li>Vui lòng đến đúng giờ hẹn</li>
-              <li>Mang theo CMND/CCCD và thông tin bảo hiểm (nếu có)</li>
-              <li>Tuân thủ hướng dẫn chuẩn bị cho từng loại xét nghiệm</li>
-              <li>Liên hệ trước nếu cần thay đổi lịch hẹn</li>
+              <li><span style={{color:'#10b981',marginRight:6,verticalAlign:'middle'}}><CheckCircle size={16}/></span>Vui lòng đến đúng giờ hẹn</li>
+              <li><span style={{color:'#10b981',marginRight:6,verticalAlign:'middle'}}><CheckCircle size={16}/></span>Mang theo CMND/CCCD và thông tin bảo hiểm (nếu có)</li>
+              <li><span style={{color:'#10b981',marginRight:6,verticalAlign:'middle'}}><CheckCircle size={16}/></span>Tuân thủ hướng dẫn chuẩn bị cho từng loại xét nghiệm</li>
+              <li><span style={{color:'#10b981',marginRight:6,verticalAlign:'middle'}}><CheckCircle size={16}/></span>Liên hệ trước nếu cần thay đổi lịch hẹn</li>
             </ul>
           </div>
 

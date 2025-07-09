@@ -581,66 +581,6 @@ const UserSettingPage = () => {
               (value) => handleNotificationChange('cycleTracking', value))}
           </div>
         </div>
-
-        {/* Security Section */}
-        <div className="setting-section">
-          <div className="section-header">
-            <Lock size={24} />
-            <h2>Bảo mật</h2>
-          </div>
-
-          {/* Password Change */}
-          <div className="password-section">
-            <h3>Đổi mật khẩu</h3>
-            <div className="password-form">
-              <div className="password-field">
-                <label>Mật khẩu hiện tại</label>
-                <div className="password-input-wrapper">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={passwords.current}
-                    onChange={(e) => handlePasswordChange('current', e.target.value)}
-                    placeholder="Nhập mật khẩu hiện tại"
-                    className="password-input"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="password-toggle"
-                  >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-              <div className="password-field">
-                <label>Mật khẩu mới</label>
-                <input
-                  type="password"
-                  value={passwords.new}
-                  onChange={(e) => handlePasswordChange('new', e.target.value)}
-                  placeholder="Nhập mật khẩu mới"
-                  className="password-input"
-                />
-                <small className="password-hint">
-                  Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt
-                </small>
-              </div>
-              <div className="password-field">
-                <label>Xác nhận mật khẩu mới</label>
-                <input
-                  type="password"
-                  value={passwords.confirm}
-                  onChange={(e) => handlePasswordChange('confirm', e.target.value)}
-                  placeholder="Nhập lại mật khẩu mới"
-                  className="password-input"
-                />
-              </div>
-              <button onClick={handlePasswordUpdate} className="btn-update-password">
-                Cập nhật mật khẩu
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

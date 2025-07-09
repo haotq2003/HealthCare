@@ -1,0 +1,90 @@
+.test-schedule-manage {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+h2, h3 {
+  color: #0ea5e9;
+  margin-bottom: 1.2rem;
+}
+.schedule-form {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  background: #f1f5f9;
+  padding: 1.2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.schedule-form select,
+.schedule-form input {
+  padding: 0.6rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 1rem;
+  min-width: 150px;
+}
+.schedule-form button {
+  background: #0ea5e9;
+  color: #fff;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.schedule-form button:hover {
+  background: #0369a1;
+}
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.schedule-table th, .schedule-table td {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+.schedule-table th {
+  background: #f1f5f9;
+  color: #334155;
+}
+.schedule-table tr:last-child td {
+  border-bottom: none;
+}
+.edit-btn, .delete-btn {
+  background: none;
+  border: none;
+  color: #0ea5e9;
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.delete-btn {
+  color: #ef4444;
+}
+.edit-btn:hover {
+  color: #0369a1;
+}
+.delete-btn:hover {
+  color: #b91c1c;
+}
+@media (max-width: 700px) {
+  .schedule-form {
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .test-schedule-manage {
+    padding: 1rem 0.2rem;
+  }
+  .schedule-table th, .schedule-table td {
+    padding: 0.5rem 0.4rem;
+  }
+} 

@@ -141,8 +141,8 @@ $font-xl: 1.25rem;
     background: $white;
     border-radius: $radius-xl;
     box-shadow: $shadow-md;
-    padding: $spacing-2xl;
-    margin-bottom: $spacing-3xl;
+
+
 
     .filter-title {
       @include flex-center;
@@ -382,6 +382,65 @@ $font-xl: 1.25rem;
   }
 }
 
+// Loading and Error States
+.loading-container {
+  @extend %container;
+  @include flex-center;
+  min-height: 400px;
+  flex-direction: column;
+  gap: $spacing-lg;
+
+  .loading-spinner {
+    font-size: $font-lg;
+    color: $primary-purple;
+    font-weight: 600;
+    
+    &::before {
+      content: "⏳";
+      display: inline-block;
+      margin-right: $spacing-sm;
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+.error-container {
+  @extend %container;
+  @include flex-center;
+  min-height: 400px;
+  flex-direction: column;
+  gap: $spacing-lg;
+
+  .error-message {
+    font-size: $font-lg;
+    color: $danger-red;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .retry-button {
+    background: $primary-purple;
+    color: $white;
+    border: none;
+    border-radius: $radius-md;
+    padding: $spacing-md $spacing-2xl;
+    font-size: $font-base;
+    font-weight: 600;
+    cursor: pointer;
+    @include transition-smooth;
+
+    &:hover {
+      background: darken($primary-purple, 10%);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 // Responsive Design
 @media (max-width: 1024px) {
   .test-booking-page {
@@ -457,4 +516,50 @@ $font-xl: 1.25rem;
       }
     }
   }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  list-style: none;
+  padding: 0;
+}
+
+.page-item {
+  background: #f5f6fa;
+  color: #22223b;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.page-item:hover:not(.active):not(.disabled) {
+  background: #e0e7ff;
+  color: #2563eb;
+  box-shadow: 0 2px 8px #a259ff22;
+}
+
+.page-item.active {
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 4px 16px #2563eb33;
+}
+
+.page-item.disabled {
+  background: #f3f4f6;
+  color: #bdbdbd;
+  cursor: not-allowed;
+  opacity: 0.7;
 }

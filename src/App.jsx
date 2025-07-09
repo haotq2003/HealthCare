@@ -7,6 +7,7 @@ import "./App.css";
 import MainLayout from "./layouts/MainLayout";
 import ConsultantLayout from "./components/Consultant/ConsultantLayout";
 import ManagerLayout from "./components/Manager/ManagerLayout";
+import StaffLayout from "./layouts/StaffLayout";
 
 // Guest Pages
 import HomePage from "./pages/Guest/HomePage/HomePage";
@@ -16,7 +17,7 @@ import RegisterPage from "./pages/Guest/RegisterPage";
 // Consultant Pages
 import DashboardPage from "./pages/Consultant/DashboardPage";
 import ProfilePage from "./pages/Consultant/ProfilePage";
-import SchedulePage from "./pages/Consultant/SchedulePage";
+import ConsultantSchedulePage from "./pages/Consultant/SchedulePage";
 
 // User Pages
 import UserLayout from "./layouts/UserLayout";
@@ -45,30 +46,43 @@ import ManagerDashboardPage from "./pages/Manager/DashboardPage.jsx";
 import FeedbackPage from "./pages/Manager/FeedbackPage.jsx";
 import ConsultationPage from "./pages/Consultant/ConsultationPage.jsx";
 
+// Staff Pages
+import DashboardPageStaff from "./pages/Staff/DashboardPageStaff.jsx";
+import TestScheduleManagePage from "./pages/Staff/TestScheduleManagePage.jsx";
+import TestPackageManagePage from "./pages/Staff/TestPackageManagePage.jsx";
+import OverviewPage from "./pages/Staff/OverviewPage";
+import PackagePage from "./pages/Staff/PackagePage";
+import StaffSchedulePage from "./pages/Staff/SchedulePage";
+
 function App() {
   return (
-    
     <AuthProvider>
-     <Toaster position="top-right" reverseOrder={false} />
+      <Toaster position="top-right" reverseOrder={false} />
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
           <Route path="blog" element={<BlogPage/>} />
-             <Route path="blog/:id" element={<BlogDetailPage/>} />
+          <Route path="blog/:id" element={<BlogDetailPage/>} />
+        </Route>
+
+        <Route path="/staff" element={<StaffLayout />}>
+          <Route path="overview" element={<OverviewPage />} />
+          <Route path="packages" element={<PackagePage />} />
+          <Route path="schedule" element={<StaffSchedulePage />} />
         </Route>
 
         <Route path="/consultant" element={<ConsultantLayout />}>
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="profile" element={<ProfilePage />} />
-          <Route path="schedule" element={<SchedulePage />} />
+          <Route path="schedule" element={<ConsultantSchedulePage />} />
           <Route path="questions" element={<QuestionsPage />} />
         </Route>
         <Route path="/consultant" element={<ConsultantLayout />}>
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="profile" element={<ProfilePage />} />
-          <Route path="schedule" element={<SchedulePage />} />
+          <Route path="schedule" element={<ConsultantSchedulePage />} />
           <Route path="questions" element={<QuestionsPage />} />
           <Route path="consultation" element={<ConsultationPage />} />
         </Route>
@@ -94,6 +108,11 @@ function App() {
           <Route path="consultants" element={<ConsultantManagePage />} />
           <Route path="blogs" element={<BlogManagePage />} />
           <Route path="feedback" element={<FeedbackPage />} />
+        </Route>
+
+        <Route path="/staff" element={<DashboardPageStaff />}>
+          <Route path="test-schedule" element={<TestScheduleManagePage />} />
+          <Route path="test-packages" element={<TestPackageManagePage />} />
         </Route>
       </Routes>
     </AuthProvider>
