@@ -44,6 +44,7 @@ import BlogManagePage from "./pages/Manager/BlogManagePage.jsx";
 import ConsultantManagePage from "./pages/Manager/ConsultantManagePage.jsx";
 import ManagerDashboardPage from "./pages/Manager/DashboardPage.jsx";
 import FeedbackPage from "./pages/Manager/FeedbackPage.jsx";
+import ConsultationPage from "./pages/Consultant/ConsultationPage.jsx";
 
 // Staff Pages
 import DashboardPageStaff from "./pages/Staff/DashboardPageStaff.jsx";
@@ -83,6 +84,7 @@ function App() {
           <Route path="profile" element={<ProfilePage />} />
           <Route path="schedule" element={<ConsultantSchedulePage />} />
           <Route path="questions" element={<QuestionsPage />} />
+          <Route path="consultation" element={<ConsultationPage />} />
         </Route>
 
         <Route path="/user" element={<UserLayout />}>
