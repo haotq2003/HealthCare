@@ -18,6 +18,7 @@ import RegisterPage from "./pages/Guest/RegisterPage";
 import DashboardPage from "./pages/Consultant/DashboardPage";
 import ProfilePage from "./pages/Consultant/ProfilePage";
 import ConsultantSchedulePage from "./pages/Consultant/SchedulePage";
+import ConsultantRegisterPage from './pages/Consultant/ConsultantRegisterPage';
 
 // User Pages
 import UserLayout from "./layouts/UserLayout";
@@ -65,7 +66,10 @@ function App() {
           <Route path="register" element={<RegisterPage />} />
           <Route path="blog" element={<BlogPage/>} />
           <Route path="blog/:id" element={<BlogDetailPage/>} />
+          <Route path="/consultant/register" element={<ConsultantRegisterPage />} />
         </Route>
+
+      
 
         <Route path="/staff" element={<StaffLayout />}>
           <Route path="overview" element={<OverviewPage />} />

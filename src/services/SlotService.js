@@ -27,5 +27,18 @@ export const SlotService ={
     throw error;
   }
 },
-
+getAvailableSlotsByConsultantId: async (consultantId) => {
+  try {
+    const res = await axios.get(`${API_URL}/api/AvailableSlots/slots`, {
+      params: {
+        ConsultantId: consultantId,
+    
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy slot:", error);
+    throw error;
+  }
+},
 }

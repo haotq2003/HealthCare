@@ -111,5 +111,24 @@ export const ConsultantService = {
             throw error;
         }
     },
+    createConsultantSchedules: async (schedule) =>{
+        try {
+            const res = await axios.post(`${API_URL}/api/ConsultantSchedules`,schedule)
+          return res.data.data;
+        } catch (error) {
+            console.log(error)
+            throw error
+        }
+    },
+    updateConsultantSchedules: async (id,schedule) =>{
+        try {
+            const res = await axios.post(`${API_URL}/api/ConsultantSchedules/${id}`,schedule)
+          return res.data.data;
+        } catch (error) {
+            console.log(error)
+            throw error
+        }
+    },
+
     
 }

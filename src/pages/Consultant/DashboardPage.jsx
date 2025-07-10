@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ConsultantLayout from "../../components/Consultant/ConsultantLayout";
 import { ConsultantService } from "../../services/ConsultantService";
 import toast from "react-hot-toast";
+import { Calendar } from "lucide-react";
 
 const DashboardPage = () => {
   const [todaySchedule, setTodaySchedule] = useState([
@@ -157,6 +158,10 @@ const DashboardPage = () => {
                         <p className="text-sm text-gray-600">
                           {appointment.reason}
                         </p>
+                         <span className="flex gap-5">
+                        
+                        {new Date(appointment.availableDate).toLocaleDateString('vi-VN')}
+                      </span>
                       </div>
                     </div>
                     <div className="flex space-x-2">

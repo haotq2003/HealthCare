@@ -278,6 +278,11 @@ const handleSubmit = async (e) => {
           </p>
         </div>
       </form>
+      <div className="mt-6 text-center">
+        <Link to="/consultant/register" className="text-blue-600 hover:underline font-semibold">
+          Đăng ký làm tư vấn viên
+        </Link>
+      </div>
     </AuthLayout>
   );
 };
