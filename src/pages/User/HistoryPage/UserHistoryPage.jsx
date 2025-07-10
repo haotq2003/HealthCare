@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, User, FileText, Filter, Repeat } from 'lucide-react';
 import './UserHistoryPage.scss';
-
+import { ConsultantService } from '../../../services/ConsultantService';
+import { FeedbackService } from '../../../services/FeedbackService';
+import toast from 'react-hot-toast';
 const UserHistoryPage = () => {
   const [activeTab, setActiveTab] = useState('consultations');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -31,7 +33,7 @@ const UserHistoryPage = () => {
       notes: 'Tư vấn chế độ ăn uống'
     }
   ]);
-
+const [consultantHis,setConsultationHis] = useState([]);
   const [testHistory, setTestHistory] = useState([
     {
       id: 1,
@@ -60,6 +62,14 @@ const UserHistoryPage = () => {
   const [loadingCycle, setLoadingCycle] = useState(false);
   const [cycleError, setCycleError] = useState(null);
 
+  const [showModal,setShowModal] = useState(false);
+  const [selectedConsultant,setSelectedConsultant] = useState(null);
+  const [rating,setRating] = useState(5);
+  const [comment,setComment] = useState('');
+useEffect(()=>{
+  getConsultantByUserId();
+
+},[])
   useEffect(() => {
     if (activeTab === 'cycles') {
       const fetchCycles = async () => {
@@ -88,11 +98,11 @@ const UserHistoryPage = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'completed':
+      case 'Completed':
         return 'status-completed';
-      case 'cancelled':
+      case 'Cancelled':
         return 'status-cancelled';
-      case 'pending':
+      case 'Pending':
         return 'status-pending';
       case 'upcoming':
         return 'status-upcoming';
@@ -103,11 +113,11 @@ const UserHistoryPage = () => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'completed':
+      case 'Completed':
         return 'Hoàn thành';
-      case 'cancelled':
+      case 'Cancelled':
         return 'Đã hủy';
-      case 'pending':
+      case 'Pending':
         return 'Đang chờ';
       case 'upcoming':
         return 'Sắp tới';
@@ -123,7 +133,39 @@ const UserHistoryPage = () => {
   const filteredTests = testHistory.filter(item => 
     filterStatus === 'all' || item.status === filterStatus
   );
-
+const getConsultantByUserId = async () =>{
+  try {
+    const res = await ConsultantService.getConsultantByUserId();
+    console.log(res.items)
+    setConsultationHis(res.items);
+  } catch (error) {
+    console.log(error)
+  }
+}
+const handleRateClick = (consultation) => {
+  setSelectedConsultant(consultation);
+  setShowModal(true);
+};
+const handleSubmit = async () => {
+  try {
+    const feedback = {
+          targetType: "Consultation",
+      targetId: selectedConsultant.id,
+       userId: selectedConsultant.userId,
+      rating,
+      comment,
+    };
+    const res = await FeedbackService.createFeedback(feedback);
+    console.log(res);
+    setShowModal(false);
+    setSelectedConsultant(null);
+    setRating(5);
+    setComment('');
+    toast.success('Đánh giá thành công');
+  } catch (error) {
+    console.error('Error submitting feedback:', error);
+  }
+};
   return (
     <div className="user-history-page">
       <div className="history-header">
@@ -164,9 +206,9 @@ const UserHistoryPage = () => {
             className="filter-select"
           >
             <option value="all">Tất cả trạng thái</option>
-            <option value="completed">Hoàn thành</option>
-            <option value="pending">Đang chờ</option>
-            <option value="cancelled">Đã hủy</option>
+            <option value="Completed">Hoàn thành</option>
+            <option value="Pending">Đang chờ</option>
+            <option value="Cancelled">Đã hủy</option>
             <option value="upcoming">Sắp tới</option>
           </select>
         </div>
@@ -175,19 +217,19 @@ const UserHistoryPage = () => {
       <div className="history-content">
         {activeTab === 'consultations' && (
           <div className="consultation-history">
-            {filteredConsultations.length === 0 ? (
+            {consultantHis.length === 0 ? (
               <div className="empty-state">
                 <User size={48} />
                 <h3>Chưa có lịch tư vấn nào</h3>
                 <p>Bạn chưa có lịch tư vấn nào trong lịch sử</p>
               </div>
             ) : (
-              filteredConsultations.map((consultation) => (
+              consultantHis.map((consultation) => (
                 <div key={consultation.id} className="history-card">
                   <div className="card-header">
                     <div className="card-title">
                       <User size={20} />
-                      <h3>{consultation.consultantName}</h3>
+                      <h3>{consultation.consultantFullName}</h3>
                     </div>
                     <span className={`status-badge ${getStatusColor(consultation.status)}`}>
                       {getStatusText(consultation.status)}
@@ -196,15 +238,15 @@ const UserHistoryPage = () => {
                   
                   <div className="card-content">
                     <div className="info-row">
-                      <span className="label">Chuyên khoa:</span>
-                      <span className="value">{consultation.specialty}</span>
+                      <span className="label">Nguyên nhân:</span>
+                      <span className="value">{consultation.reason}</span>
                     </div>
                     
                     <div className="info-row">
                       <span className="label">Ngày:</span>
                       <span className="value">
                         <Calendar size={16} />
-                        {new Date(consultation.date).toLocaleDateString('vi-VN')}
+                        {new Date(consultation.availableDate).toLocaleDateString('vi-VN')}
                       </span>
                     </div>
                     
@@ -212,24 +254,29 @@ const UserHistoryPage = () => {
                       <span className="label">Giờ:</span>
                       <span className="value">
                         <Clock size={16} />
-                        {consultation.time}
+                        {consultation.slotStart}
                       </span>
                     </div>
                     
-                    <div className="info-row">
-                      <span className="label">Địa điểm:</span>
-                      <span className="value">
-                        <MapPin size={16} />
-                        {consultation.location}
-                      </span>
-                    </div>
+                  
                     
-                    {consultation.notes && (
+                    {consultation.result && (
                       <div className="info-row">
-                        <span className="label">Ghi chú:</span>
-                        <span className="value">{consultation.notes}</span>
+                        <span className="label">Kết quả:</span>
+                        <span className="value">{consultation.result}</span>
                       </div>
                     )}
+       {consultation.status === 'Completed' && (
+  <div className="mt-4 flex justify-end">
+    <button
+      onClick={() => handleRateClick(consultation)}
+      className="px-4 py-2 bg-green-600 text-white rounded-xl shadow hover:bg-green-700 transition-all"
+    >
+      Đánh giá 
+    </button>
+  </div>
+)}
+
                   </div>
                 </div>
               ))
@@ -342,8 +389,54 @@ const UserHistoryPage = () => {
             )}
           </div>
         )}
+        
+      </div>
+      {showModal && (
+  <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
+    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+      <h2 className="text-xl font-semibold mb-4">Đánh giá bác sĩ</h2>
+      <div className="mb-4">
+        <label className="block font-medium mb-1">Số sao:</label>
+        <select
+          className="w-full border rounded-lg px-3 py-2"
+          value={rating}
+          onChange={(e) => setRating(Number(e.target.value))}
+        >
+          {[5, 4, 3, 2, 1].map((val) => (
+            <option key={val} value={val}>{val} sao</option>
+          ))}
+        </select>
+      </div>
+      <div className="mb-4">
+        <label className="block font-medium mb-1">Bình luận:</label>
+        <textarea
+          className="w-full border rounded-lg px-3 py-2"
+          rows={4}
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Nhập nội dung đánh giá..."
+        />
+      </div>
+      <div className="flex justify-end gap-2">
+        <button
+          onClick={() => setShowModal(false)}
+          className="px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400 transition"
+        >
+          Hủy
+        </button>
+        <button
+          onClick={handleSubmit}
+          className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition"
+        >
+          Gửi đánh giá
+        </button>
       </div>
     </div>
+  </div>
+)}
+
+    </div>
+    
   );
 };
 
