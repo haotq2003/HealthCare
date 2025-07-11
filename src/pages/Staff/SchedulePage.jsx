@@ -14,6 +14,226 @@ const weekdayOptions = [
   { label: "Chủ nhật", value: "Sun" },
 ];
 
+// Time Picker Component với Clock Face
+const TimePicker = ({ value, onChange, label, placeholder }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedHour, setSelectedHour] = useState(1);
+  const [selectedMinute, setSelectedMinute] = useState(0);
+  const [selectedPeriod, setSelectedPeriod] = useState('AM'); // 'AM' hoặc 'PM'
+  const [mode, setMode] = useState('hour'); // 'hour', 'minute', hoặc 'period'
+
+  useEffect(() => {
+    if (value) {
+      const [hours, minutes] = value.split(':').map(Number);
+      if (hours === 0) {
+        setSelectedHour(12);
+        setSelectedPeriod('AM');
+      } else if (hours === 12) {
+        setSelectedHour(12);
+        setSelectedPeriod('PM');
+      } else if (hours > 12) {
+        setSelectedHour(hours - 12);
+        setSelectedPeriod('PM');
+      } else {
+        setSelectedHour(hours);
+        setSelectedPeriod('AM');
+      }
+      setSelectedMinute(minutes);
+    }
+  }, [value]);
+
+  const handleTimeChange = (hour, minute, period, closeOnSelect = false) => {
+    let hour24 = hour;
+    if (period === 'PM' && hour !== 12) {
+      hour24 = hour + 12;
+    } else if (period === 'AM' && hour === 12) {
+      hour24 = 0;
+    }
+    const timeString = `${hour24.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+    onChange({ target: { name: 'time', value: timeString } });
+    if (closeOnSelect) setIsOpen(false);
+  };
+
+  const generateClockNumbers = (max, step = 1, start = 1) => {
+    const numbers = [];
+    for (let i = start; i < max + start; i += step) {
+      if (i < max) numbers.push(i);
+    }
+    return numbers;
+  };
+
+  const getClockPosition = (number, max, radius = 60) => {
+    const angle = ((number - 1) / max) * 2 * Math.PI - Math.PI / 2;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    return { x, y };
+  };
+
+  const getMinutePosition = (minute, radius = 60) => {
+    // Cho phút: 0 ở vị trí 12 giờ, 15 ở vị trí 3 giờ, 30 ở vị trí 6 giờ, 45 ở vị trí 9 giờ
+    const angle = (minute / 60) * 2 * Math.PI - Math.PI / 2;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    return { x, y };
+  };
+
+  const hourNumbers = generateClockNumbers(12, 1, 1); // 1-12
+  const minuteNumbers = generateClockNumbers(60, 5, 0); // 0, 5, 10, ..., 55
+
+  const formatDisplayTime = () => {
+    if (!value) return '';
+    const [hours, minutes] = value.split(':').map(Number);
+    let displayHour = hours;
+    let period = 'AM';
+    
+    if (hours === 0) {
+      displayHour = 12;
+      period = 'AM';
+    } else if (hours === 12) {
+      displayHour = 12;
+      period = 'PM';
+    } else if (hours > 12) {
+      displayHour = hours - 12;
+      period = 'PM';
+    }
+    
+    return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`;
+  };
+
+  return (
+    <div className="time-picker-container">
+      <label>{label}</label>
+      <div className="time-picker-input" onClick={() => setIsOpen(!isOpen)}>
+        <input
+          type="text"
+          value={formatDisplayTime()}
+          placeholder={placeholder}
+          readOnly
+          className="time-picker-display"
+        />
+        <div className="time-picker-icon">🕐</div>
+      </div>
+      
+      {isOpen && (
+        <div className="time-picker-dropdown">
+          <div className="time-picker-header">
+            <button 
+              className={`time-picker-mode-btn ${mode === 'hour' ? 'active' : ''}`}
+              onClick={() => setMode('hour')}
+            >
+              Giờ
+            </button>
+            <button 
+              className={`time-picker-mode-btn ${mode === 'minute' ? 'active' : ''}`}
+              onClick={() => setMode('minute')}
+            >
+              Phút
+            </button>
+            <button 
+              className={`time-picker-mode-btn ${mode === 'period' ? 'active' : ''}`}
+              onClick={() => setMode('period')}
+            >
+              AM/PM
+            </button>
+          </div>
+          
+          <div className="time-picker-clock">
+            <div className="clock-face">
+              {mode === 'hour' ? (
+                hourNumbers.map((hour) => {
+                  const pos = getClockPosition(hour, 12, 50);
+                  const isSelected = hour === selectedHour;
+                  return (
+                    <button
+                      key={hour}
+                      className={`clock-number ${isSelected ? 'selected' : ''}`}
+                      style={{
+                        left: `calc(50% + ${pos.x}px)`,
+                        top: `calc(50% + ${pos.y}px)`,
+                        transform: 'translate(-50%, -50%)'
+                      }}
+                      onClick={() => {
+                        setSelectedHour(hour);
+                        handleTimeChange(hour, selectedMinute, selectedPeriod, false);
+                      }}
+                    >
+                      {hour}
+                    </button>
+                  );
+                })
+              ) : mode === 'minute' ? (
+                minuteNumbers.map((minute) => {
+                  const pos = getMinutePosition(minute, 50); // Use the new getMinutePosition
+                  const isSelected = minute === selectedMinute;
+                  return (
+                    <button
+                      key={minute}
+                      className={`clock-number ${isSelected ? 'selected' : ''}`}
+                      style={{
+                        left: `calc(50% + ${pos.x}px)`,
+                        top: `calc(50% + ${pos.y}px)`,
+                        transform: 'translate(-50%, -50%)'
+                      }}
+                      onClick={() => {
+                        setSelectedMinute(minute);
+                        handleTimeChange(selectedHour, minute, selectedPeriod, false);
+                      }}
+                    >
+                      {minute.toString().padStart(2, '0')}
+                    </button>
+                  );
+                })
+              ) : (
+                // AM/PM mode
+                <>
+                  <button
+                    className={`clock-number period-btn ${selectedPeriod === 'AM' ? 'selected' : ''}`}
+                    style={{
+                      left: 'calc(50% - 30px)',
+                      top: 'calc(50% - 20px)',
+                      transform: 'translate(-50%, -50%)'
+                    }}
+                    onClick={() => {
+                      setSelectedPeriod('AM');
+                      handleTimeChange(selectedHour, selectedMinute, 'AM', true);
+                    }}
+                  >
+                    AM
+                  </button>
+                  <button
+                    className={`clock-number period-btn ${selectedPeriod === 'PM' ? 'selected' : ''}`}
+                    style={{
+                      left: 'calc(50% + 30px)',
+                      top: 'calc(50% - 20px)',
+                      transform: 'translate(-50%, -50%)'
+                    }}
+                    onClick={() => {
+                      setSelectedPeriod('PM');
+                      handleTimeChange(selectedHour, selectedMinute, 'PM', true);
+                    }}
+                  >
+                    PM
+                  </button>
+                </>
+              )}
+              <div className="clock-center"></div>
+            </div>
+          </div>
+          
+          <div className="time-picker-footer">
+            <button 
+              className="time-picker-btn"
+              onClick={() => setIsOpen(false)}
+            >
+              Đóng
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const SchedulePage = () => {
   const [filter, setFilter] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -237,12 +457,20 @@ const SchedulePage = () => {
               </div>
               <div className="hc-modal-row">
                 <div className="hc-modal-col">
-                  <label>Giờ bắt đầu *</label>
-                  <input type="time" name="slotStart" value={form.slotStart} onChange={handleFormChange} required />
+                  <TimePicker
+                    value={form.slotStart}
+                    onChange={(e) => setForm(f => ({ ...f, slotStart: e.target.value }))}
+                    label="Giờ bắt đầu *"
+                    placeholder="Chọn giờ bắt đầu"
+                  />
                 </div>
                 <div className="hc-modal-col">
-                  <label>Giờ kết thúc *</label>
-                  <input type="time" name="slotEnd" value={form.slotEnd} onChange={handleFormChange} required min={form.slotStart || undefined} />
+                  <TimePicker
+                    value={form.slotEnd}
+                    onChange={(e) => setForm(f => ({ ...f, slotEnd: e.target.value }))}
+                    label="Giờ kết thúc *"
+                    placeholder="Chọn giờ kết thúc"
+                  />
                   {timeError && <div style={{color:'red', fontSize:13, marginTop:2}}>{timeError}</div>}
                 </div>
               </div>

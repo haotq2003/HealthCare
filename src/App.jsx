@@ -54,6 +54,7 @@ import TestPackageManagePage from "./pages/Staff/TestPackageManagePage.jsx";
 import OverviewPage from "./pages/Staff/OverviewPage";
 import PackagePage from "./pages/Staff/PackagePage";
 import StaffSchedulePage from "./pages/Staff/SchedulePage";
+import ChatWidget from './components/ChatWidget/ChatWidget';
 
 function App() {
   return (
@@ -119,6 +120,7 @@ function App() {
           <Route path="test-packages" element={<TestPackageManagePage />} />
         </Route>
       </Routes>
+      <ChatWidget />
     </AuthProvider>
   );
 }

@@ -66,7 +66,8 @@ const STIBookingConfirmPage = () => {
         testDate,
         slotStart,
         slotEnd,
-        healthTestId: selectedTest.id
+        healthTestId: selectedTest.id,
+        customerId: currentUser?.id || ''
       };
       const confirm = await Swal.fire({
         title: 'Xác nhận đặt lịch',

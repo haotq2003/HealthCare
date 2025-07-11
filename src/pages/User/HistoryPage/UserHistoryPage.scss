@@ -92,6 +92,44 @@
       gap: 1.5rem;
     }
 
+    .pagination-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      margin-top: 1rem;
+
+      button {
+        padding: 0.5rem 1rem;
+        border: 1px solid #d1d5db;
+        background: white;
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background: #f3f4f6;
+          border-color: #9ca3af;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+
+      span {
+        font-size: 0.9rem;
+        color: #6b7280;
+        font-weight: 500;
+      }
+    }
+
     .empty-state {
       text-align: center;
       padding: 4rem 2rem;
@@ -262,6 +300,16 @@
               text-align: left;
             }
           }
+        }
+      }
+
+      .pagination-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+
+        button {
+          width: 100%;
+          max-width: 200px;
         }
       }
     }

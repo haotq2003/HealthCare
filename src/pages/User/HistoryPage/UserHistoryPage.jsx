@@ -34,28 +34,7 @@ const UserHistoryPage = () => {
     }
   ]);
 const [consultantHis,setConsultationHis] = useState([]);
-  const [testHistory, setTestHistory] = useState([
-    {
-      id: 1,
-      type: 'test',
-      testName: 'Xét nghiệm máu tổng quát',
-      date: '2024-01-12',
-      time: '08:00',
-      status: 'completed',
-      location: 'Phòng xét nghiệm A',
-      results: 'Kết quả bình thường'
-    },
-    {
-      id: 2,
-      type: 'test',
-      testName: 'Xét nghiệm nước tiểu',
-      date: '2024-01-08',
-      time: '10:15',
-      status: 'pending',
-      location: 'Phòng xét nghiệm B',
-      results: 'Đang chờ kết quả'
-    }
-  ]);
+  const [testHistory, setTestHistory] = useState([]);
 
   // Cycle tracking state
   const [cycleHistory, setCycleHistory] = useState([]);
@@ -188,13 +167,6 @@ const handleSubmit = async () => {
           <FileText size={20} />
           Xét nghiệm
         </button>
-        <button
-          className={`tab-button ${activeTab === 'cycles' ? 'active' : ''}`}
-          onClick={() => setActiveTab('cycles')}
-        >
-          <Repeat size={20} />
-          Chu kỳ
-        </button>
       </div>
 
       <div className="filter-section">
@@ -287,10 +259,10 @@ const handleSubmit = async () => {
         {activeTab === 'tests' && (
           <div className="test-history">
             {filteredTests.length === 0 ? (
-              <div className="empty-state">
+              <div className="empty-state" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',height:'300px',textAlign:'center'}}>
                 <FileText size={48} />
-                <h3>Chưa có xét nghiệm nào</h3>
-                <p>Bạn chưa có xét nghiệm nào trong lịch sử</p>
+                <h3>Chưa có lịch xét nghiệm nào</h3>
+                <p>Bạn chưa có lịch xét nghiệm nào trong lịch sử</p>
               </div>
             ) : (
               filteredTests.map((test) => (
@@ -304,7 +276,6 @@ const handleSubmit = async () => {
                       {getStatusText(test.status)}
                     </span>
                   </div>
-                  
                   <div className="card-content">
                     <div className="info-row">
                       <span className="label">Ngày:</span>
@@ -313,7 +284,6 @@ const handleSubmit = async () => {
                         {new Date(test.date).toLocaleDateString('vi-VN')}
                       </span>
                     </div>
-                    
                     <div className="info-row">
                       <span className="label">Giờ:</span>
                       <span className="value">
@@ -321,7 +291,6 @@ const handleSubmit = async () => {
                         {test.time}
                       </span>
                     </div>
-                    
                     <div className="info-row">
                       <span className="label">Địa điểm:</span>
                       <span className="value">
@@ -329,7 +298,6 @@ const handleSubmit = async () => {
                         {test.location}
                       </span>
                     </div>
-                    
                     <div className="info-row">
                       <span className="label">Kết quả:</span>
                       <span className="value">{test.results}</span>
@@ -337,55 +305,6 @@ const handleSubmit = async () => {
                   </div>
                 </div>
               ))
-            )}
-          </div>
-        )}
-
-        {activeTab === 'cycles' && (
-          <div className="cycle-history">
-            {loadingCycle ? (
-              <div>Đang tải dữ liệu chu kỳ...</div>
-            ) : cycleError ? (
-              <div style={{ color: 'red' }}>{cycleError}</div>
-            ) : cycleHistory.length === 0 ? (
-              <div className="empty-state">
-                <Repeat size={48} />
-                <h3>Chưa có dữ liệu chu kỳ</h3>
-                <p>Bạn chưa có lịch sử chu kỳ nào</p>
-              </div>
-            ) : (
-              <div className="cycle-table-wrapper">
-                <table className="cycle-table">
-                  <thead>
-                    <tr>
-                      <th>Ngày bắt đầu</th>
-                      <th>Ngày kết thúc</th>
-                      <th>Độ dài chu kỳ</th>
-                      <th>Độ dài kỳ kinh</th>
-                      <th>Ngày rụng trứng</th>
-                      <th>Cửa sổ thụ thai</th>
-                      <th>Ghi chú</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {cycleHistory.map((cycle) => (
-                      <tr key={cycle.id}>
-                        <td>{cycle.startDate ? new Date(cycle.startDate).toLocaleDateString('vi-VN') : ''}</td>
-                        <td>{cycle.endDate ? new Date(cycle.endDate).toLocaleDateString('vi-VN') : ''}</td>
-                        <td>{cycle.cycleLength} ngày</td>
-                        <td>{cycle.periodLength} ngày</td>
-                        <td>{cycle.ovulationDate ? new Date(cycle.ovulationDate).toLocaleDateString('vi-VN') : ''}</td>
-                        <td>
-                          {cycle.fertileWindowStart && cycle.fertileWindowEnd
-                            ? `${new Date(cycle.fertileWindowStart).toLocaleDateString('vi-VN')} - ${new Date(cycle.fertileWindowEnd).toLocaleDateString('vi-VN')}`
-                            : ''}
-                        </td>
-                        <td>{cycle.notes || ''}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
             )}
           </div>
         )}
