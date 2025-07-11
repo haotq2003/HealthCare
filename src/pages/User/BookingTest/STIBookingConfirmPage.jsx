@@ -28,6 +28,9 @@ const STIBookingConfirmPage = () => {
   const selectedTest = location.state?.selectedTest;
   const healthTestName = location.state?.healthTestName;
   const healthTestId = location.state?.id;
+  const slotId = location.state?.slotId;
+  const slotDate = location.state?.slotDate;
+  const slotTime = location.state?.slotTime;
   // Giả lập tổng chi phí, bạn có thể lấy từ state hoặc API nếu cần
   const totalPrice = "1.250k VND";
 
@@ -49,26 +52,11 @@ const STIBookingConfirmPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedTest || !date || !time) {
-      Swal.fire('Lỗi', 'Thiếu thông tin xét nghiệm hoặc thời gian!', 'error');
+    if (!selectedTest || !slotId || !currentUser?.id) {
+      Swal.fire('Lỗi', 'Thiếu thông tin xét nghiệm hoặc slot!', 'error');
       return;
     }
-    // Chuẩn bị dữ liệu
-    const testDate = new Date(`${date}T${time}:00.000Z`).toISOString();
-    const slotStart = time+':00';
-    const duration = selectedTest.slotDurationInMinutes ?? 30;
-    const [h, m] = time.split(':').map(Number);
-    const d = new Date(2000,1,1,h,m);
-    d.setMinutes(d.getMinutes() + duration);
-    const slotEnd = d.toTimeString().slice(0,8);
     try {
-      const payload = {
-        testDate,
-        slotStart,
-        slotEnd,
-        healthTestId: selectedTest.id,
-        customerId: currentUser?.id || ''
-      };
       const confirm = await Swal.fire({
         title: 'Xác nhận đặt lịch',
         text: 'Bạn có chắc chắn muốn đặt lịch xét nghiệm với thông tin này?',
@@ -78,10 +66,10 @@ const STIBookingConfirmPage = () => {
         cancelButtonText: 'Hủy'
       });
       if (!confirm.isConfirmed) return;
-      const res = await fetch(`${API_URL}/api/TestSlots`, {
-        method: 'POST',
+      const res = await fetch(`${API_URL}/api/TestSlots/${slotId}/booking`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ bookedByUserId: currentUser.id })
       });
       if (res.ok) {
         Swal.fire('Thành công', 'Đặt lịch xét nghiệm thành công!', 'success').then(() => {
@@ -140,12 +128,12 @@ const STIBookingConfirmPage = () => {
             <div className="sti-booking-info-item">
               <Calendar size={20} className="sti-booking-icon" />
               <span className="sti-booking-info-meta">Ngày xét nghiệm</span>
-              <span className="sti-booking-info-value">{date ? new Date(date).toLocaleDateString("vi-VN") : "--/--/----"}</span>
+              <span className="sti-booking-info-value">{slotDate ? new Date(slotDate).toLocaleDateString("vi-VN") : "--/--/----"}</span>
             </div>
             <div className="sti-booking-info-item">
               <Clock size={20} className="sti-booking-icon" />
               <span className="sti-booking-info-meta">Giờ xét nghiệm</span>
-              <span className="sti-booking-info-value">{time || "--:--"}</span>
+              <span className="sti-booking-info-value">{slotTime || "--:--"}</span>
             </div>
             <div className="sti-booking-info-item">
               <Coins size={20} className="sti-booking-icon" />

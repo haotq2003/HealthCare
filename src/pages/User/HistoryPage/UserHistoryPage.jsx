@@ -4,6 +4,7 @@ import './UserHistoryPage.scss';
 import { ConsultantService } from '../../../services/ConsultantService';
 import { FeedbackService } from '../../../services/FeedbackService';
 import toast from 'react-hot-toast';
+import { API_URL } from '../../../config/apiURL';
 const UserHistoryPage = () => {
   const [activeTab, setActiveTab] = useState('consultations');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -35,6 +36,8 @@ const UserHistoryPage = () => {
   ]);
 const [consultantHis,setConsultationHis] = useState([]);
   const [testHistory, setTestHistory] = useState([]);
+  const [testPackages, setTestPackages] = useState([]); // Danh sách tất cả gói xét nghiệm
+  const [testPackageDetails, setTestPackageDetails] = useState({}); // Chi tiết từng gói xét nghiệm
 
   // Cycle tracking state
   const [cycleHistory, setCycleHistory] = useState([]);
@@ -72,6 +75,58 @@ useEffect(()=>{
         }
       };
       fetchCycles();
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab === 'tests') {
+      const fetchTestHistory = async () => {
+        try {
+          const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+          if (!currentUser?.id) return;
+          const res = await fetch(`https://localhost:7276/api/TestSlots/user/${currentUser.id}?page=1&size=10`, {
+            headers: { 'accept': '*/*' }
+          });
+          const data = await res.json();
+          const testSlots = Array.isArray(data.data?.items) ? data.data.items : [];
+          setTestHistory(testSlots);
+          
+          // Fetch details for each unique healthTestId
+          const uniqueTestIds = [...new Set(testSlots.map(slot => slot.healthTestId))];
+          const details = {};
+          
+          for (const testId of uniqueTestIds) {
+            try {
+              const detailRes = await fetch(`https://localhost:7276/api/HealthTest/${testId}`, {
+                headers: { 'accept': '*/*' }
+              });
+              const detailData = await detailRes.json();
+              details[testId] = detailData;
+            } catch (err) {
+              console.error(`Error fetching test package details for ${testId}:`, err);
+              details[testId] = null;
+            }
+          }
+          
+          setTestPackageDetails(details);
+        } catch (err) {
+          setTestHistory([]);
+          setTestPackageDetails({});
+        }
+      };
+      
+      const fetchTestPackages = async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/HealthTest`);
+          const data = await res.json();
+          setTestPackages(Array.isArray(data) ? data : []);
+        } catch (err) {
+          setTestPackages([]);
+        }
+      };
+      
+      fetchTestHistory();
+      fetchTestPackages();
     }
   }, [activeTab]);
 
@@ -258,53 +313,63 @@ const handleSubmit = async () => {
 
         {activeTab === 'tests' && (
           <div className="test-history">
-            {filteredTests.length === 0 ? (
+            {console.log('testHistory in render:', testHistory)}
+            {testHistory.length === 0 ? (
               <div className="empty-state" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',height:'300px',textAlign:'center'}}>
                 <FileText size={48} />
                 <h3>Chưa có lịch xét nghiệm nào</h3>
                 <p>Bạn chưa có lịch xét nghiệm nào trong lịch sử</p>
               </div>
             ) : (
-              filteredTests.map((test) => (
-                <div key={test.id} className="history-card">
-                  <div className="card-header">
-                    <div className="card-title">
-                      <FileText size={20} />
-                      <h3>{test.testName}</h3>
+              testHistory.map((test) => {
+                const pkg = testPackageDetails[test.healthTestId];
+                return (
+                  <div key={test.id} className="history-card">
+                    <div className="card-header">
+                      <div className="card-title">
+                        <FileText size={20} />
+                        <h3>{pkg ? pkg.name : 'Xét nghiệm'}</h3>
+                      </div>
                     </div>
-                    <span className={`status-badge ${getStatusColor(test.status)}`}>
-                      {getStatusText(test.status)}
-                    </span>
+                    <div className="card-content">
+                      {pkg && (
+                        <>
+                          <div className="info-row">
+                            <span className="label">Mô tả:</span>
+                            <span className="value">{pkg.description}</span>
+                          </div>
+                          <div className="info-row">
+                            <span className="label">Giá:</span>
+                            <span className="value">{pkg.price?.toLocaleString('vi-VN')} VNĐ</span>
+                          </div>
+                        </>
+                      )}
+                      <div className="info-row">
+                        <span className="label">Ngày xét nghiệm:</span>
+                        <span className="value">
+                          <Calendar size={16} />
+                          {new Date(test.testDate).toLocaleDateString('vi-VN')}
+                        </span>
+                      </div>
+                      <div className="info-row">
+                        <span className="label">Giờ bắt đầu:</span>
+                        <span className="value">{test.slotStart}</span>
+                      </div>
+                      <div className="info-row">
+                        <span className="label">Giờ kết thúc:</span>
+                        <span className="value">{test.slotEnd}</span>
+                      </div>
+                      <div className="info-row">
+                        <span className="label">Ngày đặt:</span>
+                        <span className="value">{test.bookedAt ? new Date(test.bookedAt).toLocaleString('vi-VN') : ''}</span>
+                      </div>
+                      <div className="info-row">
+                        <button className="view-result-btn">Xem kết quả</button>
+                      </div>
+                    </div>
                   </div>
-                  <div className="card-content">
-                    <div className="info-row">
-                      <span className="label">Ngày:</span>
-                      <span className="value">
-                        <Calendar size={16} />
-                        {new Date(test.date).toLocaleDateString('vi-VN')}
-                      </span>
-                    </div>
-                    <div className="info-row">
-                      <span className="label">Giờ:</span>
-                      <span className="value">
-                        <Clock size={16} />
-                        {test.time}
-                      </span>
-                    </div>
-                    <div className="info-row">
-                      <span className="label">Địa điểm:</span>
-                      <span className="value">
-                        <MapPin size={16} />
-                        {test.location}
-                      </span>
-                    </div>
-                    <div className="info-row">
-                      <span className="label">Kết quả:</span>
-                      <span className="value">{test.results}</span>
-                    </div>
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         )}

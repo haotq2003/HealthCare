@@ -47,6 +47,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('userSettings'); // Xóa luôn cài đặt người dùng khi logout
     setUser(null);
     setIsAuthenticated(false);
   };

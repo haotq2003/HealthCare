@@ -51,7 +51,6 @@ import ConsultationPage from "./pages/Consultant/ConsultationPage.jsx";
 import DashboardPageStaff from "./pages/Staff/DashboardPageStaff.jsx";
 import TestScheduleManagePage from "./pages/Staff/TestScheduleManagePage.jsx";
 import TestPackageManagePage from "./pages/Staff/TestPackageManagePage.jsx";
-import OverviewPage from "./pages/Staff/OverviewPage";
 import PackagePage from "./pages/Staff/PackagePage";
 import StaffSchedulePage from "./pages/Staff/SchedulePage";
 import ChatWidget from './components/ChatWidget/ChatWidget';
@@ -73,17 +72,11 @@ function App() {
       
 
         <Route path="/staff" element={<StaffLayout />}>
-          <Route path="overview" element={<OverviewPage />} />
+          <Route index element={<PackagePage />} />
           <Route path="packages" element={<PackagePage />} />
           <Route path="schedule" element={<StaffSchedulePage />} />
         </Route>
 
-        <Route path="/consultant" element={<ConsultantLayout />}>
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="schedule" element={<ConsultantSchedulePage />} />
-          <Route path="questions" element={<QuestionsPage />} />
-        </Route>
         <Route path="/consultant" element={<ConsultantLayout />}>
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="profile" element={<ProfilePage />} />
@@ -115,10 +108,7 @@ function App() {
           <Route path="feedback" element={<FeedbackPage />} />
         </Route>
 
-        <Route path="/staff" element={<DashboardPageStaff />}>
-          <Route path="test-schedule" element={<TestScheduleManagePage />} />
-          <Route path="test-packages" element={<TestPackageManagePage />} />
-        </Route>
+
       </Routes>
       <ChatWidget />
     </AuthProvider>

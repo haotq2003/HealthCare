@@ -251,6 +251,26 @@
   }
 }
 
+.view-result-btn {
+  padding: 0.5rem 1.25rem;
+  background: #8b5cf6;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(139, 92, 246, 0.08);
+  transition: background 0.2s, box-shadow 0.2s;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.view-result-btn:hover, .view-result-btn:focus {
+  background: #7c3aed;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
+  outline: none;
+}
+
 // Responsive design
 @media (max-width: 768px) {
   .user-history-page {

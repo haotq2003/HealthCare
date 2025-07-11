@@ -8,16 +8,16 @@ import { API_URL } from '../../../config/apiURL';
 const STIBookingTest = () => {
   const location = useLocation();
   const selectedTest = location.state?.selectedTest;
-  const [schedules, setSchedules] = useState([]);
-  const [validDays, setValidDays] = useState([]); // days allowed for booking
-  const [slots, setSlots] = useState([]); // time slots for selected day
-  const navigate = useNavigate();
+  const [slots, setSlots] = useState([]); // all slots for selected test
+  const [validDays, setValidDays] = useState([]); // unique days with slots
   const [selectedDate, setSelectedDate] = useState(null);
+  const [availableSlots, setAvailableSlots] = useState([]); // slots for selected day
+  const [selectedSlotId, setSelectedSlotId] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
+  const navigate = useNavigate();
   const now = new Date();
   const [currentMonth, setCurrentMonth] = useState(now.getMonth());
   const [currentYear, setCurrentYear] = useState(now.getFullYear());
-  const [bookedSlots, setBookedSlots] = useState([]);
 
   const months = [
     'Tháng Một', 'Tháng Hai', 'Tháng Ba', 'Tháng Tư', 'Tháng Năm', 'Tháng Sáu',
@@ -25,17 +25,6 @@ const STIBookingTest = () => {
   ];
 
   const daysOfWeek = ['Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7', 'CN'];
-
-  const timeSlots = [
-    "08:00",
-    "09:00", 
-    "10:00",
-    "11:00",
-    "14:00",
-    "15:00",
-    "16:00",
-    "17:00",
-  ];
 
   const getDaysInMonth = (month, year) => {
     return new Date(year, month + 1, 0).getDate();
@@ -83,94 +72,54 @@ const STIBookingTest = () => {
     return days;
   };
 
-  useEffect(() => {
-    const fetchSchedules = async () => {
-      try {
-        const res = await fetch(`${API_URL}/api/HealthTestSchedule`);
-        const data = await res.json();
-        setSchedules(data);
-      } catch (err) {
-        setSchedules([]);
-      }
-    };
-    fetchSchedules();
-  }, []);
-
-  // Find schedule for selected test
-  const testSchedule = schedules.find(s => s.healthTestId === selectedTest?.id);
-
-  // Helper: get all valid dates in current month for this test
-  useEffect(() => {
-    if (!testSchedule) { setValidDays([]); return; }
-    const start = new Date(testSchedule.startDate);
-    const end = new Date(testSchedule.endDate);
-    const allowedDays = testSchedule.daysOfWeek || [];
-    const days = [];
-    const daysInMonth = getDaysInMonth(currentMonth, currentYear);
-    for (let d = 1; d <= daysInMonth; d++) {
-      const date = new Date(currentYear, currentMonth, d);
-      if (date >= start && date <= end) {
-        // Map JS day (0=Sun) to API day (Mon, Tue...)
-        const weekDay = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][date.getDay()];
-        if (allowedDays.includes(weekDay)) {
-          days.push(d);
-        }
-      }
-    }
-    setValidDays(days);
-  }, [testSchedule, currentMonth, currentYear]);
-
-  // Helper: generate slots for selected day
-  useEffect(() => {
-    if (!testSchedule || !selectedDate) { setSlots([]); return; }
-    // Only allow if selectedDate is valid
-    if (!validDays.includes(selectedDate)) { setSlots([]); return; }
-    // Parse slotStart, slotEnd
-    const [startH, startM, startS] = testSchedule.slotStart.split(':').map(Number);
-    const [endH, endM, endS] = testSchedule.slotEnd.split(':').map(Number);
-    const start = new Date(2000,1,1,startH,startM,startS||0);
-    const end = new Date(2000,1,1,endH,endM,endS||0);
-    const duration = testSchedule.slotDurationInMinutes;
-    const slotsArr = [];
-    let cur = new Date(start);
-    while (cur < end) {
-      const next = new Date(cur.getTime() + duration*60000);
-      if (next > end) break;
-      const hh = String(cur.getHours()).padStart(2,'0');
-      const mm = String(cur.getMinutes()).padStart(2,'0');
-      // Check if this slot is already booked for this test and date
-      const slotDateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(selectedDate).padStart(2,'0')}`;
-      const isBooked = bookedSlots.some(slot =>
-        slot.testDate.startsWith(slotDateStr) &&
-        slot.slotStart === `${hh}:${mm}:00` &&
-        slot.healthTestId === selectedTest.id
-      );
-      if (!isBooked) {
-        slotsArr.push(`${hh}:${mm}`);
-      }
-      cur = next;
-    }
-    setSlots(slotsArr);
-  }, [testSchedule, selectedDate, validDays, bookedSlots, currentMonth, currentYear]);
-
-  // Fetch booked slots for the selected test
+  // Fetch slots for the selected test
   useEffect(() => {
     if (!selectedTest) return;
-    const fetchBookedSlots = async () => {
+    const fetchSlots = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/TestSlots?page=1&size=100`);
+        const res = await fetch(`${API_URL}/api/TestSlots?page=1&size=1000`);
         const data = await res.json();
         if (data && data.data && data.data.items) {
-          setBookedSlots(data.data.items.filter(slot => slot.healthTestId === selectedTest.id));
+          // Filter slots for selected test and not booked
+          const filtered = data.data.items.filter(slot => slot.healthTestId === selectedTest.id && !slot.isBooked);
+          setSlots(filtered);
+          // Extract unique valid days in current month/year
+          const validDates = filtered
+            .map(slot => new Date(slot.testDate))
+            .filter(date => date.getMonth() === currentMonth && date.getFullYear() === currentYear)
+            .map(date => date.getDate());
+          setValidDays([...new Set(validDates)]);
         } else {
-          setBookedSlots([]);
+          setSlots([]);
+          setValidDays([]);
         }
       } catch (err) {
-        setBookedSlots([]);
+        setSlots([]);
+        setValidDays([]);
       }
     };
-    fetchBookedSlots();
-  }, [selectedTest]);
+    fetchSlots();
+  }, [selectedTest, currentMonth, currentYear]);
+
+  // Update available slots when date changes
+  useEffect(() => {
+    if (!selectedDate) {
+      setAvailableSlots([]);
+      setSelectedSlotId(null);
+      setSelectedTime(null);
+      return;
+    }
+    // Find slots for selected date
+    const slotsForDay = slots.filter(slot => {
+      const date = new Date(slot.testDate);
+      return date.getDate() === selectedDate && date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+    });
+    // Sort slots by slotStart ascending
+    slotsForDay.sort((a, b) => a.slotStart.localeCompare(b.slotStart));
+    setAvailableSlots(slotsForDay);
+    setSelectedSlotId(null);
+    setSelectedTime(null);
+  }, [selectedDate, slots, currentMonth, currentYear]);
 
   const handlePrevMonth = () => {
     if (currentMonth === 0) {
@@ -179,6 +128,10 @@ const STIBookingTest = () => {
     } else {
       setCurrentMonth(currentMonth - 1);
     }
+    setSelectedDate(null);
+    setAvailableSlots([]);
+    setSelectedSlotId(null);
+    setSelectedTime(null);
   };
 
   const handleNextMonth = () => {
@@ -188,26 +141,36 @@ const STIBookingTest = () => {
     } else {
       setCurrentMonth(currentMonth + 1);
     }
+    setSelectedDate(null);
+    setAvailableSlots([]);
+    setSelectedSlotId(null);
+    setSelectedTime(null);
   };
 
   const handleDateSelect = (day, isCurrentMonth, isValid) => {
     if (isCurrentMonth && isValid) {
       setSelectedDate(day);
-      setSelectedTime(null); // Reset time when date changes
     }
   };
 
-  const handleTimeSelect = (time) => {
-    setSelectedTime(time);
+  const handleTimeSelect = (slot) => {
+    setSelectedSlotId(slot.id);
+    setSelectedTime(slot.slotStart.substring(0,5)); // e.g. '09:00'
   };
 
   const handleContinue = () => {
-    if (selectedDate && selectedTime) {
-      const year = currentYear;
-      const month = String(currentMonth + 1).padStart(2, '0');
-      const dayStr = String(selectedDate).padStart(2, '0');
-      const formattedDate = `${year}-${month}-${dayStr}`;
-      navigate(`/user/test-booking/confirm?date=${formattedDate}&time=${selectedTime}`, { state: { selectedTest, healthTestName: selectedTest.name, id: selectedTest.id } });
+    if (selectedSlotId) {
+      const slot = availableSlots.find(s => s.id === selectedSlotId);
+      navigate(`/user/test-booking/confirm`, {
+        state: {
+          selectedTest,
+          healthTestName: selectedTest.name,
+          id: selectedTest.id,
+          slotId: selectedSlotId,
+          slotDate: slot.testDate,
+          slotTime: slot.slotStart.substring(0,5)
+        }
+      });
     }
   };
 
@@ -304,13 +267,13 @@ const STIBookingTest = () => {
             <h3>🕐 Chọn giờ xét nghiệm</h3>
             {selectedDate ? (
               <div className="time-slots">
-                {slots.length > 0 ? slots.map(time => (
+                {availableSlots.length > 0 ? availableSlots.map(slot => (
                   <button 
-                    key={time} 
-                    className={`time-slot ${selectedTime === time ? 'selected' : ''}`}
-                    onClick={() => handleTimeSelect(time)}
+                    key={slot.id} 
+                    className={`time-slot ${selectedSlotId === slot.id ? 'selected' : ''}`}
+                    onClick={() => handleTimeSelect(slot)}
                   >
-                    {time}
+                    {slot.slotStart.substring(0,5)} - {slot.slotEnd.substring(0,5)}
                   </button>
                 )) : <div>Không có khung giờ khả dụng.</div>}
               </div>
@@ -321,16 +284,14 @@ const STIBookingTest = () => {
               </div>
             )}
           </div>
-
-
         </div>
-                  <button 
-            className={`continue-button ${!selectedDate || !selectedTime ? 'disabled' : ''}`}
-            disabled={!selectedDate || !selectedTime}
-            onClick={handleContinue}
-          >
-            Tiếp tục với lịch hẹn này
-          </button>
+        <button 
+          className={`continue-button ${!selectedSlotId ? 'disabled' : ''}`}
+          disabled={!selectedSlotId}
+          onClick={handleContinue}
+        >
+          Tiếp tục với lịch hẹn này
+        </button>
       </div>
     </div>
   );
