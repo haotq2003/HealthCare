@@ -14,6 +14,7 @@ const MenstrualPage = () => {
   const [cycleHistory, setCycleHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [cycleTrackingEnabled, setCycleTrackingEnabled] = useState(true); // Mặc định true để tránh disable nhầm khi chưa load
 
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
@@ -166,48 +167,6 @@ const MenstrualPage = () => {
     }
   };
 
-  // API call to get current cycle tracking
-  const getCurrentCycleTracking = async () => {
-    try {
-      const accessToken = getAccessToken();
-      if (!accessToken) {
-        return null;
-      }
-
-      const response = await fetch('https://localhost:7276/api/CycleTracking/current', {
-        method: 'GET',
-        headers: {
-          'accept': '*/*',
-          'Authorization': `Bearer ${accessToken}`
-        }
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        return result.data;
-      } else if (response.status === 401) {
-        // Token expired or invalid
-        localStorage.removeItem('accessToken');
-        Swal.fire({
-          icon: 'warning',
-          title: 'Phiên đăng nhập hết hạn',
-          text: 'Vui lòng đăng nhập lại để tiếp tục sử dụng.',
-          confirmButtonText: 'Đăng nhập',
-          showCancelButton: false
-        }).then(() => {
-          window.location.href = '/login';
-        });
-        return null;
-      } else {
-        console.log('No current cycle found');
-        return null;
-      }
-    } catch (error) {
-      console.error('Error fetching current cycle:', error);
-      return null;
-    }
-  };
-
   // Load current cycle data on component mount
   useEffect(() => {
     const loadData = async () => {
@@ -218,11 +177,9 @@ const MenstrualPage = () => {
       
       setLoading(true);
       try {
-        const [currentCycle, allCycles] = await Promise.all([
-          getCurrentCycleTracking(),
+        const [allCycles] = await Promise.all([
           getAllCycles()
         ]);
-        setCurrentCycle(currentCycle);
         setCycleHistory(allCycles);
       } catch (error) {
         console.error('Error loading data:', error);
@@ -233,6 +190,53 @@ const MenstrualPage = () => {
     loadData();
   }, []);
 
+  // Đọc trạng thái cycleTracking từ localStorage khi mount
+  useEffect(() => {
+    const readCycleTracking = () => {
+      try {
+        const userSettings = localStorage.getItem('userSettings');
+        if (userSettings) {
+          const parsed = JSON.parse(userSettings);
+          if (parsed.notifications && typeof parsed.notifications.cycleTracking === 'boolean') {
+            setCycleTrackingEnabled(parsed.notifications.cycleTracking);
+          } else {
+            setCycleTrackingEnabled(true); // fallback
+          }
+        } else {
+          setCycleTrackingEnabled(true); // fallback
+        }
+      } catch {
+        setCycleTrackingEnabled(true);
+      }
+    };
+
+    readCycleTracking();
+
+    // Lắng nghe sự thay đổi localStorage (từ tab khác hoặc trang khác)
+    const handleStorage = (e) => {
+      if (e.key === 'userSettings') {
+        readCycleTracking();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+
+    // Lắng nghe khi tab được focus (để đồng bộ khi chuyển tab hoặc vừa chỉnh ở trang cài đặt)
+    const handleFocus = () => {
+      readCycleTracking();
+    };
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
+  // Log trạng thái toggle và button mỗi khi thay đổi
+  useEffect(() => {
+    console.log('[MenstrualPage] Trạng thái toggle (cycleTrackingEnabled):', cycleTrackingEnabled);
+    console.log('[MenstrualPage] Trạng thái button Lưu thông tin (disabled):', !cycleTrackingEnabled);
+  }, [cycleTrackingEnabled]);
 
 
   // Handle opening history modal
@@ -306,6 +310,16 @@ const MenstrualPage = () => {
   };
 
   const handleSaveCycle = async () => {
+    // Nếu cycleTracking đang tắt, không cho lưu
+    if (!cycleTrackingEnabled) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Tính năng đang tắt',
+        text: 'Bạn cần bật "Theo dõi chu kỳ" trong cài đặt để lưu thông tin!',
+        confirmButtonText: 'Đồng ý'
+      });
+      return;
+    }
     try {
       // Validate required fields
       if (!cycleData.startDate) {
@@ -333,6 +347,19 @@ const MenstrualPage = () => {
           icon: 'warning',
           title: 'Thông tin không hợp lệ',
           text: 'Vui lòng nhập số ngày kinh nguyệt !',
+          confirmButtonText: 'Đồng ý'
+        });
+        return;
+      }
+
+      // Kiểm tra ngày bắt đầu chỉ được là ngày hiện tại hoặc ngày mai
+      const today = new Date().toISOString().split('T')[0];
+      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      if (cycleData.startDate < today || cycleData.startDate > tomorrow) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi!',
+          text: 'Chỉ được chọn ngày hiện tại hoặc ngày mai!',
           confirmButtonText: 'Đồng ý'
         });
         return;
@@ -493,7 +520,23 @@ const MenstrualPage = () => {
                   <input
                     type="date"
                     value={cycleData.startDate}
-                    onChange={(e) => setCycleData({...cycleData, startDate: e.target.value})}
+                    min={new Date().toISOString().split('T')[0]}
+                    max={new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const today = new Date().toISOString().split('T')[0];
+                      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                      if (value && (value < today || value > tomorrow)) {
+                        Swal.fire({
+                          icon: 'error',
+                          title: 'Lỗi!',
+                          text: 'Chỉ được chọn ngày hiện tại hoặc ngày mai!',
+                          confirmButtonText: 'Đồng ý'
+                        });
+                        return;
+                      }
+                      setCycleData({...cycleData, startDate: value});
+                    }}
                     className="menstrual-input"
                   />
                 </div>
@@ -535,7 +578,7 @@ const MenstrualPage = () => {
                   />
                 </div>
                 
-                <button onClick={handleSaveCycle} className="menstrual-save-button">
+                <button onClick={handleSaveCycle} className="menstrual-save-button" disabled={!cycleTrackingEnabled}>
                   <Plus className="menstrual-button-icon" />
                   <span>Lưu thông tin</span>
                 </button>

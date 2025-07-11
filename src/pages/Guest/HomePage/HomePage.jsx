@@ -91,7 +91,7 @@ const HomePage = () => {
           <div className="service-card">
             <div className="service-icon"><span role="img" aria-label="faq">💬</span></div>
             <h3>Hỏi đáp</h3>
-            <p>Đặt câu hỏi và nhận tư vấn từ các chuyên gia</p>
+            <p>Đặt câu hỏi và nhận phàn hồi dịch vụ tư vấn phù hợp với vấn đề sức khỏe của bạn</p>
             <button className="link-btn">Tìm hiểu thêm &rarr;</button>
           </div>
         </div>

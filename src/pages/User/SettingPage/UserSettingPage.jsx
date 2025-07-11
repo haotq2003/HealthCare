@@ -13,7 +13,7 @@ const UserSettingPage = () => {
   const [settings, setSettings] = useState({
     notifications: {
       appointmentReminders: true,
-      cycleTracking: true
+      cycleTracking: false
     }
   });
 
@@ -46,35 +46,8 @@ const UserSettingPage = () => {
         return;
       }
 
-      // Fetch cycle tracking status from server
-      const response = await fetch('https://localhost:7276/api/CycleTracking/status', {
-        method: 'GET',
-        headers: {
-          'accept': '*/*',
-          'Authorization': `Bearer ${accessToken}`,
-        }
-      });
-
-      if (response.ok) {
-        const serverData = await response.json();
-        console.log(`[${componentIdRef.current}] Server cycle tracking status:`, serverData);
-        
-        // Update local settings with server data
-        setSettings(prev => ({
-          ...prev,
-          notifications: {
-            ...prev.notifications,
-            cycleTracking: serverData.isEnabled || false
-          }
-        }));
-      } else if (response.status === 403) {
-        console.log(`[${componentIdRef.current}] Access denied (403), keeping local settings`);
-        // Không thay đổi settings local khi bị từ chối quyền truy cập
-      } else if (response.status === 404) {
-        console.log(`[${componentIdRef.current}] Status endpoint not found, skipping server sync`);
-      } else {
-        console.log(`[${componentIdRef.current}] Server sync failed with status:`, response.status);
-      }
+      // XÓA toàn bộ các đoạn fetch('https://localhost:7276/api/CycleTracking/status', ...) và các useEffect, biến, hàm liên quan đến việc gọi API này.
+      
     } catch (error) {
       console.error(`[${componentIdRef.current}] Error syncing settings from server:`, error);
       // Don't throw error, just log it
@@ -88,56 +61,44 @@ const UserSettingPage = () => {
 
   // Load settings from localStorage on component mount
   useEffect(() => {
-    console.log(`[${componentIdRef.current}] useEffect for loading settings called, globalSettingsLoaded:`, globalSettingsLoaded);
-    
-    // Luôn load settings từ localStorage khi component mount
-    // để đảm bảo UI hiển thị đúng trạng thái
     try {
       const savedSettings = localStorage.getItem('userSettings');
-      console.log(`[${componentIdRef.current}] Loading settings from localStorage:`, savedSettings);
-      
       if (savedSettings) {
         const parsedSettings = JSON.parse(savedSettings);
-        // Đảm bảo cấu trúc dữ liệu hợp lệ
         if (parsedSettings && parsedSettings.notifications) {
           // Merge với default settings để đảm bảo có đầy đủ các field
           const mergedSettings = {
             notifications: {
               appointmentReminders: true,
-              cycleTracking: true,
+              cycleTracking: false,
               ...parsedSettings.notifications
             }
           };
-          console.log(`[${componentIdRef.current}] Loaded settings:`, mergedSettings);
           setSettings(mergedSettings);
-          settingsLoadedRef.current = true; // Đánh dấu đã load settings
         } else {
-          // Nếu dữ liệu không hợp lệ, sử dụng default settings
-          console.warn(`[${componentIdRef.current}] Invalid settings data in localStorage, using defaults`);
           setSettings({
             notifications: {
               appointmentReminders: true,
-              cycleTracking: true
+              cycleTracking: false
             }
           });
-          settingsLoadedRef.current = true;
         }
       } else {
-        console.log(`[${componentIdRef.current}] No saved settings found, using defaults`);
-        settingsLoadedRef.current = true;
+        setSettings({
+          notifications: {
+            appointmentReminders: true,
+            cycleTracking: false
+          }
+        });
       }
     } catch (error) {
-      console.error(`[${componentIdRef.current}] Error loading settings from localStorage:`, error);
-      // Nếu có lỗi parse JSON, sử dụng default settings
       setSettings({
         notifications: {
           appointmentReminders: true,
-          cycleTracking: true
+          cycleTracking: false
         }
       });
-      settingsLoadedRef.current = true;
     }
-
     // Cleanup function
     return () => {
       console.log(`[${componentIdRef.current}] Cleanup function called`);
@@ -173,7 +134,7 @@ const UserSettingPage = () => {
     const defaultSettings = {
       notifications: {
         appointmentReminders: true,
-        cycleTracking: true
+        cycleTracking: false
       }
     };
     setSettings(defaultSettings);
@@ -198,7 +159,7 @@ const UserSettingPage = () => {
           const newSettings = {
             notifications: {
               appointmentReminders: true,
-              cycleTracking: true,
+              cycleTracking: false,
               ...parsedSettings.notifications
             }
           };
@@ -231,7 +192,7 @@ const UserSettingPage = () => {
     handleNotificationChange('cycleTracking', newValue);
   };
 
-  // Function to test toggle without API call
+  // Function to test toggle without API
   const testToggleNoAPI = () => {
     console.log(`[${componentIdRef.current}] Testing toggle without API...`);
     console.log(`[${componentIdRef.current}] Current appointmentReminders:`, settings.notifications.appointmentReminders);
@@ -279,13 +240,9 @@ const UserSettingPage = () => {
   };
 
   const handleNotificationChange = async (key, value) => {
-    // Lưu trạng thái cũ để có thể revert nếu cần
     const oldValue = settings.notifications[key];
-    
     console.log(`[${componentIdRef.current}] Changing ${key} from ${oldValue} to ${value}`);
     console.log(`[${componentIdRef.current}] Current settings before change:`, settings);
-    
-    // Cập nhật state ngay lập tức để UI phản ánh thay đổi
     const newSettings = {
       ...settings,
       notifications: {
@@ -293,32 +250,17 @@ const UserSettingPage = () => {
         [key]: value
       }
     };
-    
-    console.log(`[${componentIdRef.current}] New settings:`, newSettings);
     setSettings(newSettings);
-    
-    // Lưu vào localStorage ngay lập tức
-    try {
-      localStorage.setItem('userSettings', JSON.stringify(newSettings));
-      console.log(`[${componentIdRef.current}] Settings saved to localStorage immediately:`, newSettings);
-    } catch (error) {
-      console.error(`[${componentIdRef.current}] Error saving to localStorage:`, error);
-    }
-
+    // KHÔNG lưu vào localStorage nữa
     try {
       let success = true;
-      
-      // Special handling for cycle tracking
       if (key === 'cycleTracking') {
         success = await updateCycleTracking(value);
       }
-
       if (success) {
         console.log(`[${componentIdRef.current}] Successfully updated ${key} to ${value}`);
-        // Show success feedback with SweetAlert
         const notificationType = key === 'appointmentReminders' ? 'Nhắc nhở lịch hẹn' : 'Theo dõi chu kỳ';
         const status = value ? 'bật' : 'tắt';
-        
         Swal.fire({
           icon: 'success',
           title: 'Thành công!',
@@ -330,7 +272,6 @@ const UserSettingPage = () => {
         });
       } else {
         console.log(`[${componentIdRef.current}] Failed to update ${key}, reverting to ${oldValue}`);
-        // Revert state if API call failed
         const revertedSettings = {
           ...settings,
           notifications: {
@@ -339,18 +280,9 @@ const UserSettingPage = () => {
           }
         };
         setSettings(revertedSettings);
-        
-        // Lưu lại vào localStorage
-        try {
-          localStorage.setItem('userSettings', JSON.stringify(revertedSettings));
-          console.log(`[${componentIdRef.current}] Reverted settings saved to localStorage:`, revertedSettings);
-        } catch (error) {
-          console.error(`[${componentIdRef.current}] Error saving reverted settings:`, error);
-        }
       }
     } catch (error) {
       console.log(`[${componentIdRef.current}] Error updating ${key}, reverting to ${oldValue}:`, error);
-      // Revert state if API call failed
       const revertedSettings = {
         ...settings,
         notifications: {
@@ -359,19 +291,8 @@ const UserSettingPage = () => {
         }
       };
       setSettings(revertedSettings);
-      
-      // Lưu lại vào localStorage
-      try {
-        localStorage.setItem('userSettings', JSON.stringify(revertedSettings));
-        console.log(`[${componentIdRef.current}] Reverted settings saved to localStorage:`, revertedSettings);
-      } catch (error) {
-        console.error(`[${componentIdRef.current}] Error saving reverted settings:`, error);
-      }
-
-      // Show error feedback with SweetAlert
       const notificationType = key === 'appointmentReminders' ? 'Nhắc nhở lịch hẹn' : 'Theo dõi chu kỳ';
       const status = value ? 'bật' : 'tắt';
-      
       Swal.fire({
         icon: 'error',
         title: 'Lỗi!',
@@ -518,7 +439,7 @@ const UserSettingPage = () => {
               const newSettings = {
                 notifications: {
                   appointmentReminders: true,
-                  cycleTracking: true,
+                  cycleTracking: false,
                   ...parsedSettings.notifications
                 }
               };
