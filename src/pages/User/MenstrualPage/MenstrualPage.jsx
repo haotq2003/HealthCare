@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Heart, Activity, Clock, Plus, TrendingUp, Moon, Sun, Eye, CalendarDays, BarChart3, History, Trash2 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import './MenstrualPage.scss';
+// Remove ReactDatePicker import
+import 'react-datepicker/dist/react-datepicker.css';
+import { format, addDays, isSameDay, parseISO } from 'date-fns';
+import ReactDatePicker from 'react-datepicker';
 
 const MenstrualPage = () => {
   const [cycleData, setCycleData] = useState({
@@ -353,8 +357,8 @@ const MenstrualPage = () => {
       }
 
       // Kiểm tra ngày bắt đầu chỉ được là ngày hiện tại hoặc ngày mai
-      const today = new Date().toISOString().split('T')[0];
-      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const today = format(currentDate, 'yyyy-MM-dd');
+      const tomorrow = format(addDays(currentDate, 1), 'yyyy-MM-dd');
       if (cycleData.startDate < today || cycleData.startDate > tomorrow) {
         Swal.fire({
           icon: 'error',
@@ -381,7 +385,7 @@ const MenstrualPage = () => {
         Swal.fire({
           icon: 'error',
           title: 'Lỗi!',
-          text: `Ngày bắt đầu chu kỳ mới không được nhỏ hơn kỳ dự đoán sắp tới! (Ngày dự đoán: ${upcomingPeriod.toLocaleDateString('vi-VN')})`,
+          text: `Ngày bắt đầu chu kỳ mới không được nhỏ hơn kỳ dự đoán sắp tới! (Ngày dự đoán: ${format(upcomingPeriod, 'dd/MM/yyyy')})`,
           confirmButtonText: 'Đồng ý'
         });
         return;
@@ -517,26 +521,19 @@ const MenstrualPage = () => {
               <div className="menstrual-input-group">
                 <div className="menstrual-input-field">
                   <label className="menstrual-input-label">Ngày bắt đầu chu kỳ</label>
-                  <input
-                    type="date"
-                    value={cycleData.startDate}
-                    min={new Date().toISOString().split('T')[0]}
-                    max={new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      const today = new Date().toISOString().split('T')[0];
-                      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-                      if (value && (value < today || value > tomorrow)) {
-                        Swal.fire({
-                          icon: 'error',
-                          title: 'Lỗi!',
-                          text: 'Chỉ được chọn ngày hiện tại hoặc ngày mai!',
-                          confirmButtonText: 'Đồng ý'
-                        });
-                        return;
-                      }
-                      setCycleData({...cycleData, startDate: value});
+                  <ReactDatePicker
+                    selected={cycleData.startDate ? new Date(cycleData.startDate) : null}
+                    onChange={date => setCycleData({...cycleData, startDate: date ? format(date, 'yyyy-MM-dd') : ''})}
+                    filterDate={date => {
+                      const today = new Date();
+                      const tomorrow = addDays(today, 1);
+                      return (
+                        date.toDateString() === today.toDateString() ||
+                        date.toDateString() === tomorrow.toDateString()
+                      );
                     }}
+                    placeholderText="Chọn ngày bắt đầu chu kỳ"
+                    dateFormat="yyyy-MM-dd"
                     className="menstrual-input"
                   />
                 </div>

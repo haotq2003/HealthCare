@@ -263,31 +263,27 @@ const PackagePage = () => {
                     <div className="hc-package-avatar">{initials}</div>
                     <div className="hc-package-card-main">
                       <div className="hc-package-title">{pkg.name}</div>
-                      <div className="hc-package-badge" style={{color: pkg.badgeColor}}>
-                        <FlaskConical size={16} style={{marginRight: 4}} /> {pkg.badge}
-                      </div>
                     </div>
                   </div>
                   <div className="hc-package-card-info-grid">
                     <div className="hc-package-card-row">
                       <span className="hc-package-icon"><Clock size={16} /></span>
-                      <span>{pkg.time}</span>
+                      <span>Thời gian tạo: {pkg.time}</span>
                     </div>
                     <div className="hc-package-card-row">
                       <span className="hc-package-icon"><DollarSign size={16} /></span>
-                      <span>{pkg.price.toLocaleString()} đ</span>
+                      <span>Giá: {pkg.price.toLocaleString()} đ</span>
+                    </div>
+                    <div className="hc-package-card-row">
+                      <span className="hc-package-icon"><FlaskConical size={16} /></span>
+                      <span>Loại: {pkg.badge}</span>
+                    </div>
+                    <div className="hc-package-card-row">
+                      <span className="hc-package-icon"><Eye size={16} /></span>
+                      <span>Mô tả: {pkg.desc}</span>
                     </div>
                   </div>
-                  <div className="hc-package-card-actions">
-                    <button className="hc-package-icon-btn view-block horiz" onClick={() => handleViewDetail(pkg)}>
-                      <Eye size={20} className="hc-package-icon-btn-icon" /> 
-                      <span className="hc-package-icon-btn-text">View</span>
-                    </button>
-                    <button className="hc-package-icon-btn edit-block horiz" onClick={() => handleEditClick(pkg)}>
-                      <Edit size={20} className="hc-package-icon-btn-icon" /> 
-                      <span className="hc-package-icon-btn-text">Sửa</span>
-                    </button>
-                  </div>
+                  {/* Removed action buttons */}
                 </div>
               );
             })}

@@ -11,16 +11,9 @@ const testTabs = [
   { label: "Gói xét nghiệm", value: "browse" },
 ];
 
-const testFilters = {
-  type: ["Tất cả loại", "Xét nghiệm"],
-  price: ["Tất cả giá", "< 200k", "200k - 500k", "> 500k"],
-  time: ["Tất cả thời gian", "< 15 phút", "15-30 phút", "> 30 phút"],
-};
-
 const UserTestBookingPage = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("browse");
-  const [filters, setFilters] = useState({ type: "Tất cả loại", price: "Tất cả giá", time: "Tất cả thời gian" });
   const [activeStep] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTest, setModalTest] = useState(null);
@@ -138,22 +131,6 @@ const UserTestBookingPage = () => {
               {tab.label}
             </button>
           ))}
-        </div>
-        <div className="test-booking-filter">
-          <div className="filter-title">
-            <span className="icon">🔎</span> Bộ lọc tìm kiếm
-          </div>
-          <div className="filter-row">
-            <select value={filters.type} onChange={e => setFilters(f => ({ ...f, type: e.target.value }))}>
-              {testFilters.type.map(opt => <option key={opt}>{opt}</option>)}
-            </select>
-            <select value={filters.price} onChange={e => setFilters(f => ({ ...f, price: e.target.value }))}>
-              {testFilters.price.map(opt => <option key={opt}>{opt}</option>)}
-            </select>
-            <select value={filters.time} onChange={e => setFilters(f => ({ ...f, time: e.target.value }))}>
-              {testFilters.time.map(opt => <option key={opt}>{opt}</option>)}
-            </select>
-          </div>
         </div>
         <div className="test-booking-list">
           {pagedTests.map((test, idx) => (

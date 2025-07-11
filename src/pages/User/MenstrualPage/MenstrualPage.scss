@@ -350,20 +350,19 @@
         margin-bottom: 0.5rem;
       }
 
-              .menstrual-input {
-          width: 100%;
-          padding: 0.5rem 1rem;
-          border: 1px solid #d1d5db;
-          border-radius: 0.5rem;
-          transition: all 0.2s;
-
-          &:focus {
-            outline: none;
-            ring: 2px;
-            ring-color: #2563eb;
-            border-color: transparent;
-          }
-        }
+      .menstrual-input, .menstrual-input.react-datepicker__input-container input {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        transition: all 0.2s;
+        font-size: 1rem;
+        background: #fff;
+      }
+      .menstrual-input:focus, .menstrual-input.react-datepicker__input-container input:focus {
+        outline: none;
+        border-color: #2563eb;
+      }
 
         .menstrual-textarea {
           width: 100%;
@@ -869,4 +868,54 @@
     transform: scale(1);
     opacity: 1;
   }
+}
+
+.menstrual-input-field {
+  .menstrual-datepicker-wrapper {
+    width: 100%;
+    .react-datepicker__input-container {
+      width: 100% !important;
+      display: block !important;
+      input {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+        padding: 0.5rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        background: #fff;
+        transition: all 0.2s;
+      }
+      input:focus {
+        outline: none;
+        border-color: #2563eb;
+      }
+    }
+  }
+}
+
+.menstrual-input-field .react-datepicker__input-container input.menstrual-input {
+  width: 270% !important;
+  min-width: 0 !important;
+  max-width: 270% !important;
+  box-sizing: border-box;
+}
+
+.menstrual-date-btn {
+  padding: 0.5rem 1.2rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  color: #1f2937;
+}
+.menstrual-date-btn.selected,
+.menstrual-date-btn:focus {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
 }
