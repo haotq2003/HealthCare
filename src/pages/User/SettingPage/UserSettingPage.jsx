@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Bell, Lock, Eye, EyeOff } from 'lucide-react';
 import Swal from 'sweetalert2';
+import { CycleTrackingService } from '../../../services/CycleTrackingService';
+import { AuthService } from '../../../services/AuthService';
 import './UserSettingPage.scss';
 
 // Global flag để tránh load localStorage nhiều lần trong React StrictMode
@@ -30,7 +32,7 @@ const UserSettingPage = () => {
   const hasLoadedRef = useRef(false);
   const settingsLoadedRef = useRef(false); // Thêm ref để track việc đã load settings
 
-  // Function to sync settings from server
+  // Function to sync settings from server - sử dụng API profile
   const syncSettingsFromServer = useCallback(async () => {
     if (isSyncingRef.current) {
       console.log(`[${componentIdRef.current}] Already syncing, skipping...`);
@@ -46,7 +48,24 @@ const UserSettingPage = () => {
         return;
       }
 
-      // XÓA toàn bộ các đoạn fetch('https://localhost:7276/api/CycleTracking/status', ...) và các useEffect, biến, hàm liên quan đến việc gọi API này.
+      // Lấy thông tin profile từ server để có trạng thái cycle tracking mới nhất
+      const userProfile = await AuthService.getUserProfile();
+      console.log(`[${componentIdRef.current}] User profile from server:`, userProfile);
+      
+      // Cập nhật trạng thái cycle tracking từ server
+      setSettings(prev => {
+        if (prev.notifications.cycleTracking !== userProfile.isCycleTrackingOn) {
+          console.log(`[${componentIdRef.current}] Updating cycle tracking from server: ${prev.notifications.cycleTracking} -> ${userProfile.isCycleTrackingOn}`);
+          return {
+            ...prev,
+            notifications: {
+              ...prev.notifications,
+              cycleTracking: userProfile.isCycleTrackingOn
+            }
+          };
+        }
+        return prev;
+      });
       
     } catch (error) {
       console.error(`[${componentIdRef.current}] Error syncing settings from server:`, error);
@@ -204,35 +223,15 @@ const UserSettingPage = () => {
     handleNotificationChange('appointmentReminders', newValue);
   };
 
-  // API call to enable/disable cycle tracking
+  // API call to enable/disable cycle tracking - duy nhất 1 API
   const updateCycleTracking = async (isEnabled) => {
     try {
-      const accessToken = localStorage.getItem('accessToken');
-      if (!accessToken) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Lỗi xác thực',
-          text: 'Vui lòng đăng nhập lại!',
-          confirmButtonText: 'Đồng ý'
-        });
-        return false;
-      }
-
-      const response = await fetch(`https://localhost:7276/api/CycleTracking/enable-tracking?isEnabled=${isEnabled}`, {
-        method: 'PUT',
-        headers: {
-          'accept': '*/*',
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        return true;
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Có lỗi xảy ra khi cập nhật cài đặt');
-      }
+      await CycleTrackingService.updateCycleTracking(isEnabled);
+      
+      // Không cần lưu vào localStorage nữa, server sẽ cập nhật isCycleTrackingOn trong profile
+      console.log(`[${componentIdRef.current}] Updated cycle tracking on server: ${isEnabled}`);
+      
+      return true;
     } catch (error) {
       console.error('Error updating cycle tracking:', error);
       throw error;
