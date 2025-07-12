@@ -3,6 +3,7 @@ import { Calendar, Clock, MapPin, User, FileText, Filter, Repeat } from 'lucide-
 import './UserHistoryPage.scss';
 import { ConsultantService } from '../../../services/ConsultantService';
 import { FeedbackService } from '../../../services/FeedbackService';
+import { CycleTrackingService } from '../../../services/CycleTrackingService';
 import toast from 'react-hot-toast';
 import { API_URL } from '../../../config/apiURL';
 const UserHistoryPage = () => {
@@ -58,16 +59,8 @@ useEffect(()=>{
         setLoadingCycle(true);
         setCycleError(null);
         try {
-          const token = localStorage.getItem('accessToken');
-          const res = await fetch('https://localhost:7276/api/CycleTracking', {
-            headers: {
-              'accept': '*/*',
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-          if (!res.ok) throw new Error('Không thể tải dữ liệu chu kỳ');
-          const data = await res.json();
-          setCycleHistory(Array.isArray(data.data) ? data.data : []);
+          const cycles = await CycleTrackingService.getCycleHistory();
+          setCycleHistory(Array.isArray(cycles) ? cycles : []);
         } catch (err) {
           setCycleError(err.message);
         } finally {

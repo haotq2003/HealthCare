@@ -83,4 +83,35 @@ export const AuthService = {
       };
     }
   },
+
+  // Lấy thông tin profile user bao gồm trạng thái cycle tracking
+  getUserProfile: async () => {
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        throw new Error('Không có token xác thực');
+      }
+
+      const response = await fetch(`${API_URL}/api/Authentication/profile`, {
+        method: 'GET',
+        headers: {
+          'accept': '*/*',
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        return result.data;
+      } else if (response.status === 401) {
+        localStorage.removeItem('accessToken');
+        throw new Error('Phiên đăng nhập hết hạn');
+      } else {
+        throw new Error('Không thể lấy thông tin profile');
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      throw error;
+    }
+  }
 };

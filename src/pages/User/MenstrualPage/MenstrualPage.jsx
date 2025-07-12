@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Heart, Activity, Clock, Plus, TrendingUp, Moon, Sun, Eye, CalendarDays, BarChart3, History, Trash2 } from 'lucide-react';
 import Swal from 'sweetalert2';
+import { CycleTrackingService } from '../../../services/CycleTrackingService';
+import { AuthService } from '../../../services/AuthService';
 import './MenstrualPage.scss';
 // Remove ReactDatePicker import
 import 'react-datepicker/dist/react-datepicker.css';
@@ -137,20 +139,11 @@ const MenstrualPage = () => {
         return [];
       }
 
-      const response = await fetch('https://localhost:7276/api/CycleTracking', {
-        method: 'GET',
-        headers: {
-          'accept': '*/*',
-          'Authorization': `Bearer ${accessToken}`
-        }
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        return result.data || [];
-      } else if (response.status === 401) {
-        // Token expired or invalid
-        localStorage.removeItem('accessToken');
+      const cycles = await CycleTrackingService.getCycleHistory();
+      return cycles;
+    } catch (error) {
+      console.error('Error fetching cycles:', error);
+      if (error.message === 'Phiên đăng nhập hết hạn') {
         Swal.fire({
           icon: 'warning',
           title: 'Phiên đăng nhập hết hạn',
@@ -160,13 +153,7 @@ const MenstrualPage = () => {
         }).then(() => {
           window.location.href = '/login';
         });
-        return [];
-      } else {
-        console.log('No cycles found');
-        return [];
       }
-    } catch (error) {
-      console.error('Error fetching cycles:', error);
       return [];
     }
   };
@@ -194,44 +181,28 @@ const MenstrualPage = () => {
     loadData();
   }, []);
 
-  // Đọc trạng thái cycleTracking từ localStorage khi mount
+  // Đọc trạng thái cycleTracking từ API profile khi mount
   useEffect(() => {
-    const readCycleTracking = () => {
+    const readCycleTracking = async () => {
       try {
-        const userSettings = localStorage.getItem('userSettings');
-        if (userSettings) {
-          const parsed = JSON.parse(userSettings);
-          if (parsed.notifications && typeof parsed.notifications.cycleTracking === 'boolean') {
-            setCycleTrackingEnabled(parsed.notifications.cycleTracking);
-          } else {
-            setCycleTrackingEnabled(true); // fallback
-          }
-        } else {
-          setCycleTrackingEnabled(true); // fallback
-        }
-      } catch {
-        setCycleTrackingEnabled(true);
+        const userProfile = await AuthService.getUserProfile();
+        setCycleTrackingEnabled(userProfile.isCycleTrackingOn);
+        console.log('[MenstrualPage] Cycle tracking status from server:', userProfile.isCycleTrackingOn);
+      } catch (error) {
+        console.error('[MenstrualPage] Error reading cycle tracking status:', error);
+        setCycleTrackingEnabled(true); // fallback
       }
     };
 
     readCycleTracking();
 
-    // Lắng nghe sự thay đổi localStorage (từ tab khác hoặc trang khác)
-    const handleStorage = (e) => {
-      if (e.key === 'userSettings') {
-        readCycleTracking();
-      }
-    };
-    window.addEventListener('storage', handleStorage);
-
     // Lắng nghe khi tab được focus (để đồng bộ khi chuyển tab hoặc vừa chỉnh ở trang cài đặt)
-    const handleFocus = () => {
-      readCycleTracking();
+    const handleFocus = async () => {
+      await readCycleTracking();
     };
     window.addEventListener('focus', handleFocus);
 
     return () => {
-      window.removeEventListener('storage', handleStorage);
       window.removeEventListener('focus', handleFocus);
     };
   }, []);
@@ -269,30 +240,11 @@ const MenstrualPage = () => {
         return null;
       }
 
-      // Convert date to ISO string format - use local timezone to avoid date shift
-      const startDateISO = new Date(cycleData.startDate + 'T00:00:00').toISOString();
-
-      const response = await fetch('https://localhost:7276/api/CycleTracking', {
-        method: 'POST',
-        headers: {
-          'accept': '*/*',
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          startDate: startDateISO,
-          cycleLength: cycleData.cycleLength,
-          periodLength: cycleData.periodLength,
-          notes: cycleData.notes
-        })
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        return result.data;
-      } else if (response.status === 401) {
-        // Token expired or invalid
-        localStorage.removeItem('accessToken');
+      const result = await CycleTrackingService.createCycleTracking(cycleData);
+      return result;
+    } catch (error) {
+      console.error('Error creating cycle tracking:', error);
+      if (error.message === 'Phiên đăng nhập hết hạn') {
         Swal.fire({
           icon: 'warning',
           title: 'Phiên đăng nhập hết hạn',
@@ -302,18 +254,14 @@ const MenstrualPage = () => {
         }).then(() => {
           window.location.href = '/login';
         });
-        return null;
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Có lỗi xảy ra khi tạo chu kỳ');
       }
-    } catch (error) {
-      console.error('Error creating cycle tracking:', error);
       throw error;
     }
   };
 
   const handleSaveCycle = async () => {
+    console.log('[MenstrualPage] handleSaveCycle - cycleTrackingEnabled:', cycleTrackingEnabled);
+    
     // Nếu cycleTracking đang tắt, không cho lưu
     if (!cycleTrackingEnabled) {
       Swal.fire({
@@ -417,7 +365,9 @@ const MenstrualPage = () => {
         }
       });
 
+      console.log('[MenstrualPage] Calling createCycleTracking with data:', cycleData);
       const result = await createCycleTracking(cycleData);
+      console.log('[MenstrualPage] createCycleTracking result:', result);
 
       if (result) {
         // Update current cycle state and refresh cycle history
