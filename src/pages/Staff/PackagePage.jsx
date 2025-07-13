@@ -5,6 +5,7 @@ import axios from 'axios';
 import { API_URL } from '../../config/apiURL';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
+import { formatVietnameseCurrencyDong } from '../../utils/currencyFormatter';
 
 const DEFAULT_BADGE = "Xét nghiệm";
 const DEFAULT_BADGE_COLOR = "#3b82f6";
@@ -272,7 +273,7 @@ const PackagePage = () => {
                     </div>
                     <div className="hc-package-card-row">
                       <span className="hc-package-icon"><DollarSign size={16} /></span>
-                      <span>Giá: {pkg.price.toLocaleString()} đ</span>
+                      <span>Giá: {formatVietnameseCurrencyDong(pkg.price)}</span>
                     </div>
                     <div className="hc-package-card-row">
                       <span className="hc-package-icon"><FlaskConical size={16} /></span>
@@ -313,7 +314,7 @@ const PackagePage = () => {
               <div className="hc-modal-row">
                 <div className="hc-modal-col">
                   <label>Giá</label>
-                  <div className="hc-modal-value">{selectedPackage.price.toLocaleString()} đ</div>
+                  <div className="hc-modal-value">{formatVietnameseCurrencyDong(selectedPackage.price)}</div>
                 </div>
               </div>
               <div className="hc-modal-row">

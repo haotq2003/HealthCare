@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { formatVietnameseCurrencyVND } from '../../utils/currencyFormatter';
 
 const PaymentSuccessPage = () => {
   const location = useLocation();
@@ -70,7 +71,7 @@ const PaymentSuccessPage = () => {
   return (
     <div className="p-10 max-w-xl mx-auto bg-white rounded shadow">
       <h1 className="text-2xl font-bold text-green-600 mb-4">Thanh toán thành công!</h1>
-      <p><strong>Số tiền:</strong> {amount.toLocaleString()} VND</p>
+      <p><strong>Số tiền:</strong> {formatVietnameseCurrencyVND(amount)}</p>
       {updated ? (
         <p className="text-green-500 mt-4">Cập nhật và lưu giao dịch thành công! Đang chuyển hướng...</p>
       ) : (

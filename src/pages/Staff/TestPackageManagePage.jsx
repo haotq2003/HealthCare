@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
+import { formatVietnameseCurrencyVND } from '../../utils/currencyFormatter';
 
 const initialPackages = [
   { id: 1, name: 'Gói Xét Nghiệm A', desc: 'Mô tả A', price: 500000, status: 'Đang hoạt động' },
@@ -62,7 +63,7 @@ const TestPackageManagePage = () => {
             <tr key={pkg.id}>
               <td>{pkg.name}</td>
               <td>{pkg.desc}</td>
-              <td>{pkg.price.toLocaleString()}</td>
+              <td>{formatVietnameseCurrencyVND(pkg.price)}</td>
               <td>{pkg.status}</td>
               <td>
                 <button className="edit-btn" onClick={() => openEditModal(pkg)}><FaEdit /></button>
