@@ -1,36 +1,38 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { formatVietnameseCurrencyVND } from '../../utils/currencyFormatter';
+import React, { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+// import { formatVietnameseCurrencyVND } from '../../utils/currencyFormatter';
 
 const PaymentSuccessPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   const query = new URLSearchParams(location.search);
-  const orderInfo = query.get('vnp_OrderInfo');
-  const amountRaw = query.get('vnp_Amount');
-  const responseCode = query.get('vnp_ResponseCode');
-  const transactionStatus = query.get('vnp_TransactionStatus');
-  const secureHash = query.get('vnp_SecureHash');
-  const bankCode = query.get('vnp_BankCode');
-  const txnRef = query.get('vnp_TxnRef');
+  const orderInfo = query.get("vnp_OrderInfo");
+  const amountRaw = query.get("vnp_Amount");
+  const responseCode = query.get("vnp_ResponseCode");
+  const transactionStatus = query.get("vnp_TransactionStatus");
+  const secureHash = query.get("vnp_SecureHash");
+  const bankCode = query.get("vnp_BankCode");
+  const txnRef = query.get("vnp_TxnRef");
 
-  const [userId, serviceId] = orderInfo?.split('_') || [];
-  const amount = parseInt(amountRaw || '0') / 100;
+  const [userId, serviceId] = orderInfo?.split("_") || [];
+  const amount = parseInt(amountRaw || "0") / 100;
 
   const [updated, setUpdated] = useState(false);
-  const calledRef = useRef(false); 
+  const calledRef = useRef(false);
 
   useEffect(() => {
     const savePayment = async () => {
       try {
-     
-        if (responseCode === '00' && serviceId && !calledRef.current) {
+        if (responseCode === "00" && serviceId && !calledRef.current) {
           calledRef.current = true;
 
-          await fetch(`https://localhost:7276/api/TestSlots/${serviceId}/updateStatus`, {
-            method: "PATCH",
-          });
+          await fetch(
+            `https://localhost:7276/api/TestSlots/${serviceId}/updateStatus`,
+            {
+              method: "PATCH",
+            }
+          );
 
           const paymentData = {
             txnRef,
@@ -44,7 +46,7 @@ const PaymentSuccessPage = () => {
 
           await fetch(`https://localhost:7276/api/vnpay/save-payment`, {
             method: "POST",
-            headers: { 'Content-Type': 'application/json' },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(paymentData),
           });
 
@@ -62,7 +64,7 @@ const PaymentSuccessPage = () => {
   useEffect(() => {
     if (updated) {
       const timeout = setTimeout(() => {
-        navigate('/');
+        navigate("/");
       }, 2000);
       return () => clearTimeout(timeout);
     }
@@ -70,14 +72,25 @@ const PaymentSuccessPage = () => {
 
   return (
     <div className="p-10 max-w-xl mx-auto bg-white rounded shadow">
-      <h1 className="text-2xl font-bold text-green-600 mb-4">Thanh toán thành công!</h1>
-      <p><strong>Số tiền:</strong> {formatVietnameseCurrencyVND(amount)}</p>
+      <h1 className="text-2xl font-bold text-green-600 mb-4">
+        Thanh toán thành công!
+      </h1>
+      <p>
+        {/* <strong>Số tiền:</strong> {formatVietnameseCurrencyVND(amount)} */}
+        <p>
+          <strong>Số tiền:</strong> {amount}
+        </p>
+      </p>
       {updated ? (
-        <p className="text-green-500 mt-4">Cập nhật và lưu giao dịch thành công! Đang chuyển hướng...</p>
+        <p className="text-green-500 mt-4">
+          Cập nhật và lưu giao dịch thành công! Đang chuyển hướng...
+        </p>
       ) : (
         <p className="text-yellow-500 mt-4">Đang xử lý giao dịch...</p>
       )}
-      <p className="mt-4 text-gray-600">Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</p>
+      <p className="mt-4 text-gray-600">
+        Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.
+      </p>
     </div>
   );
 };
