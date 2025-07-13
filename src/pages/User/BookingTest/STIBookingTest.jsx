@@ -161,7 +161,7 @@ const STIBookingTest = () => {
   const handleContinue = () => {
     if (selectedSlotId) {
       const slot = availableSlots.find(s => s.id === selectedSlotId);
-      navigate(`/user/test-booking/confirm`, {
+      navigate(`/user/test-booking/confirm?price=${selectedTest.price}`, {
         state: {
           selectedTest,
           healthTestName: selectedTest.name,

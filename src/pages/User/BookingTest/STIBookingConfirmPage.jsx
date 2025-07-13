@@ -71,11 +71,48 @@ const STIBookingConfirmPage = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ bookedByUserId: currentUser.id })
       });
-      if (res.ok) {
-        Swal.fire('Thành công', 'Đặt lịch xét nghiệm thành công!', 'success').then(() => {
-          navigate('/user/test-booking');
-        });
-      } else {
+ if (res.ok) {
+  console.log("✅ Booking Success - Details:");
+  console.table({
+    userId: currentUser.id,
+    userName: currentUser.fullName,
+    testName: selectedTest?.name || healthTestName,
+    testId: healthTestId,
+    slotId,
+    slotDate,
+    slotTime,
+    price: selectedTest?.price || 'Không xác định'
+  });
+
+
+  const paymentRes = await fetch("https://localhost:7276/api/VnPay/create-payment", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      amount: selectedTest?.price || 0,
+      userId: currentUser.id,
+      serviceId: slotId
+    })
+  });
+
+  if (paymentRes.ok) {
+    const paymentData = await paymentRes.json();
+if (paymentData?.paymentUrl) {
+     
+      window.location.href = paymentData.paymentUrl;
+    } else {
+      Swal.fire('Lỗi', 'Không nhận được link thanh toán.', 'error');
+    }
+    
+    navigate(`/user/payment/success?amount=${selectedTest?.price}&userId=${currentUser.id}&serviceId=${slotId}`);
+  } else {
+    Swal.fire('Thanh toán thất bại', 'Không thể xử lý thanh toán', 'error');
+  }
+}
+
+else {
         Swal.fire('Lỗi', 'Đặt lịch thất bại!', 'error');
       }
     } catch (err) {
