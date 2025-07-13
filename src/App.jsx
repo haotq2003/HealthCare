@@ -58,6 +58,7 @@ import PaymentSuccessPage from "./pages/User/BookingTest/PaymentSuccessPage.jsx"
 import AdminLayout from "./layouts/AdminLayout.jsx";
 import AdminDashboardPage from "./pages/Admin/AdminDashboardPage.jsx";
 import UserPage from "./pages/Admin/UserPage.jsx";
+import AdminProfilePage from "./pages/Admin/AdminProfilePage.jsx";
 import AcceptDoctor from "./pages/Admin/AcceptDoctor.jsx";
 import ConsultantCreateProfile from "./pages/Consultant/ConsultantCreateProfile.jsx";
 
@@ -128,7 +129,7 @@ function App() {
           <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="users" element={<UserPage />} />
           {/* <Route path="bookings" element={<AdminBookingPage />} /> */}
-          <Route path="profile" element={<ProfilePage />} />
+          <Route path="profile" element={<AdminProfilePage />} />
           <Route path="accept-doctor" element={<AcceptDoctor />} />
         </Route>
       </Routes>

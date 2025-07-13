@@ -1,6 +1,9 @@
+// src/pages/admin/UserPage.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { FaTrashAlt } from "react-icons/fa";
+import styles from "./UserPage.module.scss";
 
 const UserPage = () => {
   const [users, setUsers] = useState([]);
@@ -69,8 +72,6 @@ const UserPage = () => {
         }
       );
       toast.success("Đã cập nhật vai trò");
-
-      // Cập nhật lại state users
       setUsers((prev) =>
         prev.map((user) =>
           user.id === id
@@ -93,37 +94,35 @@ const UserPage = () => {
   }, [pageIndex]);
 
   return (
-    <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold text-blue-800">Quản lý người dùng</h1>
+    <div className={styles.container}>
+      <h1 className={styles.heading}>Quản lý người dùng</h1>
 
-      <div className="overflow-x-auto bg-white shadow rounded-xl">
-        <table className="min-w-full text-sm text-left">
-          <thead className="bg-blue-100 text-blue-800 text-xs uppercase font-semibold">
+      <div className={styles.tableWrapper}>
+        <table className={styles.table}>
+          <thead>
             <tr>
-              <th className="px-6 py-3">Họ tên</th>
-              <th className="px-6 py-3">Email</th>
-              <th className="px-6 py-3">SĐT</th>
-              <th className="px-6 py-3">Ngày sinh</th>
-              <th className="px-6 py-3">Vai trò</th>
-              <th className="px-6 py-3 text-center">Hành động</th>
+              <th>Họ tên</th>
+              <th>Email</th>
+              <th>SĐT</th>
+              <th>Ngày sinh</th>
+              <th>Vai trò</th>
+              <th className={styles.textCenter}>Hành động</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody>
             {users.map((user) => (
-              <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-3">{user.fullName}</td>
-                <td className="px-6 py-3">{user.email}</td>
-                <td className="px-6 py-3">{user.phoneNumber}</td>
-                <td className="px-6 py-3">
-                  {new Date(user.dateOfBirth).toLocaleDateString()}
-                </td>
-                <td className="px-6 py-3">
+              <tr key={user.id}>
+                <td>{user.fullName}</td>
+                <td>{user.email}</td>
+                <td>{user.phoneNumber}</td>
+                <td>{new Date(user.dateOfBirth).toLocaleDateString()}</td>
+                <td>
                   <select
-                    className="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring focus:ring-blue-300"
                     value={
                       roleOptions.find((r) => r.label === user.role)?.value ?? 1
                     }
                     onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                    className={styles.roleSelect}
                   >
                     {roleOptions.map((role) => (
                       <option key={role.value} value={role.value}>
@@ -132,12 +131,13 @@ const UserPage = () => {
                     ))}
                   </select>
                 </td>
-                <td className="px-6 py-3 text-center">
+                <td className={styles.textCenter}>
                   <button
                     onClick={() => handleDelete(user.id)}
-                    className="text-red-600 hover:text-red-800 hover:underline font-medium"
+                    className={styles.deleteBtn}
+                    title="Xoá người dùng"
                   >
-                    Xoá
+                    <FaTrashAlt size={18} />
                   </button>
                 </td>
               </tr>
@@ -146,22 +146,19 @@ const UserPage = () => {
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-end items-center gap-4 mt-4">
+      <div className={styles.pagination}>
         <button
           onClick={() => setPageIndex((prev) => Math.max(prev - 1, 1))}
           disabled={pageIndex === 1}
-          className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 disabled:opacity-50"
         >
           ← Trước
         </button>
-        <span className="text-gray-700 font-medium">
+        <span>
           Trang {pageIndex} / {totalPages}
         </span>
         <button
           onClick={() => setPageIndex((prev) => Math.min(prev + 1, totalPages))}
           disabled={pageIndex === totalPages}
-          className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 disabled:opacity-50"
         >
           Tiếp →
         </button>
