@@ -104,21 +104,26 @@ const AdminDashboardPage = () => {
 
       {/* Thống kê tổng */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-blue-100 rounded-xl shadow p-6">
-          <p className="text-blue-700 font-medium">Tổng người dùng</p>
-          <p className="text-3xl font-bold text-blue-900">
+        {/* Tổng người dùng */}
+        <div className="bg-purple-100 border-l-4 border-purple-500 rounded-xl shadow p-6">
+          <p className="text-purple-700 font-medium">Tổng người dùng</p>
+          <p className="text-3xl font-bold text-purple-900">
             {loading ? "Đang tải..." : counts.customerCount}
           </p>
         </div>
-        <div className="bg-blue-100 rounded-xl shadow p-6">
-          <p className="text-blue-700 font-medium">Tổng lượt tư vấn</p>
-          <p className="text-3xl font-bold text-blue-900">
+
+        {/* Tổng lượt tư vấn */}
+        <div className="bg-green-100 border-l-4 border-green-500 rounded-xl shadow p-6">
+          <p className="text-green-700 font-medium">Tổng lượt tư vấn</p>
+          <p className="text-3xl font-bold text-green-900">
             {loading ? "Đang tải..." : counts.bookedAvailableSlotCount}
           </p>
         </div>
-        <div className="bg-blue-100 rounded-xl shadow p-6">
-          <p className="text-blue-700 font-medium">Tổng lượt đặt lịch</p>
-          <p className="text-3xl font-bold text-blue-900">
+
+        {/* Tổng lượt đặt lịch */}
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 rounded-xl shadow p-6">
+          <p className="text-yellow-700 font-medium">Tổng lượt đặt lịch</p>
+          <p className="text-3xl font-bold text-yellow-900">
             {loading ? "Đang tải..." : counts.bookedTestSlotCount}
           </p>
         </div>
