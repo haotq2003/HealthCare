@@ -58,7 +58,7 @@ import PaymentSuccessPage from "./pages/User/BookingTest/PaymentSuccessPage.jsx"
 import AdminLayout from "./layouts/AdminLayout.jsx";
 import AdminDashboardPage from "./pages/Admin/AdminDashboardPage.jsx";
 import UserPage from "./pages/Admin/UserPage.jsx";
-import AdminProfilePage from "./pages/Admin/ProfilePage.jsx";
+import AdminProfilePage from "./pages/Admin/AdminProfilePage.jsx";
 
 function App() {
   return (
