@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from '../../components/Auth/AuthLayout';
 import { AuthService } from '../../services/AuthService';
 import toast from 'react-hot-toast';
@@ -14,6 +14,7 @@ const RegisterPage = () => {
     confirmPassword: '',
     dateOfBirth: '',
     gender: '',
+     role: '', 
     agreeToTerms: false,
     subscribeNewsletter: false
   });
@@ -21,7 +22,7 @@ const RegisterPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+ const navigate = useNavigate();
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -49,7 +50,9 @@ const validateForm = () => {
   if (!formData.lastName.trim()) {
     newErrors.lastName = 'Tên là bắt buộc';
   }
-
+if (!formData.role) {
+  newErrors.role = 'Bạn phải chọn vai trò';
+}
   if (!formData.email) {
     newErrors.email = 'Email là bắt buộc';
   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -134,12 +137,20 @@ const handleSubmit = async (e) => {
       ConfirmPassword: formData.confirmPassword,
       DateOfBirth: dob,
       Gender: formData.gender === 'male' ? 0 : formData.gender === 'female' ? 1 : 2,
-      Role: 1,
+     Role: parseInt(formData.role, 10),
     };
 
     console.log('requestData:', requestData);
     const res = await AuthService.register(requestData);
-    toast.success(res.message || 'Đăng ký thành công');
+ 
+if (requestData.Role === 1) {
+  toast.success(res.message || 'Đăng ký thành công');
+  navigate('/login')
+} else if (requestData.Role === 2) {
+  toast.success('Đăng ký thành công. Vui lòng chờ quản trị viên phê duyệt tài khoản.');
+  navigate('/login')
+}
+
   } catch (error) {
     console.error('Register failed:', error);
     setErrors({ general: error.message || 'Đăng ký thất bại. Vui lòng thử lại.' });
@@ -287,6 +298,26 @@ const handleSubmit = async (e) => {
             </select>
             {errors.gender && <p className="mt-1 text-sm text-red-600">{errors.gender}</p>}
           </div>
+          <div>
+  <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
+    Vai trò <span className="text-red-500">*</span>
+  </label>
+  <select
+    id="role"
+    name="role"
+    value={formData.role}
+    onChange={handleChange}
+    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ${
+      errors.role ? 'border-red-300 bg-red-50' : 'border-gray-300'
+    }`}
+  >
+    <option value="">Chọn vai trò</option>
+    <option value="1">Khách hàng</option>
+    <option value="2">Tư vấn viên</option>
+  </select>
+  {errors.role && <p className="mt-1 text-sm text-red-600">{errors.role}</p>}
+</div>
+
         </div>
 
         {/* Password Fields */}

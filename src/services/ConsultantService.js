@@ -129,6 +129,21 @@ export const ConsultantService = {
             throw error
         }
     },
+      getConsultantByConsultantId: async (consultantId) => {
+  try {
+    const res = await axios.get(`${API_URL}/api/Consultation/consultations`, {
+      params: { ConsultantId: consultantId },
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+      }
+    });
+    return res.data.data;
+  } catch (error) {
+    console.error("Error fetching consultant detail:", error);
+    throw error;
+  }
+}
+
 
     
 }
