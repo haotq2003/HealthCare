@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Calendar, Clock, Coins, AlertCircle, CheckCircle } from "lucide-react";
 import "./STIBookingConfirmPage.scss";
 import { API_URL } from '../../../config/apiURL';
+import { formatVietnameseCurrencyVND } from '../../../utils/currencyFormatter';
 
 const getWeekday = (dateStr) => {
   const weekdays = [
@@ -32,7 +33,7 @@ const STIBookingConfirmPage = () => {
   const slotDate = location.state?.slotDate;
   const slotTime = location.state?.slotTime;
   // Giả lập tổng chi phí, bạn có thể lấy từ state hoặc API nếu cần
-  const totalPrice = "1.250k VND";
+  const totalPrice = formatVietnameseCurrencyVND(selectedTest?.price || 1250000);
 
   // Lấy currentUser từ localStorage
   const currentUser = (() => {

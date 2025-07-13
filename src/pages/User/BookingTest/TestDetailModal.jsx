@@ -1,5 +1,6 @@
 import React from "react";
 import './TestDetailModal.scss';
+import { formatVietnameseCurrencyVND } from '../../../utils/currencyFormatter';
 
 const TestDetailModal = ({ open, onClose, test }) => {
   if (!open || !test) return null;
@@ -13,7 +14,7 @@ const TestDetailModal = ({ open, onClose, test }) => {
         <div className="meta">
           <div><b>Loại:</b> {test.type}</div>
           <div><b>Thời gian:</b> {test.time}</div>
-          <div><b>Giá:</b> {test.price}k</div>
+          <div><b>Giá:</b> {formatVietnameseCurrencyVND(test.price * 1000)}</div>
           <div><b>Kết quả:</b> {test.result}</div>
         </div>
         {test.details && (

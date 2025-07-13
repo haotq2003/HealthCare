@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { formatVietnameseCurrencyDong } from '../../utils/currencyFormatter';
 
 const DashboardPage = () => {
   const [stats, setStats] = useState({
@@ -122,7 +123,7 @@ const DashboardPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Doanh thu tháng</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.monthlyRevenue.toLocaleString()}đ</p>
+                <p className="text-3xl font-bold text-gray-900">{formatVietnameseCurrencyDong(stats.monthlyRevenue)}</p>
                 <p className="text-sm text-green-600 mt-1">+12% so với tháng trước</p>
               </div>
               <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">

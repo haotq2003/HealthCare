@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import TestBookingHeader from './TestBookingHeader';
 import './STIBookingTest.scss';
 import { API_URL } from '../../../config/apiURL';
+import { formatVietnameseCurrencyVND } from '../../../utils/currencyFormatter';
 
 const STIBookingTest = () => {
   const location = useLocation();
@@ -215,8 +216,7 @@ const STIBookingTest = () => {
                 </div>
               </div>
               <div className="test-price">
-                <span className="price">{selectedTest.price}k</span>
-                <span className="currency">VNĐ</span>
+                <span className="price">{formatVietnameseCurrencyVND(selectedTest.price)}</span>
               </div>
             </div>
           ) : (
