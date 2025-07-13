@@ -1,0 +1,102 @@
+/* src/pages/admin/UserPage.module.scss */
+.container {
+  padding: 1.5rem;
+  background-color: #f9fafb;
+  min-height: 100vh;
+}
+
+.heading {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1d4ed8;
+  margin-bottom: 1.5rem;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  background-color: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  th,
+  td {
+    padding: 1rem;
+    text-align: left;
+  }
+
+  thead {
+    background-color: #dbeafe;
+    color: #1e40af;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+  }
+
+  tbody tr {
+    transition: background-color 0.2s;
+    &:hover {
+      background-color: #f3f4f6;
+    }
+  }
+}
+
+.roleSelect {
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  background-color: #fff;
+  color: #1f2937;
+  &:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  }
+}
+
+.deleteBtn {
+  color: #dc2626;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  &:hover {
+    color: #b91c1c;
+  }
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+
+  button {
+    padding: 0.5rem 1rem;
+    background-color: #e5e7eb;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    color: #1f2937;
+    &:hover {
+      background-color: #d1d5db;
+    }
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  span {
+    font-weight: 500;
+    color: #374151;
+  }
+}
