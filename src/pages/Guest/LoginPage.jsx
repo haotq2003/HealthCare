@@ -65,9 +65,21 @@ const LoginPage = () => {
       console.log(result);
       if (result.success) {
         const role = result.role;
+        const user = result.user;
         setAuthFromLogin(result.token, result.user);
         console.log("Đăng nhập thành công, role:", role);
         toast.success("Đăng nhập thành công!");
+        
+  if (role.toLowerCase() === "consultant") {
+    if (!user.hasConsultantProfile) {
+      // Chưa có profile → chuyển đến trang tạo profile
+      navigate("/consultant/create-profile");
+    } else {
+      // Có profile rồi → vào dashboard
+      navigate("/consultant/dashboard");
+    }
+    return;
+  }
         // Redirect theo role
         switch (role.toLowerCase()) {
           case "admin":
@@ -76,9 +88,7 @@ const LoginPage = () => {
           case "manager":
             navigate("/manager/dashboard");
             break;
-          case "consultant":
-            navigate("/consultant/dashboard");
-            break;
+         
           case "staff":
             navigate("/staff");
             break;

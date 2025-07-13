@@ -3,7 +3,7 @@ import ConsultantLayout from "../../components/Consultant/ConsultantLayout";
 import { ConsultantService } from "../../services/ConsultantService";
 import toast from "react-hot-toast";
 import { Calendar } from "lucide-react";
-
+import { jwtDecode } from "jwt-decode";
 const DashboardPage = () => {
   const [todaySchedule, setTodaySchedule] = useState([
     {
@@ -47,7 +47,10 @@ const DashboardPage = () => {
 
   const fetchConsultantById = async () => {
     try {
-      const res = await ConsultantService.getConsultantByUserId();
+        const token = localStorage.getItem('accessToken');
+        const decode = jwtDecode(token);
+        const id = decode.consultant_id;
+      const res = await ConsultantService.getConsultantByConsultantId(id);
       console.log(res.items);
       setBooking(res.items);
     } catch (error) {

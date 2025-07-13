@@ -25,14 +25,14 @@ const AdminLayout = () => {
           >
             Users
           </NavLink>
-          {/* <NavLink
-            to="/admin/bookings"
+          <NavLink
+            to="/admin/accept-doctor"
             className={({ isActive }) =>
               isActive ? `${styles.link} active` : styles.link
             }
           >
-            Bookings
-          </NavLink> */}
+            Accept Consultant
+          </NavLink>
           <NavLink
             to="/admin/profile"
             className={({ isActive }) =>
