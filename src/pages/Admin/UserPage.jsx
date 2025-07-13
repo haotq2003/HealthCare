@@ -8,53 +8,89 @@ const UserPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 10;
 
+  const token = localStorage.getItem("accessToken");
+
+  const roleOptions = [
+    { value: 1, label: "Customer" },
+    { value: 2, label: "Consultant" },
+    { value: 3, label: "Staff" },
+    { value: 4, label: "Manager" },
+  ];
+
   const fetchUsers = async () => {
     try {
       const res = await axios.get(
-        `https://localhost:7276/api/Admin/users?PageIndex=${pageIndex}&PageSize=${pageSize}`
+        `https://localhost:7276/api/Admin/users?PageIndex=${pageIndex}&PageSize=${pageSize}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       setUsers(res.data.data.items);
       setTotalPages(res.data.data.totalPages);
     } catch (error) {
-      toast.error("Lỗi khi tải danh sách người dùng");
+      if (error.response?.status === 401) {
+        toast.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+      } else {
+        toast.error("Lỗi khi tải danh sách người dùng");
+      }
       console.error(error);
     }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Bạn có chắc muốn xoá người dùng này?")) return;
+
     try {
-      await axios.delete(`https://localhost:7276/api/Admin/${id}`);
+      await axios.delete(`https://localhost:7276/api/Admin/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       toast.success("Đã xoá người dùng");
       fetchUsers();
-      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast.error("Không thể xoá người dùng");
+      console.error(error);
     }
   };
 
-  const handleRoleChange = async (id, newRole) => {
+  const handleRoleChange = async (id, newRoleValue) => {
+    const parsedValue = parseInt(newRoleValue);
     try {
-      await axios.put(`https://localhost:7276/api/Admin/${id}/update-role`, {
-        newRole: parseInt(newRole),
-      });
+      await axios.put(
+        `https://localhost:7276/api/Admin/${id}/update-role`,
+        { newRole: parsedValue },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       toast.success("Đã cập nhật vai trò");
-      fetchUsers();
-      // eslint-disable-next-line no-unused-vars
+
+      // Cập nhật lại state users
+      setUsers((prev) =>
+        prev.map((user) =>
+          user.id === id
+            ? {
+                ...user,
+                role: roleOptions.find((r) => r.value === parsedValue)?.label,
+              }
+            : user
+        )
+      );
     } catch (error) {
       toast.error("Cập nhật vai trò thất bại");
+      console.error(error);
     }
   };
 
   useEffect(() => {
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex]);
-
-  const roleOptions = [
-    { value: 0, label: "Customer" },
-    { value: 1, label: "Consultant" },
-    { value: 2, label: "Admin" },
-  ];
 
   return (
     <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
@@ -85,7 +121,7 @@ const UserPage = () => {
                   <select
                     className="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring focus:ring-blue-300"
                     value={
-                      roleOptions.find((r) => r.label === user.role)?.value
+                      roleOptions.find((r) => r.label === user.role)?.value ?? 1
                     }
                     onChange={(e) => handleRoleChange(user.id, e.target.value)}
                   >

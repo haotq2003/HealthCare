@@ -7,8 +7,14 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
+        const token = localStorage.getItem("accessToken");
         const res = await axios.get(
-          "https://localhost:7276/api/Authentication/profile"
+          "https://localhost:7276/api/Authentication/profile",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         setProfile(res.data.data);
       } catch (error) {
