@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // Variables
 $primary-purple: #a259ff;
 $primary-pink: #f65687;
@@ -239,8 +241,8 @@ $font-xl: 1.25rem;
         color: $dark-text;
         margin-bottom: $spacing-sm;
         padding: $spacing-sm 0;
-        border-top: 1px solid lighten($border-light, 3%);
-        border-bottom: 1px solid lighten($border-light, 3%);
+        border-top: 1px solid color.adjust($border-light, $lightness: 3%);
+        border-bottom: 1px solid color.adjust($border-light, $lightness: 3%);
 
         .test-price {
           color: $success-green;
@@ -342,7 +344,7 @@ $font-xl: 1.25rem;
     font-size: $font-lg;
     color: $primary-purple;
     font-weight: 600;
-    
+
     &::before {
       content: "⏳";
       display: inline-block;
@@ -378,15 +380,19 @@ $font-xl: 1.25rem;
     @include transition-smooth;
 
     &:hover {
-      background: darken($primary-purple, 10%);
+      background: color.adjust($primary-purple, $lightness: -10%);
       transform: translateY(-1px);
     }
   }
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 // Responsive Design
