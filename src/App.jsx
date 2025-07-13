@@ -18,7 +18,7 @@ import RegisterPage from "./pages/Guest/RegisterPage";
 import DashboardPage from "./pages/Consultant/DashboardPage";
 import ProfilePage from "./pages/Consultant/ProfilePage";
 import ConsultantSchedulePage from "./pages/Consultant/SchedulePage";
-import ConsultantRegisterPage from './pages/Consultant/ConsultantRegisterPage';
+import ConsultantRegisterPage from "./pages/Consultant/ConsultantRegisterPage";
 
 // User Pages
 import UserLayout from "./layouts/UserLayout";
@@ -53,8 +53,13 @@ import TestScheduleManagePage from "./pages/Staff/TestScheduleManagePage.jsx";
 import TestPackageManagePage from "./pages/Staff/TestPackageManagePage.jsx";
 import PackagePage from "./pages/Staff/PackagePage";
 import StaffSchedulePage from "./pages/Staff/SchedulePage";
-import ChatWidget from './components/ChatWidget/ChatWidget';
+import ChatWidget from "./components/ChatWidget/ChatWidget";
 import PaymentSuccessPage from "./pages/User/BookingTest/PaymentSuccessPage.jsx";
+import AdminLayout from "./layouts/AdminLayout.jsx";
+import AdminDashboardPage from "./pages/Admin/AdminDashboardPage.jsx";
+import UserPage from "./pages/Admin/UserPage.jsx";
+import AcceptDoctor from "./pages/Admin/AcceptDoctor.jsx";
+import ConsultantCreateProfile from "./pages/Consultant/ConsultantCreateProfile.jsx";
 
 function App() {
   return (
@@ -65,12 +70,13 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
-          <Route path="blog" element={<BlogPage/>} />
-          <Route path="blog/:id" element={<BlogDetailPage/>} />
-          <Route path="/consultant/register" element={<ConsultantRegisterPage />} />
+          <Route path="blog" element={<BlogPage />} />
+          <Route path="blog/:id" element={<BlogDetailPage />} />
+          <Route
+            path="/consultant/register"
+            element={<ConsultantRegisterPage />}
+          />
         </Route>
-
-      
 
         <Route path="/staff" element={<StaffLayout />}>
           <Route index element={<PackagePage />} />
@@ -84,6 +90,7 @@ function App() {
           <Route path="schedule" element={<ConsultantSchedulePage />} />
           <Route path="questions" element={<QuestionsPage />} />
           <Route path="consultation" element={<ConsultationPage />} />
+          <Route path="create-profile" element={<ConsultantCreateProfile />} />
         </Route>
 
         <Route path="/user" element={<UserLayout />}>
@@ -91,10 +98,16 @@ function App() {
           <Route path="dashboard" element={<DashboardPageUser />} />
           <Route path="booking" element={<ConsultantListPage />} />
           <Route path="booking/:id" element={<ConsultantBookingPage />} />
-          <Route path="booking/:id/confirm" element={<ConsultantBookingConfirmPage />} />
+          <Route
+            path="booking/:id/confirm"
+            element={<ConsultantBookingConfirmPage />}
+          />
           <Route path="test-booking" element={<UserTestBookingPage />} />
           <Route path="test-booking/schedule" element={<STIBookingTest />} />
-          <Route path="test-booking/confirm" element={<STIBookingConfirmPage />} />
+          <Route
+            path="test-booking/confirm"
+            element={<STIBookingConfirmPage />}
+          />
           <Route path="payment-success" element={<PaymentSuccessPage />} />
           <Route path="faq" element={<UserFAQPage />} />
           <Route path="history" element={<UserHistoryPage />} />
@@ -108,9 +121,16 @@ function App() {
           <Route path="consultants" element={<ConsultantManagePage />} />
           <Route path="blogs" element={<BlogManagePage />} />
           <Route path="feedback" element={<FeedbackPage />} />
+
         </Route>
 
-
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="dashboard" element={<AdminDashboardPage />} />
+          <Route path="users" element={<UserPage />} />
+          {/* <Route path="bookings" element={<AdminBookingPage />} /> */}
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="accept-doctor" element={<AcceptDoctor />} />
+        </Route>
       </Routes>
       <ChatWidget />
     </AuthProvider>

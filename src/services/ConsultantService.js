@@ -142,7 +142,19 @@ export const ConsultantService = {
     console.error("Error fetching consultant detail:", error);
     throw error;
   }
-}
+},
+createProfile: async (userId, profileData) => {
+  return await axios.post(
+    `${API_URL}/api/Consultants/byUser/${userId}`,
+    profileData,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    }
+  );
+},
+
 
 
     

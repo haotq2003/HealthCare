@@ -6,6 +6,7 @@ import { Eye } from 'lucide-react';
 import { API_URL } from "../../../config/apiURL";
 import "./UserTestBookingPage.scss";
 import ReactPaginate from 'react-paginate';
+import { formatVietnameseCurrencyVND } from '../../../utils/currencyFormatter';
 
 const testTabs = [
   { label: "Gói xét nghiệm", value: "browse" },
@@ -144,7 +145,7 @@ const UserTestBookingPage = () => {
               <div className="test-card-desc">{test.desc}</div>
               <div className="test-card-meta">
                 <span>⏱ {test.time}</span>
-                <span className="test-price">$ {test.price}k</span>
+                <span className="test-price">{formatVietnameseCurrencyVND(test.price)}</span>
               </div>
               <div className="test-card-result">{test.result}</div>
               <div className="test-card-actions">

@@ -6,6 +6,7 @@ import { FeedbackService } from '../../../services/FeedbackService';
 import { CycleTrackingService } from '../../../services/CycleTrackingService';
 import toast from 'react-hot-toast';
 import { API_URL } from '../../../config/apiURL';
+import { formatVietnameseCurrencyVND } from '../../../utils/currencyFormatter';
 const UserHistoryPage = () => {
   const [activeTab, setActiveTab] = useState('consultations');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -333,7 +334,7 @@ const handleSubmit = async () => {
                           </div>
                           <div className="info-row">
                             <span className="label">Giá:</span>
-                            <span className="value">{pkg.price?.toLocaleString('vi-VN')} VNĐ</span>
+                            <span className="value">{formatVietnameseCurrencyVND(pkg.price)}</span>
                           </div>
                         </>
                       )}
