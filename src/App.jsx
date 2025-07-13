@@ -58,6 +58,7 @@ import PaymentSuccessPage from "./pages/User/BookingTest/PaymentSuccessPage.jsx"
 import AdminLayout from "./layouts/AdminLayout.jsx";
 import AdminDashboardPage from "./pages/Admin/AdminDashboardPage.jsx";
 import UserPage from "./pages/Admin/UserPage.jsx";
+import AdminProfilePage from "./pages/Admin/AdminProfilePage.jsx";
 
 function App() {
   return (
@@ -124,7 +125,7 @@ function App() {
           <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="users" element={<UserPage />} />
           {/* <Route path="bookings" element={<AdminBookingPage />} /> */}
-          <Route path="profile" element={<ProfilePage />} />
+          <Route path="profile" element={<AdminProfilePage />} />
         </Route>
       </Routes>
       <ChatWidget />
