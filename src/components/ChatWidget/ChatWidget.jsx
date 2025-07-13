@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaRegCommentDots } from 'react-icons/fa';
 import { IoChevronBack } from 'react-icons/io5';
+import Swal from 'sweetalert2';
 import './ChatWidget.scss';
 import { API_URL } from '../../config/apiURL';
 
@@ -68,7 +69,12 @@ const ChatWidget = () => {
         }
       }
     } catch {
-      alert('Không thể tải danh sách câu hỏi');
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: 'Không thể tải danh sách câu hỏi',
+        confirmButtonText: 'Đồng ý'
+      });
     }
   };
 
@@ -209,7 +215,12 @@ const ChatWidget = () => {
     // Lấy accessToken từ localStorage
     const token = localStorage.getItem('accessToken');
     if (!token) {
-      alert('Không tìm thấy token xác thực. Vui lòng đăng nhập lại.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi xác thực',
+        text: 'Không tìm thấy token xác thực. Vui lòng đăng nhập lại.',
+        confirmButtonText: 'Đồng ý'
+      });
       return;
     }
     try {
@@ -242,7 +253,12 @@ const ChatWidget = () => {
         }
       }, 100);
     } catch (err) {
-      alert(err.message || 'Có lỗi xảy ra khi gửi câu trả lời.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: err.message || 'Có lỗi xảy ra khi gửi câu trả lời.',
+        confirmButtonText: 'Đồng ý'
+      });
     }
   };
 
@@ -256,7 +272,12 @@ const ChatWidget = () => {
       customerId = user?.id || '';
     } catch {/* ignore parse error */}
     if (!customerId) {
-      alert('Không tìm thấy thông tin người dùng.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: 'Không tìm thấy thông tin người dùng.',
+        confirmButtonText: 'Đồng ý'
+      });
       setIsSending(false);
       return;
     }
@@ -276,7 +297,12 @@ const ChatWidget = () => {
     setInput('');
       await fetchUserQA(); // Tự động cập nhật lịch sử
     } catch (err) {
-      alert(err.message || 'Có lỗi xảy ra khi gửi câu hỏi.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: err.message || 'Có lỗi xảy ra khi gửi câu hỏi.',
+        confirmButtonText: 'Đồng ý'
+      });
     }
     setIsSending(false);
   };

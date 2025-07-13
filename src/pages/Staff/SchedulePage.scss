@@ -131,6 +131,8 @@ body, .hc-schedule-title, .hc-schedule-desc, .hc-schedule-btn {
 .hc-schedule-card-list {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  border-radius: 18px;
+  padding: 18px;
   gap: 18px;
 }
 .hc-schedule-card {
@@ -140,7 +142,7 @@ body, .hc-schedule-title, .hc-schedule-desc, .hc-schedule-btn {
   border-radius: 18px;
   box-shadow: 0 2px 12px rgba(37,99,235,0.08);
   padding: 28px 28px 20px 28px;
-  border: none;
+  border: 1px solid #2563EB;
   min-width: 0;
   position: relative;
   transition: box-shadow 0.18s, transform 0.18s;
@@ -388,4 +390,19 @@ body, .hc-schedule-title, .hc-schedule-desc, .hc-schedule-btn {
 }
 body, .hc-schedule-page, .hc-schedule-page * {
   font-size: 14px !important;
+} 
+.custom-clock-input {
+  padding: 12px 16px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  min-height: 44px;
+  font-size: 15px;
+  color: #374151;
+  cursor: pointer;
+  margin-bottom: 4px;
+  transition: border 0.18s;
+}
+.custom-clock-input:hover, .custom-clock-input:focus {
+  border-color: #3b82f6;
 } 
