@@ -5,6 +5,13 @@ const AdminProfilePage = () => {
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
+  const [showChangePasswordForm, setShowChangePasswordForm] = useState(false);
+  const [changePasswordData, setChangePasswordData] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [changePasswordMessage, setChangePasswordMessage] = useState(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -32,7 +39,48 @@ const AdminProfilePage = () => {
   const handleSave = () => {
     setIsEditing(false);
     console.log("Đã lưu thông tin:", profile);
-    // Gọi API lưu nếu cần
+    // TODO: Gọi API cập nhật thông tin nếu cần
+  };
+
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setChangePasswordData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmitChangePassword = async () => {
+    if (changePasswordData.newPassword !== changePasswordData.confirmPassword) {
+      setChangePasswordMessage({
+        type: "error",
+        text: "Mật khẩu xác nhận không khớp.",
+      });
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("accessToken");
+      await axios.post(
+        "https://localhost:7276/api/Authentication/change-password",
+        changePasswordData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setChangePasswordMessage({
+        type: "success",
+        text: "Đổi mật khẩu thành công.",
+      });
+      setChangePasswordData({
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      setShowChangePasswordForm(false);
+    } catch (error) {
+      setChangePasswordMessage({
+        type: "error",
+        text: error.response?.data?.message || "Lỗi khi đổi mật khẩu.",
+      });
+    }
   };
 
   if (!profile)
@@ -69,12 +117,15 @@ const AdminProfilePage = () => {
                 </h3>
                 <p className="text-gray-600">{profile.role}</p>
               </div>
-
               <nav className="space-y-2">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setShowChangePasswordForm(false);
+                      setChangePasswordMessage(null);
+                    }}
                     className={`w-full text-left px-4 py-3 rounded-lg transition ${
                       activeTab === tab.id
                         ? "bg-blue-50 text-blue-700 border border-blue-200"
@@ -198,11 +249,12 @@ const AdminProfilePage = () => {
               )}
 
               {activeTab === "settings" && (
-                <div className="p-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                <div className="p-6 space-y-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
                     Cài đặt tài khoản
                   </h2>
-                  <div className="space-y-6">
+
+                  {!showChangePasswordForm ? (
                     <div className="border p-4 rounded-lg">
                       <h3 className="text-lg font-medium mb-2">
                         Thay đổi mật khẩu
@@ -210,21 +262,81 @@ const AdminProfilePage = () => {
                       <p className="text-gray-600 mb-4">
                         Cập nhật mật khẩu để bảo mật hơn
                       </p>
-                      <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                      <button
+                        onClick={() => setShowChangePasswordForm(true)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      >
                         Đổi mật khẩu
                       </button>
                     </div>
-                    <div className="border p-4 rounded-lg">
-                      <h3 className="text-lg font-medium mb-2">
-                        Xóa tài khoản
-                      </h3>
-                      <p className="text-red-600 mb-4">
-                        Xóa vĩnh viễn tài khoản và dữ liệu
-                      </p>
-                      <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-                        Xóa tài khoản
-                      </button>
+                  ) : (
+                    <div className="border p-4 rounded-lg space-y-4">
+                      <h3 className="text-lg font-medium">Đổi mật khẩu</h3>
+                      <input
+                        type="password"
+                        name="oldPassword"
+                        placeholder="Mật khẩu hiện tại"
+                        value={changePasswordData.oldPassword}
+                        onChange={handlePasswordChange}
+                        className="w-full px-4 py-2 border rounded"
+                      />
+                      <input
+                        type="password"
+                        name="newPassword"
+                        placeholder="Mật khẩu mới"
+                        value={changePasswordData.newPassword}
+                        onChange={handlePasswordChange}
+                        className="w-full px-4 py-2 border rounded"
+                      />
+                      <input
+                        type="password"
+                        name="confirmPassword"
+                        placeholder="Xác nhận mật khẩu mới"
+                        value={changePasswordData.confirmPassword}
+                        onChange={handlePasswordChange}
+                        className="w-full px-4 py-2 border rounded"
+                      />
+
+                      {changePasswordMessage && (
+                        <p
+                          className={`text-sm ${
+                            changePasswordMessage.type === "success"
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          {changePasswordMessage.text}
+                        </p>
+                      )}
+
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={handleSubmitChangePassword}
+                          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        >
+                          Xác nhận
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowChangePasswordForm(false);
+                            setChangePasswordMessage(null);
+                          }}
+                          className="px-4 py-2 border rounded hover:bg-gray-100"
+                        >
+                          Hủy
+                        </button>
+                      </div>
                     </div>
+                  )}
+
+                  <div className="border p-4 rounded-lg">
+                    <h3 className="text-lg font-medium mb-2">Xóa tài khoản</h3>
+                    <p className="text-red-600 mb-4">
+                      Xóa vĩnh viễn tài khoản và dữ liệu
+                    </p>
+                    <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                      Xóa tài khoản
+                    </button>
                   </div>
                 </div>
               )}
