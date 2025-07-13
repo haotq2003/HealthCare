@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Plus, Edit, Eye, Calendar, Filter } from "lucide-react";
 import "./SchedulePage.scss";
 import Select from "react-select";
+import CustomClockPicker from "../../components/TimePicker/CustomClockPicker";
+import Swal from 'sweetalert2';
 
 // Đã bỏ weekdays, không còn dùng
 const weekdayOptions = [
@@ -30,6 +32,7 @@ const SchedulePage = () => {
     daysOfWeek: [],
   });
   const [timeError, setTimeError] = useState("");
+  const [showClock, setShowClock] = useState({ field: null });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,34 +69,61 @@ const SchedulePage = () => {
     const { name, value, selectedOptions } = e.target;
     if (name === "daysOfWeek") {
       setForm(f => ({ ...f, daysOfWeek: Array.from(selectedOptions).map(o => o.value) }));
-    } else if (name === "slotStart") {
-      if (form.slotEnd && value >= form.slotEnd) {
-        setForm(f => ({ ...f, slotStart: value, slotEnd: "" }));
-      } else {
-        setForm(f => ({ ...f, [name]: value }));
-      }
     } else {
       setForm(f => ({ ...f, [name]: value }));
     }
   };
   // Realtime validation giờ bắt đầu < giờ kết thúc
   React.useEffect(() => {
-    if (form.slotStart && form.slotEnd && form.slotStart >= form.slotEnd) {
-      setTimeError("Giờ bắt đầu phải nhỏ hơn giờ kết thúc!");
+    if (form.slotStart && form.slotEnd) {
+      const startTime = new Date(`2000-01-01T${form.slotStart}`);
+      const endTime = new Date(`2000-01-01T${form.slotEnd}`);
+      
+      if (startTime >= endTime) {
+        setTimeError("Giờ bắt đầu phải nhỏ hơn giờ kết thúc!");
+      } else {
+        setTimeError("");
+      }
     } else {
       setTimeError("");
     }
   }, [form.slotStart, form.slotEnd]);
 
   // Helper để chuẩn hóa giờ sang HH:mm:ss
-  const padTime = (t) => t && t.length === 5 ? t + ':00' : t;
+  const padTime = (t) => {
+    if (!t) return t;
+    // TimePicker trả về format HH:mm:ss, nên chỉ cần đảm bảo có đủ 3 phần
+    const parts = t.split(':');
+    if (parts.length === 2) {
+      return t + ':00';
+    }
+    return t;
+  };
+
+  // Helper để hiển thị giờ đã chọn dạng 12h AM/PM
+  const displayTime = (val) => {
+    if (!val) return "Chọn giờ";
+    const [h, m] = val.split(":");
+    let hour = Number(h);
+    const minute = m;
+    let period = "AM";
+    if (hour === 0) hour = 12;
+    else if (hour === 12) period = "PM";
+    else if (hour > 12) { hour = hour - 12; period = "PM"; }
+    return `${hour.toString().padStart(2, "0")}:${minute} ${period}`;
+  };
 
   // Handler gửi API thêm lịch
   const handleAddSchedule = async () => {
     // Kiểm tra giờ bắt đầu phải nhỏ hơn giờ kết thúc
-    if (form.slotStart && form.slotEnd && form.slotStart >= form.slotEnd) {
-      alert("Giờ bắt đầu phải nhỏ hơn giờ kết thúc!");
-      return;
+    if (form.slotStart && form.slotEnd) {
+      const startTime = new Date(`2000-01-01T${form.slotStart}`);
+      const endTime = new Date(`2000-01-01T${form.slotEnd}`);
+      
+      if (startTime >= endTime) {
+        Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Giờ bắt đầu phải nhỏ hơn giờ kết thúc!' });
+        return;
+      }
     }
     try {
       const token = localStorage.getItem("accessToken");
@@ -107,7 +137,6 @@ const SchedulePage = () => {
         slotDurationInMinutes: Number(form.slotDurationInMinutes),
         daysOfWeek: form.daysOfWeek,
       };
-      console.log("Payload gửi lên:", payload);
       const res = await fetch("https://localhost:7276/api/HealthTestSchedule", {
         method: "POST",
         headers: {
@@ -129,9 +158,25 @@ const SchedulePage = () => {
         daysOfWeek: [],
       });
       setShowModal(false);
-      // TODO: Có thể reload lại danh sách lịch nếu cần
+      // Auto reload danh sách lịch sau khi tạo thành công
+      try {
+        const schRes = await fetch("https://localhost:7276/api/HealthTestSchedule", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "accept": "*/*"
+          }
+        });
+        if (schRes.ok) {
+          const schData = await schRes.json();
+          setSchedules(schData);
+          Swal.fire({ icon: 'success', title: 'Thành công', text: 'Tạo lịch làm việc thành công!' });
+        }
+      } catch (reloadErr) {
+        console.error("Lỗi khi reload danh sách lịch:", reloadErr);
+        Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Tạo lịch thành công nhưng không thể cập nhật danh sách. Vui lòng tải lại trang!' });
+      }
     } catch (err) {
-      alert(err.message || "Có lỗi xảy ra khi thêm lịch!");
+      Swal.fire({ icon: 'error', title: 'Lỗi', text: err.message || "Có lỗi xảy ra khi thêm lịch!" });
     }
   };
 
@@ -184,10 +229,6 @@ const SchedulePage = () => {
                     <div className="hc-schedule-card-row"><span className="hc-schedule-icon"><Calendar size={16} /></span><span>Thứ: {sch.daysOfWeek && sch.daysOfWeek.length > 0 ? sch.daysOfWeek.join(", ") : "-"}</span></div>
                     <div className="hc-schedule-card-row"><span className="hc-schedule-icon"><Calendar size={16} /></span><span>Slot: {sch.slotDurationInMinutes} phút</span></div>
                   </div>
-                  <div className="hc-schedule-card-actions" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, textAlign: 'center' }}>
-                    <button className="hc-schedule-icon-btn view-block horiz"><Eye size={20} className="hc-schedule-icon-btn-icon" /> <span className="hc-schedule-icon-btn-text">View</span></button>
-                    <button className="hc-schedule-icon-btn edit-block horiz"><Edit size={20} className="hc-schedule-icon-btn-icon" /> <span className="hc-schedule-icon-btn-text">Sửa</span></button>
-                  </div>
                 </div>
               );
             })}
@@ -238,11 +279,29 @@ const SchedulePage = () => {
               <div className="hc-modal-row">
                 <div className="hc-modal-col">
                   <label>Giờ bắt đầu *</label>
-                  <input type="time" name="slotStart" value={form.slotStart} onChange={handleFormChange} required />
+                  <div onClick={() => setShowClock({ field: 'slotStart' })} className="custom-clock-input">
+                    {displayTime(form.slotStart)}
+                  </div>
+                  {showClock.field === 'slotStart' && (
+                    <CustomClockPicker
+                      value={form.slotStart}
+                      onChange={val => setForm(f => ({ ...f, slotStart: val }))}
+                      onClose={() => setShowClock({ field: null })}
+                    />
+                  )}
                 </div>
                 <div className="hc-modal-col">
                   <label>Giờ kết thúc *</label>
-                  <input type="time" name="slotEnd" value={form.slotEnd} onChange={handleFormChange} required min={form.slotStart || undefined} />
+                  <div onClick={() => setShowClock({ field: 'slotEnd' })} className="custom-clock-input">
+                    {displayTime(form.slotEnd)}
+                  </div>
+                  {showClock.field === 'slotEnd' && (
+                    <CustomClockPicker
+                      value={form.slotEnd}
+                      onChange={val => setForm(f => ({ ...f, slotEnd: val }))}
+                      onClose={() => setShowClock({ field: null })}
+                    />
+                  )}
                   {timeError && <div style={{color:'red', fontSize:13, marginTop:2}}>{timeError}</div>}
                 </div>
               </div>
