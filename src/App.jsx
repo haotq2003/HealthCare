@@ -54,6 +54,7 @@ import TestPackageManagePage from "./pages/Staff/TestPackageManagePage.jsx";
 import PackagePage from "./pages/Staff/PackagePage";
 import StaffSchedulePage from "./pages/Staff/SchedulePage";
 import ChatWidget from './components/ChatWidget/ChatWidget';
+import PaymentSuccessPage from "./pages/User/BookingTest/PaymentSuccessPage.jsx";
 
 function App() {
   return (
@@ -94,6 +95,7 @@ function App() {
           <Route path="test-booking" element={<UserTestBookingPage />} />
           <Route path="test-booking/schedule" element={<STIBookingTest />} />
           <Route path="test-booking/confirm" element={<STIBookingConfirmPage />} />
+          <Route path="payment-success" element={<PaymentSuccessPage />} />
           <Route path="faq" element={<UserFAQPage />} />
           <Route path="history" element={<UserHistoryPage />} />
           <Route path="menstrual-cycle" element={<MenstrualPage />} />
