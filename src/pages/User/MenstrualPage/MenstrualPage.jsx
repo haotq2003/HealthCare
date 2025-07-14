@@ -286,6 +286,19 @@ const MenstrualPage = () => {
         return;
       }
 
+      // Kiểm tra ngày bắt đầu chỉ được là ngày hiện tại, quá khứ, hoặc ngày mai
+      const today = format(currentDate, 'yyyy-MM-dd');
+      const tomorrow = format(addDays(currentDate, 1), 'yyyy-MM-dd');
+      if (cycleData.startDate > tomorrow) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi!',
+          text: 'Chỉ được chọn ngày hiện tại, ngày quá khứ hoặc ngày mai!',
+          confirmButtonText: 'Đồng ý'
+        });
+        return;
+      }
+
       if (!cycleData.cycleLength || cycleData.cycleLength <= 20 || cycleData.cycleLength > 35) {
         Swal.fire({
           icon: 'warning',
@@ -301,19 +314,6 @@ const MenstrualPage = () => {
           icon: 'warning',
           title: 'Thông tin không hợp lệ',
           text: 'Số ngày kinh nguyệt phải lớn hơn 1 và nhỏ hơn hoặc bằng 10!',
-          confirmButtonText: 'Đồng ý'
-        });
-        return;
-      }
-
-      // Kiểm tra ngày bắt đầu chỉ được là ngày hiện tại hoặc ngày mai
-      const today = format(currentDate, 'yyyy-MM-dd');
-      const tomorrow = format(addDays(currentDate, 1), 'yyyy-MM-dd');
-      if (cycleData.startDate < today || cycleData.startDate > tomorrow) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Lỗi!',
-          text: 'Chỉ được chọn ngày hiện tại hoặc ngày mai!',
           confirmButtonText: 'Đồng ý'
         });
         return;
@@ -478,11 +478,10 @@ const MenstrualPage = () => {
                     onChange={date => setCycleData({...cycleData, startDate: date ? format(date, 'yyyy-MM-dd') : ''})}
                     filterDate={date => {
                       const today = new Date();
-                      const tomorrow = addDays(today, 1);
-                      return (
-                        date.toDateString() === today.toDateString() ||
-                        date.toDateString() === tomorrow.toDateString()
-                      );
+                      const tomorrow = new Date();
+                      tomorrow.setDate(today.getDate() + 1);
+                      // Chỉ cho chọn ngày hôm nay, quá khứ, hoặc ngày mai
+                      return date <= tomorrow;
                     }}
                     placeholderText="Chọn ngày bắt đầu chu kỳ"
                     dateFormat="yyyy-MM-dd"
