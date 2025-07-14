@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import TestBookingHeader from "./TestBookingHeader";
-import TestDetailModal from "./TestDetailModal";
 import { Eye } from 'lucide-react';
 import { API_URL } from "../../../config/apiURL";
 import "./UserTestBookingPage.scss";
@@ -155,9 +154,6 @@ const UserTestBookingPage = () => {
                 >
                   Đặt lịch xét nghiệm
                 </button>
-                <button className="test-card-detail-btn" onClick={() => { setModalTest(test); setModalOpen(true); }} title="Xem chi tiết">
-                  <Eye size={20} />
-                </button>
               </div>
             </div>
           ))}
@@ -181,8 +177,6 @@ const UserTestBookingPage = () => {
           />
         </div>
       </>}
-
-      <TestDetailModal open={modalOpen} onClose={() => setModalOpen(false)} test={modalTest} />
 
     </div>
   );
