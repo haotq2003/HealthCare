@@ -179,6 +179,14 @@ console.log(resTest.data.data.bookedTestSlotCount)
           </p>
         </div>
       </div>
+<button
+  onClick={() =>
+    RevenueService.exportReport("csv")
+  }
+  className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg shadow"
+>
+  Xuất báo cáo CSV
+</button>
 
       {/* Thống kê doanh thu */}
       <div className="bg-white rounded-xl shadow p-6">

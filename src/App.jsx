@@ -61,6 +61,7 @@ import UserPage from "./pages/Admin/UserPage.jsx";
 import AdminProfilePage from "./pages/Admin/AdminProfilePage.jsx";
 import AcceptDoctor from "./pages/Admin/AcceptDoctor.jsx";
 import ConsultantCreateProfile from "./pages/Consultant/ConsultantCreateProfile.jsx";
+import ReportHistoryPage from "./pages/Admin/ReportHistoryPage.jsx";
 
 function App() {
   return (
@@ -131,6 +132,7 @@ function App() {
           {/* <Route path="bookings" element={<AdminBookingPage />} /> */}
           <Route path="profile" element={<AdminProfilePage />} />
           <Route path="accept-doctor" element={<AcceptDoctor />} />
+          <Route path="report-history" element={<ReportHistoryPage />} />
         </Route>
       </Routes>
       <ChatWidget />

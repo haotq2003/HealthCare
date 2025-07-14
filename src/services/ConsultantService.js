@@ -42,7 +42,8 @@ export const ConsultantService = {
             });
             return res.data.data;
         } catch (error) {
-            console.error("Error creating consultation:", error);
+            const message = error.response.data.message;
+            console.error(message);
             throw error;
         }
     },
@@ -155,6 +156,26 @@ createProfile: async (userId, profileData) => {
   );
 },
 
+cancelConsultation: async (id, result) => {
+  try {
+    const token = localStorage.getItem("accessToken");
+
+    const res = await axios.put(
+      `${API_URL}/api/Consultation/${id}/cancel`,
+      { result },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return res.data.data;
+  } catch (error) {
+    console.error("Error canceling consultation:", error);
+    throw error;
+  }
+},
 
 
     
