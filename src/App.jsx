@@ -87,7 +87,7 @@ function App() {
 
         <Route path="/consultant" element={<ConsultantLayout />}>
           <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="profile" element={<ProfilePage />} />
+          {/* <Route path="profile" element={<ProfilePage />} /> */}
           <Route path="schedule" element={<ConsultantSchedulePage />} />
           <Route path="questions" element={<QuestionsPage />} />
           <Route path="consultation" element={<ConsultationPage />} />
