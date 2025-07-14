@@ -4,47 +4,47 @@ import './UserHistoryPage.scss';
 import { ConsultantService } from '../../../services/ConsultantService';
 import { FeedbackService } from '../../../services/FeedbackService';
 import { CycleTrackingService } from '../../../services/CycleTrackingService';
-import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+const MySwal = withReactContent(Swal);
 import { API_URL } from '../../../config/apiURL';
 import { formatVietnameseCurrencyVND } from '../../../utils/currencyFormatter';
+// Hàm lấy resultUrl từ API TestBookings/customer/{customerId}
+const fetchTestResultUrl = async (customerId) => {
+  try {
+    const accessToken = localStorage.getItem('accessToken');
+    const res = await fetch(`${API_URL}/api/TestBookings/customer/${customerId}?page=1&size=10`, {
+      headers: {
+        'accept': '*/*',
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+    const data = await res.json();
+    const items = data?.data?.items || [];
+    if (items.length > 0 && items[0].resultUrl) {
+      return items[0].resultUrl;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+};
 const UserHistoryPage = () => {
   const [activeTab, setActiveTab] = useState('consultations');
-  const [filterStatus, setFilterStatus] = useState('all');
-
-  // Mock data - replace with actual API calls
-  const [consultationHistory, setConsultationHistory] = useState([
-    {
-      id: 1,
-      type: 'consultation',
-      consultantName: 'Dr. Nguyễn Văn A',
-      specialty: 'Tư vấn tâm lý',
-      date: '2024-01-15',
-      time: '14:00',
-      status: 'completed',
-      location: 'Phòng 301, Tầng 3',
-      notes: 'Tư vấn về stress và anxiety'
-    },
-    {
-      id: 2,
-      type: 'consultation',
-      consultantName: 'Dr. Trần Thị B',
-      specialty: 'Tư vấn dinh dưỡng',
-      date: '2024-01-10',
-      time: '09:30',
-      status: 'cancelled',
-      location: 'Phòng 205, Tầng 2',
-      notes: 'Tư vấn chế độ ăn uống'
-    }
-  ]);
-const [consultantHis,setConsultationHis] = useState([]);
+  // const [filterStatus, setFilterStatus] = useState('all'); // Xoá unused
+  // const [consultationHistory, setConsultationHistory] = useState([...]); // Xoá unused
+  // const [testPackages, setTestPackages] = useState([]); // Xoá unused
+  // const [cycleHistory, setCycleHistory] = useState([]); // Xoá unused
+  // const [loadingCycle, setLoadingCycle] = useState(false); // Xoá unused
+  // const [cycleError, setCycleError] = useState(null); // Xoá unused
+  const [consultantHis,setConsultationHis] = useState([]);
   const [testHistory, setTestHistory] = useState([]);
-  const [testPackages, setTestPackages] = useState([]); // Danh sách tất cả gói xét nghiệm
   const [testPackageDetails, setTestPackageDetails] = useState({}); // Chi tiết từng gói xét nghiệm
 
   // Cycle tracking state
-  const [cycleHistory, setCycleHistory] = useState([]);
-  const [loadingCycle, setLoadingCycle] = useState(false);
-  const [cycleError, setCycleError] = useState(null);
+  // const [cycleHistory, setCycleHistory] = useState([]); // Xoá unused
+  // const [loadingCycle, setLoadingCycle] = useState(false); // Xoá unused
+  // const [cycleError, setCycleError] = useState(null); // Xoá unused
 
   const [showModal,setShowModal] = useState(false);
   const [selectedConsultant,setSelectedConsultant] = useState(null);
@@ -57,16 +57,7 @@ useEffect(()=>{
   useEffect(() => {
     if (activeTab === 'cycles') {
       const fetchCycles = async () => {
-        setLoadingCycle(true);
-        setCycleError(null);
-        try {
-          const cycles = await CycleTrackingService.getCycleHistory();
-          setCycleHistory(Array.isArray(cycles) ? cycles : []);
-        } catch (err) {
-          setCycleError(err.message);
-        } finally {
-          setLoadingCycle(false);
-        }
+        try { await CycleTrackingService.getCycleHistory(); } catch {}
       };
       fetchCycles();
     }
@@ -84,43 +75,20 @@ useEffect(()=>{
           const data = await res.json();
           const testSlots = Array.isArray(data.data?.items) ? data.data.items : [];
           setTestHistory(testSlots);
-          
           // Fetch details for each unique healthTestId
           const uniqueTestIds = [...new Set(testSlots.map(slot => slot.healthTestId))];
           const details = {};
-          
           for (const testId of uniqueTestIds) {
-            try {
-              const detailRes = await fetch(`https://localhost:7276/api/HealthTest/${testId}`, {
-                headers: { 'accept': '*/*' }
-              });
-              const detailData = await detailRes.json();
-              details[testId] = detailData;
-            } catch (err) {
-              console.error(`Error fetching test package details for ${testId}:`, err);
-              details[testId] = null;
-            }
+            try { const detailRes = await fetch(`https://localhost:7276/api/HealthTest/${testId}`, { headers: { 'accept': '*/*' } }); const detailData = await detailRes.json(); details[testId] = detailData; } catch {}
           }
-          
           setTestPackageDetails(details);
-        } catch (err) {
+        } catch {
           setTestHistory([]);
           setTestPackageDetails({});
         }
       };
-      
-      const fetchTestPackages = async () => {
-        try {
-          const res = await fetch(`${API_URL}/api/HealthTest`);
-          const data = await res.json();
-          setTestPackages(Array.isArray(data) ? data : []);
-        } catch (err) {
-          setTestPackages([]);
-        }
-      };
-      
       fetchTestHistory();
-      fetchTestPackages();
+      // fetchTestPackages(); // Xoá unused
     }
   }, [activeTab]);
 
@@ -154,13 +122,8 @@ useEffect(()=>{
     }
   };
 
-  const filteredConsultations = consultationHistory.filter(item => 
-    filterStatus === 'all' || item.status === filterStatus
-  );
-
-  const filteredTests = testHistory.filter(item => 
-    filterStatus === 'all' || item.status === filterStatus
-  );
+  // const filteredConsultations = consultationHistory.filter(...); // Xoá unused
+  // const filteredTests = testHistory.filter(...); // Xoá unused
 const getConsultantByUserId = async () =>{
   try {
     const res = await ConsultantService.getConsultantByUserId();
@@ -189,7 +152,13 @@ const handleSubmit = async () => {
     setSelectedConsultant(null);
     setRating(5);
     setComment('');
-    toast.success('Đánh giá thành công');
+    MySwal.fire({
+      icon: 'success',
+      title: 'Thành công',
+      text: 'Đánh giá thành công!',
+      timer: 2000,
+      showConfirmButton: false,
+    });
   } catch (error) {
     console.error('Error submitting feedback:', error);
   }
@@ -341,7 +310,38 @@ const handleSubmit = async () => {
                         <span className="value">{test.bookedAt ? new Date(test.bookedAt).toLocaleString('vi-VN') : ''}</span>
                       </div>
                       <div className="info-row">
-                        <button className="view-result-btn">Xem kết quả</button>
+                        <button className="view-result-btn"
+                          onClick={async () => {
+                            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                            const customerId = currentUser?.id;
+                            if (!customerId) {
+                              MySwal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: 'Không tìm thấy thông tin người dùng!',
+                              });
+                              return;
+                            }
+                            const url = await fetchTestResultUrl(customerId);
+                            if (url) {
+                              window.open(url, '_blank');
+                              MySwal.fire({
+                                icon: 'success',
+                                title: 'Thành công',
+                                text: 'Mở kết quả xét nghiệm thành công!',
+                                timer: 2000,
+                                showConfirmButton: false,
+                              });
+                            } else {
+                              MySwal.fire({
+                                icon: 'info',
+                                title: 'Chưa có kết quả xét nghiệm!',
+                                timer: 2000,
+                                showConfirmButton: false,
+                              });
+                            }
+                          }}
+                        >Xem kết quả</button>
                       </div>
                     </div>
                   </div>
