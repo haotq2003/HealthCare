@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './CustomClockPicker.scss';
 
 const pad = n => n.toString().padStart(2, '0');
@@ -45,6 +45,19 @@ const CustomClockPicker = ({ value, onChange, onClose }) => {
     if (!value) setPeriod(null);
   }, [value]);
 
+  // Đóng khi click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target)) {
+        onClose && onClose();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
+
   // Helper: nếu đã chọn đủ 3 field thì đóng và gọi onChange
   const tryClose = (h, m, p) => {
     if (h && m !== undefined && p) {
@@ -71,11 +84,12 @@ const CustomClockPicker = ({ value, onChange, onClose }) => {
     tryClose(selectedHour, selectedMinute, p);
   };
 
+  const pickerRef = useRef(null);
+
   return (
     <div className="custom-clock-picker-bg">
-      <div className="custom-clock-picker">
+      <div className="custom-clock-picker" ref={pickerRef}>
         <div className="clock-face">
-          <div className="clock-center"></div>
           {mode === 'hour' && hours.map((h, i) => (
             <div
               key={h}

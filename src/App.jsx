@@ -38,9 +38,6 @@ import BlogPage from "./pages/Guest/BlogPage/BlogPage.jsx";
 import BlogDetailPage from "./pages/Guest/BlogPage/BlogDetailPage.jsx";
 import QuestionsPage from "./pages/Consultant/QuestionsPage.jsx";
 import { Toaster } from "react-hot-toast";
-import DashboardPageUser from "./pages/User/DashboardPage.jsx";
-
-// Manager Pages
 import BlogManagePage from "./pages/Manager/BlogManagePage.jsx";
 import ConsultantManagePage from "./pages/Manager/ConsultantManagePage.jsx";
 import ManagerDashboardPage from "./pages/Manager/DashboardPage.jsx";
@@ -97,7 +94,6 @@ function App() {
 
         <Route path="/user" element={<UserLayout />}>
           <Route path="home" element={<UserHomePage />} />
-          <Route path="dashboard" element={<DashboardPageUser />} />
           <Route path="booking" element={<ConsultantListPage />} />
           <Route path="booking/:id" element={<ConsultantBookingPage />} />
           <Route

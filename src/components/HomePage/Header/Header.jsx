@@ -82,9 +82,6 @@ const Header = () => {
               <Link to="/user/history" className="dropdown-item">
                 <History size={18} /> Lịch sử
               </Link>
-              <Link to="/user/dashboard" className="dropdown-item">
-                <User size={18} /> Thống kê
-              </Link>
               <Link to="/user/profile" className="dropdown-item">
                 <User size={18} /> Hồ sơ
               </Link>

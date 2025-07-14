@@ -81,11 +81,11 @@ export const CycleTrackingService = {
       if (!cycleData.startDate) {
         throw new Error('Ngày bắt đầu chu kỳ là bắt buộc');
       }
-      if (!cycleData.cycleLength || cycleData.cycleLength < 20 || cycleData.cycleLength > 45) {
-        throw new Error('Độ dài chu kỳ phải từ 20-45 ngày');
+      if (!cycleData.cycleLength || cycleData.cycleLength <= 20 || cycleData.cycleLength > 35) {
+        throw new Error('Độ dài chu kỳ phải lớn hơn 20 và nhỏ hơn hoặc bằng 35 ngày');
       }
-      if (!cycleData.periodLength || cycleData.periodLength < 1 || cycleData.periodLength > 10) {
-        throw new Error('Số ngày kinh nguyệt phải từ 1-10 ngày');
+      if (!cycleData.periodLength || cycleData.periodLength <= 1 || cycleData.periodLength > 10) {
+        throw new Error('Số ngày kinh nguyệt phải lớn hơn 1 và nhỏ hơn hoặc bằng 10 ngày');
       }
 
       // Convert date to ISO string format

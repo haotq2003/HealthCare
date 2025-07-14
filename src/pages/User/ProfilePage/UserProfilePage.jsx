@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, MapPin, Calendar, Edit, Save, X, Lock, Eye, EyeOff } from 'lucide-react';
 import './UserProfilePage.scss';
 import Swal from 'sweetalert2';
@@ -6,22 +6,44 @@ import axios from 'axios';
 
 const UserProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const currentUser = (() => {
-    try {
-      return JSON.parse(localStorage.getItem('currentUser'));
-    } catch {
-      return null;
-    }
-  })();
   const [profile, setProfile] = useState({
-    fullName: currentUser?.fullName || '',
-    email: currentUser?.email || '',
-    phone: currentUser?.phoneNumber || '',
-    dateOfBirth: currentUser?.dateOfBirth || '',
-    gender: currentUser?.gender || ''
+    fullName: '',
+    email: '',
+    phone: '',
+    dateOfBirth: '',
+    gender: ''
   });
-
   const [formData, setFormData] = useState(profile);
+
+  // Lấy thông tin user từ API khi load trang
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const accessToken = localStorage.getItem('accessToken');
+        const res = await axios.get('https://localhost:7276/api/Authentication/profile', {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        });
+        const data = res.data.data;
+        setProfile({
+          fullName: data.fullName || '',
+          email: data.email || '',
+          phone: data.phoneNumber || '',
+          dateOfBirth: data.dateOfBirth || '',
+          gender: data.gender || ''
+        });
+        setFormData({
+          fullName: data.fullName || '',
+          email: data.email || '',
+          phone: data.phoneNumber || '',
+          dateOfBirth: data.dateOfBirth || '',
+          gender: data.gender || ''
+        });
+      } catch (error) {
+        Swal.fire({ icon: 'error', title: 'Lỗi!', text: 'Không thể tải thông tin hồ sơ từ server.', confirmButtonText: 'Đồng ý' });
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -30,10 +52,24 @@ const UserProfilePage = () => {
     }));
   };
 
-  const handleSave = () => {
-    setProfile(formData);
-    setIsEditing(false);
-    // Here you would typically make an API call to save the data
+  const handleSave = async () => {
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+      // Chuẩn hóa dữ liệu gửi lên API
+      const payload = {
+        fullName: formData.fullName,
+        phoneNumber: formData.phone,
+        dateOfBirth: formData.dateOfBirth
+      };
+      await axios.put('https://localhost:7276/api/Authentication/profile', payload, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+      setProfile(formData);
+      setIsEditing(false);
+      Swal.fire({ icon: 'success', title: 'Thành công!', text: 'Cập nhật thông tin thành công!', confirmButtonText: 'Đồng ý' });
+    } catch (error) {
+      Swal.fire({ icon: 'error', title: 'Lỗi!', text: error.response?.data?.message || 'Cập nhật thông tin thất bại.', confirmButtonText: 'Đồng ý' });
+    }
   };
 
   const handleCancel = () => {
