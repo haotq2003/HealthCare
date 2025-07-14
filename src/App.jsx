@@ -58,6 +58,7 @@ import UserPage from "./pages/Admin/UserPage.jsx";
 import AdminProfilePage from "./pages/Admin/AdminProfilePage.jsx";
 import AcceptDoctor from "./pages/Admin/AcceptDoctor.jsx";
 import ConsultantCreateProfile from "./pages/Consultant/ConsultantCreateProfile.jsx";
+import TestBookingManagePage from "./pages/Staff/TestBookingManagePage";
 import ReportHistoryPage from "./pages/Admin/ReportHistoryPage.jsx";
 
 function App() {
@@ -81,6 +82,7 @@ function App() {
           <Route index element={<PackagePage />} />
           <Route path="packages" element={<PackagePage />} />
           <Route path="schedule" element={<StaffSchedulePage />} />
+          <Route path="test-bookings" element={<TestBookingManagePage />} />
         </Route>
 
         <Route path="/consultant" element={<ConsultantLayout />}>

@@ -19,6 +19,15 @@ const StaffSidebar = () => {
       )
     },
     {
+      name: 'Quản lý đăng ký xét nghiệm',
+      path: '/staff/test-bookings',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2a4 4 0 014-4h4m0 0V7a4 4 0 00-4-4H7a4 4 0 00-4 4v10a4 4 0 004 4h4" />
+        </svg>
+      )
+    },
+    {
       name: 'Lịch làm việc',
       path: '/staff/schedule',
       icon: (

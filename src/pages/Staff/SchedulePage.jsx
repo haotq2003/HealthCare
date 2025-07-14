@@ -191,17 +191,6 @@ const SchedulePage = () => {
         </div>
         <button className="hc-schedule-add-btn" onClick={() => setShowModal(true)}><Plus size={18} /> Thêm lịch</button>
       </div>
-      <div className="hc-schedule-filter-box">
-        <div className="hc-schedule-filter-title"><Filter size={18} /> Bộ lọc gói xét nghiệm</div>
-        <div className="hc-schedule-filter-row">
-          <select className="hc-schedule-select" value={filter} onChange={e => setFilter(e.target.value)}>
-            <option value="">Tất cả gói</option>
-            {packages.map(p => (
-              <option key={p.id} value={p.name}>{p.name}</option>
-            ))}
-          </select>
-        </div>
-      </div>
       <div className="hc-schedule-main">
         <div className="hc-schedule-list">
           <div className="hc-schedule-list-title"><Calendar size={18} /> Lịch làm việc ({schedules.length})</div>

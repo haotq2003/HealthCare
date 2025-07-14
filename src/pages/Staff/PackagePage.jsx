@@ -214,7 +214,7 @@ const PackagePage = () => {
           },
         });
       }
-      const data = response.data.map(pkg => ({
+      let data = response.data.map(pkg => ({
         id: pkg.id,
         name: pkg.name,
         desc: pkg.description,
@@ -231,6 +231,11 @@ const PackagePage = () => {
         badge: DEFAULT_BADGE,
         badgeColor: DEFAULT_BADGE_COLOR,
       }));
+      // Filter lại trên client chỉ theo tên gói
+      if (keyword.trim()) {
+        const lowerKeyword = keyword.trim().toLowerCase();
+        data = data.filter(pkg => pkg.name.toLowerCase().includes(lowerKeyword));
+      }
       setPackages(data);
     } catch {
       setPackages([]);
