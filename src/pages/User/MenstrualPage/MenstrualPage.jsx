@@ -21,6 +21,8 @@ const MenstrualPage = () => {
   const [loading, setLoading] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [cycleTrackingEnabled, setCycleTrackingEnabled] = useState(true); // Mặc định true để tránh disable nhầm khi chưa load
+  const [cycleLengthError, setCycleLengthError] = useState('');
+  const [periodLengthError, setPeriodLengthError] = useState('');
 
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
@@ -284,21 +286,21 @@ const MenstrualPage = () => {
         return;
       }
 
-      if (!cycleData.cycleLength || cycleData.cycleLength < 20 || cycleData.cycleLength > 45) {
+      if (!cycleData.cycleLength || cycleData.cycleLength <= 20 || cycleData.cycleLength > 35) {
         Swal.fire({
           icon: 'warning',
           title: 'Thông tin không hợp lệ',
-          text: 'Vui lòng nhập độ dài chu kỳ ( ngày )!',
+          text: 'Độ dài chu kỳ phải lớn hơn 20 và nhỏ hơn hoặc bằng 35 ngày!',
           confirmButtonText: 'Đồng ý'
         });
         return;
       }
 
-      if (!cycleData.periodLength || cycleData.periodLength < 1 || cycleData.periodLength > 10) {
+      if (!cycleData.periodLength || cycleData.periodLength <= 1 || cycleData.periodLength > 10) {
         Swal.fire({
           icon: 'warning',
           title: 'Thông tin không hợp lệ',
-          text: 'Vui lòng nhập số ngày kinh nguyệt !',
+          text: 'Số ngày kinh nguyệt phải lớn hơn 1 và nhỏ hơn hoặc bằng 10!',
           confirmButtonText: 'Đồng ý'
         });
         return;
@@ -493,12 +495,23 @@ const MenstrualPage = () => {
                   <input
                     type="number"
                     value={cycleData.cycleLength}
-                    onChange={(e) => setCycleData({...cycleData, cycleLength: e.target.value ? parseInt(e.target.value) : ''})}
+                    onChange={(e) => {
+                      const value = e.target.value ? parseInt(e.target.value) : '';
+                      setCycleData({...cycleData, cycleLength: value});
+                      if (value === '' || (value > 20 && value <= 35)) {
+                        setCycleLengthError('');
+                      } else {
+                        setCycleLengthError('Độ dài chu kỳ phải lớn hơn 20 và nhỏ hơn hoặc bằng 35 ngày!');
+                      }
+                    }}
                     className="menstrual-input"
                     min="20"
                     max="45"
                     placeholder="Nhập độ dài chu kỳ (ngày)"
                   />
+                  {cycleLengthError && (
+                    <div style={{ color: 'red', fontSize: '0.9em', marginTop: 4 }}>{cycleLengthError}</div>
+                  )}
                 </div>
                 
                 <div className="menstrual-input-field">
@@ -506,12 +519,23 @@ const MenstrualPage = () => {
                   <input
                     type="number"
                     value={cycleData.periodLength}
-                    onChange={(e) => setCycleData({...cycleData, periodLength: e.target.value ? parseInt(e.target.value) : ''})}
+                    onChange={(e) => {
+                      const value = e.target.value ? parseInt(e.target.value) : '';
+                      setCycleData({...cycleData, periodLength: value});
+                      if (value === '' || (value > 1 && value <= 10)) {
+                        setPeriodLengthError('');
+                      } else {
+                        setPeriodLengthError('Số ngày kinh nguyệt phải lớn hơn 1 và nhỏ hơn hoặc bằng 10!');
+                      }
+                    }}
                     className="menstrual-input"
                     min="1"
                     max="10"
                     placeholder="Nhập số ngày kinh (ngày)"
                   />
+                  {periodLengthError && (
+                    <div style={{ color: 'red', fontSize: '0.9em', marginTop: 4 }}>{periodLengthError}</div>
+                  )}
                 </div>
 
                 <div className="menstrual-input-field">

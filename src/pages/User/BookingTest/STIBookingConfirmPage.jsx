@@ -227,14 +227,14 @@ else {
             </div>
           </div>
 
-          <div className="sti-booking-form-group sti-booking-form-group--full">
+          {/* <div className="sti-booking-form-group sti-booking-form-group--full">
             <label className="sti-booking-label">Giới tính</label>
             <input
               value={currentUser?.gender || ''}
               disabled
               className="sti-booking-input"
             />
-          </div>
+          </div> */}
 
           <div className="sti-booking-form-group sti-booking-form-group--full">
             <label className="sti-booking-label">Ghi chú đặc biệt</label>

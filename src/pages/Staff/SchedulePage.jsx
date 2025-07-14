@@ -180,6 +180,8 @@ const SchedulePage = () => {
     }
   };
 
+  const todayStr = new Date().toISOString().split('T')[0];
+
   return (
     <div className="hc-schedule-page">
       <div className="hc-schedule-header">
@@ -269,11 +271,11 @@ const SchedulePage = () => {
               <div className="hc-modal-row">
                 <div className="hc-modal-col">
                   <label>Ngày bắt đầu *</label>
-                  <input type="date" name="startDate" value={form.startDate} onChange={handleFormChange} required />
+                  <input type="date" name="startDate" value={form.startDate} onChange={handleFormChange} required min={todayStr} />
                 </div>
                 <div className="hc-modal-col">
                   <label>Ngày kết thúc *</label>
-                  <input type="date" name="endDate" value={form.endDate} onChange={handleFormChange} required />
+                  <input type="date" name="endDate" value={form.endDate} onChange={handleFormChange} required min={todayStr} />
                 </div>
               </div>
               <div className="hc-modal-row">
