@@ -18,7 +18,7 @@ import {
 } from "recharts";
 
 const AdminDashboardPage = () => {
-  const [filter, setFilter] = useState("month");
+  const [filter, setFilter] = useState("year");
   const [month, setMonth] = useState(7);
   const [year, setYear] = useState(2025);
 
@@ -35,30 +35,37 @@ const AdminDashboardPage = () => {
   const [revenueLoading, setRevenueLoading] = useState(true);
 
   // Màu sắc cho biểu đồ
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
+  const COLORS = [
+    "#0088FE",
+    "#00C49F",
+    "#FFBB28",
+    "#FF8042",
+    "#8884d8",
+    "#82ca9d",
+  ];
 
   useEffect(() => {
     const fetchCounts = async () => {
-        const token = localStorage.getItem("accessToken");
+      const token = localStorage.getItem("accessToken");
 
       const headers = {
         Authorization: `Bearer ${token}`,
       };
       try {
-           const [resCustomer, resTest, resConsult] = await Promise.all([
-        axios.get("https://localhost:7276/api/Statistics/customer-count", {
-          headers,
-        }),
-        axios.get(
-          "https://localhost:7276/api/Statistics/booked-testslot-count",
-          { headers }
-        ),
-        axios.get(
-          "https://localhost:7276/api/Statistics/booked-available-slot-count",
-          { headers }
-        ),
-      ]);
-console.log(resTest.data.data.bookedTestSlotCount)
+        const [resCustomer, resTest, resConsult] = await Promise.all([
+          axios.get("https://localhost:7276/api/Statistics/customer-count", {
+            headers,
+          }),
+          axios.get(
+            "https://localhost:7276/api/Statistics/booked-testslot-count",
+            { headers }
+          ),
+          axios.get(
+            "https://localhost:7276/api/Statistics/booked-available-slot-count",
+            { headers }
+          ),
+        ]);
+        console.log(resTest.data.data.bookedTestSlotCount);
         setCounts({
           customerCount: resCustomer.data.data.customerCount,
           bookedTestSlotCount: resTest.data.data.bookedTestSlotCount,
@@ -79,25 +86,25 @@ console.log(resTest.data.data.bookedTestSlotCount)
   useEffect(() => {
     const fetchCharts = async () => {
       try {
-            const token = localStorage.getItem("accessToken");
+        const token = localStorage.getItem("accessToken");
 
-      const headers = {
-        Authorization: `Bearer ${token}`,
-      };
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
 
         const query =
           filter === "month" ? `?Year=${year}&Month=${month}` : `?Year=${year}`;
 
-      const [resBooking, resConsult] = await Promise.all([
-        axios.get(
-          `https://localhost:7276/api/Statistics/test-bookings/statistics${query}`,
-          { headers }
-        ),
-        axios.get(
-          `https://localhost:7276/api/Statistics/consultations/statistics${query}`,
-          { headers }
-        ),
-      ]);
+        const [resBooking, resConsult] = await Promise.all([
+          axios.get(
+            `https://localhost:7276/api/Statistics/test-bookings/statistics${query}`,
+            { headers }
+          ),
+          axios.get(
+            `https://localhost:7276/api/Statistics/consultations/statistics${query}`,
+            { headers }
+          ),
+        ]);
 
         const data =
           filter === "month"
@@ -144,7 +151,10 @@ console.log(resTest.data.data.bookedTestSlotCount)
 
   // Format số tiền thành VND
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(amount);
   };
 
   return (
@@ -182,8 +192,10 @@ console.log(resTest.data.data.bookedTestSlotCount)
 
       {/* Thống kê doanh thu */}
       <div className="bg-white rounded-xl shadow p-6">
-        <h2 className="text-2xl font-bold text-blue-800 mb-4">Thống kê doanh thu</h2>
-        
+        <h2 className="text-2xl font-bold text-blue-800 mb-4">
+          Thống kê doanh thu
+        </h2>
+
         {revenueLoading ? (
           <p className="text-gray-500">Đang tải dữ liệu doanh thu...</p>
         ) : revenueData ? (
@@ -203,7 +215,9 @@ console.log(resTest.data.data.bookedTestSlotCount)
                 </p>
               </div>
               <div className="bg-emerald-100 rounded-lg p-4">
-                <p className="text-emerald-700 font-medium">Giao dịch thành công</p>
+                <p className="text-emerald-700 font-medium">
+                  Giao dịch thành công
+                </p>
                 <p className="text-2xl font-bold text-emerald-900">
                   {revenueData.successfulTransactions}
                 </p>
@@ -230,14 +244,19 @@ console.log(resTest.data.data.bookedTestSlotCount)
                         cx="50%"
                         cy="50%"
                         labelLine={true}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        label={({ name, percent }) =>
+                          `${name}: ${(percent * 100).toFixed(0)}%`
+                        }
                         outerRadius={80}
                         fill="#8884d8"
                         dataKey="totalRevenue"
                         nameKey="healthTestName"
                       >
                         {revenueData.revenueByService.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
                         ))}
                       </Pie>
                       <Tooltip formatter={(value) => formatCurrency(value)} />
@@ -256,10 +275,17 @@ console.log(resTest.data.data.bookedTestSlotCount)
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={revenueData.revenueByMonth}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" tickFormatter={(month) => `T${month}`} />
+                      <XAxis
+                        dataKey="month"
+                        tickFormatter={(month) => `T${month}`}
+                      />
                       <YAxis tickFormatter={(value) => `${value / 1000}`} />
                       <Tooltip formatter={(value) => formatCurrency(value)} />
-                      <Bar dataKey="totalRevenue" fill="#8884d8" name="Doanh thu" />
+                      <Bar
+                        dataKey="totalRevenue"
+                        fill="#8884d8"
+                        name="Doanh thu"
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -271,8 +297,8 @@ console.log(resTest.data.data.bookedTestSlotCount)
         )}
       </div>
 
-      {/* Bộ lọc */}
       <div className="flex flex-wrap gap-4 justify-end items-center">
+        {/* Bộ lọc 
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
@@ -281,6 +307,7 @@ console.log(resTest.data.data.bookedTestSlotCount)
           <option value="month">Tháng</option>
           <option value="year">Năm</option>
         </select>
+        */}
 
         {filter === "month" && (
           <select
