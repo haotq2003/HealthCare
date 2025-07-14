@@ -4,6 +4,17 @@ import { jwtDecode } from "jwt-decode";
 import { ConsultantService } from '../../services/ConsultantService';
 import toast from 'react-hot-toast';
 import { SlotService } from '../../services/SlotService';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  Grid,
+  IconButton
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 const SchedulePage = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -97,37 +108,65 @@ const SchedulePage = () => {
     return { available, booked, total: slots.length };
   };
 
-  const handleAddSlot = async () => {
-    try {
-      const token = localStorage.getItem('accessToken');
-      const decoded = jwtDecode(token);
-      const consultantId = decoded.consultant_id;
-      
-      const availableDate = new Date(`${newSlot.date}T${newSlot.startTime}`);
-      const body = {
-        availableDate: availableDate.toISOString(),
-        startTime: newSlot.startTime.length === 5 ? newSlot.startTime + ':00' : newSlot.startTime,
-        endTime: newSlot.endTime.length === 5 ? newSlot.endTime + ':00' : newSlot.endTime,
-        consultantId
-      };
-      
-      await ConsultantService.createConsultantSchedules(body);
-      toast.success('Tạo lịch thành công!');
-      setShowAddModal(false);
-      setNewSlot({
-        date: '',
-        startTime: '',
-        endTime: '',
-      });
-      
-      // Refresh slots after adding
-      const response = await SlotService.getAvailableSlotsByConsultantId(consultantId);
-      setAvailableSlotDays(response.data.items);
-    } catch (error) {
-      toast.error('Tạo lịch thất bại!');
-      console.error(error);
+ const handleAddSlot = async () => {
+  try {
+    const { date, startTime, endTime } = newSlot;
+
+    if (!date || !startTime || !endTime) {
+      toast.error("Vui lòng nhập đầy đủ thông tin.");
+      return;
     }
-  };
+
+    const selectedDate = new Date(date);
+    const now = new Date();
+
+    const start = new Date(`${date}T${startTime}`);
+    const end = new Date(`${date}T${endTime}`);
+
+    // Nếu là hôm nay, giờ bắt đầu phải > giờ hiện tại
+    if (
+      selectedDate.toDateString() === now.toDateString() &&
+      start <= now
+    ) {
+      toast.error("Giờ bắt đầu phải lớn hơn thời gian hiện tại.");
+      return;
+    }
+
+    // Check giờ kết thúc phải sau giờ bắt đầu
+    if (end <= start) {
+      toast.error("Giờ kết thúc phải sau giờ bắt đầu.");
+      return;
+    }
+
+    const token = localStorage.getItem('accessToken');
+    const decoded = jwtDecode(token);
+    const consultantId = decoded.consultant_id;
+
+    const availableDate = new Date(`${date}T${startTime}`);
+
+    const body = {
+      availableDate: availableDate.toISOString(),
+      startTime: startTime.length === 5 ? startTime + ':00' : startTime,
+      endTime: endTime.length === 5 ? endTime + ':00' : endTime,
+      consultantId,
+    };
+
+    await ConsultantService.createConsultantSchedules(body);
+    toast.success('Tạo lịch thành công!');
+    setShowAddModal(false);
+    setNewSlot({ date: '', startTime: '', endTime: '' });
+
+    // Refresh slots
+    const response = await SlotService.getAvailableSlotsByConsultantId(consultantId);
+    setAvailableSlotDays(response.data.items);
+  } catch (error) {
+      const message =
+    error.response?.data?.message || 'Tạo lịch thất bại!';
+  toast.error(message);
+  console.error(error);
+  }
+};
+
 
   const handleDeleteSlot = async (slotId) => {
     try {

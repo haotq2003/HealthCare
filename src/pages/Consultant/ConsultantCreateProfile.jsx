@@ -4,12 +4,22 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Container,
+  Paper
+} from '@mui/material';
+
 const ConsultantCreateProfile = () => {
-  const { user } = useAuth(); // chứa user.id
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+
   const [form, setForm] = useState({
     degree: '',
-    experience: 0,
+    experience: '',
     bio: '',
   });
 
@@ -21,11 +31,14 @@ const ConsultantCreateProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-    
-         console.log("Dữ liệu gửi đi:", form); 
-      await ConsultantService.createProfile(user.id, form);
-      toast.success('Tạo hồ sơ thành công');
-      navigate('/consultant/dashboard');
+      console.log("Dữ liệu gửi đi:", form); 
+      await ConsultantService.createProfile(user.id, {
+        ...form,
+        experience: Number(form.experience), // đảm bảo là số
+      });
+      toast.success('Tạo hồ sơ thành công. Vui lòng đăng nhập lại');
+      logout();
+      navigate('/login');
     } catch (error) {
       toast.error('Lỗi khi tạo hồ sơ');
       console.error(error);
@@ -33,48 +46,59 @@ const ConsultantCreateProfile = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Tạo hồ sơ tư vấn viên</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-medium mb-1">Bằng cấp</label>
-          <input
+    <Container maxWidth="sm" sx={{ mt: 6 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Typography variant="h5" fontWeight="bold" mb={3}>
+          Tạo hồ sơ tư vấn viên
+        </Typography>
+
+        <Box component="form" onSubmit={handleSubmit} noValidate>
+          <TextField
+            label="Bằng cấp"
             name="degree"
             value={form.degree}
             onChange={handleChange}
-            className="w-full border rounded p-2"
+            fullWidth
             required
+            margin="normal"
           />
-        </div>
-        <div>
-          <label className="block font-medium mb-1">Kinh nghiệm (năm)</label>
-          <input
+
+          <TextField
+            label="Kinh nghiệm (năm)"
             name="experience"
             type="number"
             value={form.experience}
             onChange={handleChange}
-            className="w-full border rounded p-2"
+            fullWidth
             required
+            margin="normal"
           />
-        </div>
-        <div>
-          <label className="block font-medium mb-1">Giới thiệu</label>
-          <textarea
+
+          <TextField
+            label="Giới thiệu"
             name="bio"
             value={form.bio}
             onChange={handleChange}
-            className="w-full border rounded p-2"
+            fullWidth
             required
+            multiline
+            rows={4}
+            margin="normal"
           />
-        </div>
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Lưu hồ sơ
-        </button>
-      </form>
-    </div>
+
+          <Box mt={3}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+            >
+              Lưu hồ sơ
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
+    </Container>
   );
 };
 

@@ -122,8 +122,7 @@ useEffect(()=>{
     }
   };
 
-  // const filteredConsultations = consultationHistory.filter(...); // Xoá unused
-  // const filteredTests = testHistory.filter(...); // Xoá unused
+  
 const getConsultantByUserId = async () =>{
   try {
     const res = await ConsultantService.getConsultantByUserId();

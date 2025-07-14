@@ -1,85 +1,137 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import styles from "./UserPage.module.scss"; // dùng chung style table
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 
-const AcceptDoctor = () => {
-  const [pendingDoctors, setPendingDoctors] = useState([]);
+const AcceptConsultant = () => {
+  const [pendingConsultants, setPendingConsultants] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedConsultant, setSelectedConsultant] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
-    fetchPendingDoctors();
+    fetchPendingConsultants();
   }, []);
 
-  const fetchPendingDoctors = async () => {
+  const token = localStorage.getItem("accessToken");
+
+  const fetchPendingConsultants = async () => {
     try {
-      const res = await axios.get('https://localhost:7276/api/Admin/users', {
+      const res = await axios.get("https://localhost:7276/api/Admin/users", {
         params: { ConsultantStatus: 0 },
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-
-      setPendingDoctors(res.data.data.items);
+      setPendingConsultants(res.data.data.items);
     } catch (error) {
-      console.error('Lỗi khi lấy danh sách bác sĩ chờ duyệt:', error);
-      toast.error("Không thể lấy danh sách bác sĩ.");
+      toast.error("Lỗi khi tải danh sách tư vấn viên");
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleApprove = async (consultantId) => {
+  const handleApprove = async () => {
+    if (!selectedConsultant) return;
+
     try {
-      const res = await axios.put(
-        `https://localhost:7276/api/Admin/${consultantId}/approve`,
+      await axios.put(
+        `https://localhost:7276/api/Admin/${selectedConsultant.id}/approve`,
         {},
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-
-      toast.success( 'Duyệt thành công');
-
-      // Cập nhật lại danh sách sau khi duyệt
-      setPendingDoctors((prev) =>
-        prev.filter((doctor) => doctor.id !== consultantId)
+      toast.success("Duyệt thành công!");
+      setPendingConsultants((prev) =>
+        prev.filter((c) => c.id !== selectedConsultant.id)
       );
     } catch (error) {
-      console.error('Lỗi khi duyệt bác sĩ:', error);
-      toast.error('Duyệt thất bại. Vui lòng thử lại.');
+      toast.error("Duyệt thất bại.");
+      console.error(error);
+    } finally {
+      handleCloseConfirm();
     }
   };
 
+  const handleOpenConfirm = (consultant) => {
+    setSelectedConsultant(consultant);
+    setConfirmOpen(true);
+  };
+
+  const handleCloseConfirm = () => {
+    setConfirmOpen(false);
+    setSelectedConsultant(null);
+  };
+
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-semibold mb-4">Danh sách bác sĩ chờ duyệt</h2>
+    <div className={styles.container}>
+      <h1 className={styles.heading}>Duyệt tư vấn viên</h1>
 
       {loading ? (
         <p>Đang tải...</p>
-      ) : pendingDoctors.length === 0 ? (
-        <p>Không có bác sĩ nào chờ duyệt.</p>
+      ) : pendingConsultants.length === 0 ? (
+        <p>Không có tư vấn viên nào chờ duyệt.</p>
       ) : (
-        <ul className="space-y-4">
-          {pendingDoctors.map((doctor) => (
-            <li key={doctor.id} className="bg-white shadow p-4 rounded-lg">
-              <p><strong>Họ tên:</strong> {doctor.name || doctor.fullName}</p>
-              <p><strong>Email:</strong> {doctor.email}</p>
-              <p><strong>Số điện thoại:</strong> {doctor.phoneNumber}</p>
-
-              <button
-                onClick={() => handleApprove(doctor.id)}
-                className="mt-3 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-200"
-              >
-                Chấp nhận
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className={styles.tableWrapper}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Họ tên</th>
+                <th>Email</th>
+                <th>SĐT</th>
+                {/* <th>Ngày tạo</th> */}
+                <th className={styles.textCenter}>Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pendingConsultants.map((consultant) => (
+                <tr key={consultant.id}>
+                  <td>{consultant.name || consultant.fullName}</td>
+                  <td>{consultant.email}</td>
+                  <td>{consultant.phoneNumber || '—'}</td>
+                  {/* <td>
+                    {consultant.createdAt
+                      ? new Date(consultant.createdAt).toLocaleDateString()
+                      : "—"}
+                  </td> */}
+                  <td className={styles.textCenter}>
+                    <button
+                      onClick={() => handleOpenConfirm(consultant)}
+                      className={styles.deleteBtn}
+                    >
+                      Duyệt
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
+
+      {/* Confirm Dialog */}
+      <Dialog open={confirmOpen} onClose={handleCloseConfirm}>
+        <DialogTitle>Xác nhận duyệt</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có chắc muốn duyệt tư vấn viên{" "}
+            <strong>{selectedConsultant?.name || selectedConsultant?.fullName}</strong>?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirm}>Hủy</Button>
+          <Button onClick={handleApprove} color="success" variant="contained">
+            Duyệt
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
 
-export default AcceptDoctor;
+export default AcceptConsultant;

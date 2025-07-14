@@ -4,6 +4,15 @@ import { ConsultantService } from "../../services/ConsultantService";
 import toast from "react-hot-toast";
 import { Calendar } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+} from "@mui/material";
+
 const DashboardPage = () => {
   const [todaySchedule, setTodaySchedule] = useState([
     {
@@ -40,16 +49,18 @@ const DashboardPage = () => {
     },
   ]);
   const [booking, setBooking] = useState([]);
-
+  const [openCancelModal, setOpenCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [selectedBookingId, setSelectedBookingId] = useState(null);
   useEffect(() => {
     fetchConsultantById();
   }, []);
 
   const fetchConsultantById = async () => {
     try {
-        const token = localStorage.getItem('accessToken');
-        const decode = jwtDecode(token);
-        const id = decode.consultant_id;
+      const token = localStorage.getItem("accessToken");
+      const decode = jwtDecode(token);
+      const id = decode.consultant_id;
       const res = await ConsultantService.getConsultantByConsultantId(id);
       console.log(res.items);
       setBooking(res.items);
@@ -86,8 +97,8 @@ const DashboardPage = () => {
   };
   const handleConfirm = async (bookingId) => {
     try {
-      await ConsultantService.confirmConsultation(bookingId); 
-      toast.success('Xác nhận thành công')
+      await ConsultantService.confirmConsultation(bookingId);
+      toast.success("Xác nhận thành công");
       setBooking((prev) =>
         prev.map((booking) =>
           booking.id === bookingId
@@ -97,6 +108,45 @@ const DashboardPage = () => {
       );
     } catch (error) {
       console.error("Lỗi khi xác nhận:", error);
+    }
+  };
+  const handleOpenCancelModal = (id) => {
+    setSelectedBookingId(id);
+    setCancelReason("");
+    setOpenCancelModal(true);
+  };
+
+  const handleCloseCancelModal = () => {
+    setOpenCancelModal(false);
+    setCancelReason("");
+    setSelectedBookingId(null);
+  };
+
+  const handleConfirmCancel = async () => {
+    try {
+      if (!cancelReason.trim()) {
+        toast.error("Vui lòng nhập lý do hủy");
+        return;
+      }
+
+      await ConsultantService.cancelConsultation(
+        selectedBookingId,
+        cancelReason
+      );
+      toast.success("Hủy cuộc hẹn thành công");
+
+      setBooking((prev) =>
+        prev.map((booking) =>
+          booking.id === selectedBookingId
+            ? { ...booking, status: "Cancelled" }
+            : booking
+        )
+      );
+
+      handleCloseCancelModal();
+    } catch (error) {
+      toast.error("Hủy thất bại");
+      console.error("Cancel error:", error);
     }
   };
 
@@ -161,20 +211,31 @@ const DashboardPage = () => {
                         <p className="text-sm text-gray-600">
                           {appointment.reason}
                         </p>
-                         <span className="flex gap-5">
-                        
-                        {new Date(appointment.availableDate).toLocaleDateString('vi-VN')}
-                      </span>
+                        <span className="flex gap-5">
+                          {new Date(
+                            appointment.availableDate
+                          ).toLocaleDateString("vi-VN")}
+                        </span>
                       </div>
                     </div>
                     <div className="flex space-x-2">
                       {appointment.status === "Pending" && (
-                        <button
-                          onClick={() => handleConfirm(appointment.id)}
-                          className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
-                        >
-                          Xác nhận
-                        </button>
+                        <>
+                          <button
+                            onClick={() => handleConfirm(appointment.id)}
+                            className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
+                          >
+                            Xác nhận
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleOpenCancelModal(appointment.id)
+                            }
+                            className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700"
+                          >
+                            Hủy
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -188,6 +249,32 @@ const DashboardPage = () => {
 
         {/* Quick Actions */}
       </div>
+      <Dialog open={openCancelModal} onClose={handleCloseCancelModal} fullWidth
+  maxWidth="sm"  >
+  <DialogTitle>Hủy lịch hẹn</DialogTitle>
+  <DialogContent>
+    <TextField
+      autoFocus
+      margin="dense"
+      label="Lý do hủy"
+      type="text"
+      fullWidth
+      multiline
+      rows={3}
+      value={cancelReason}
+      onChange={(e) => setCancelReason(e.target.value)}
+    />
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseCancelModal} color="inherit">
+      Đóng
+    </Button>
+    <Button onClick={handleConfirmCancel} variant="contained" color="error">
+      Xác nhận hủy
+    </Button>
+  </DialogActions>
+</Dialog>
+
     </div>
   );
 };

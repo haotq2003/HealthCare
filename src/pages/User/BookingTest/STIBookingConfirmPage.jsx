@@ -34,6 +34,11 @@ const STIBookingConfirmPage = () => {
   const slotTime = location.state?.slotTime;
   // Giả lập tổng chi phí, bạn có thể lấy từ state hoặc API nếu cần
   const totalPrice = formatVietnameseCurrencyVND(selectedTest?.price || 1250000);
+const genderMap = {
+  Male: "Nam",
+  Female: "Nữ",
+  Other: "Khác",
+};
 
   // Lấy currentUser từ localStorage
   const currentUser = (() => {
@@ -230,22 +235,14 @@ else {
           {/* <div className="sti-booking-form-group sti-booking-form-group--full">
             <label className="sti-booking-label">Giới tính</label>
             <input
-              value={currentUser?.gender || ''}
+          value={genderMap[currentUser?.gender] || ''}
+
               disabled
               className="sti-booking-input"
             />
           </div> */}
 
-          <div className="sti-booking-form-group sti-booking-form-group--full">
-            <label className="sti-booking-label">Ghi chú đặc biệt</label>
-            <textarea 
-              name="note" 
-              value={currentUser?.note || ''}
-              disabled
-              placeholder="Thông tin bổ sung về tình trạng sức khỏe hoặc yêu cầu đặc biệt" 
-              className="sti-booking-textarea"
-            />
-          </div>
+        
 
           {/* Lưu ý */}
           <div className="sti-booking-notice">
