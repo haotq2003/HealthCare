@@ -218,23 +218,6 @@ const handleSubmit = async () => {
         </button>
       </div>
 
-      <div className="filter-section">
-        <div className="filter-wrapper">
-          <Filter size={18} />
-          <select 
-            value={filterStatus} 
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="filter-select"
-          >
-            <option value="all">Tất cả trạng thái</option>
-            <option value="Completed">Hoàn thành</option>
-            <option value="Pending">Đang chờ</option>
-            <option value="Cancelled">Đã hủy</option>
-            <option value="upcoming">Sắp tới</option>
-          </select>
-        </div>
-      </div>
-
       <div className="history-content">
         {activeTab === 'consultations' && (
           <div className="consultation-history">
