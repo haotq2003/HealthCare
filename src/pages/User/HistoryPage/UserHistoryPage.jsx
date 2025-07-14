@@ -161,6 +161,9 @@ useEffect(()=>{
   const filteredTests = testHistory.filter(item => 
     filterStatus === 'all' || item.status === filterStatus
   );
+  const filteredConsultantHis = consultantHis.filter(
+  item => filterStatus === 'all' || item.status === filterStatus
+);
 const getConsultantByUserId = async () =>{
   try {
     const res = await ConsultantService.getConsultantByUserId();
@@ -245,7 +248,7 @@ const handleSubmit = async () => {
                 <p>Bạn chưa có lịch tư vấn nào trong lịch sử</p>
               </div>
             ) : (
-              consultantHis.map((consultation) => (
+              filteredConsultantHis.map((consultation) => (
                 <div key={consultation.id} className="history-card">
                   <div className="card-header">
                     <div className="card-title">

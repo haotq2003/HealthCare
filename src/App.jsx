@@ -38,7 +38,7 @@ import BlogPage from "./pages/Guest/BlogPage/BlogPage.jsx";
 import BlogDetailPage from "./pages/Guest/BlogPage/BlogDetailPage.jsx";
 import QuestionsPage from "./pages/Consultant/QuestionsPage.jsx";
 import { Toaster } from "react-hot-toast";
-import BlogManagePage from "./pages/Manager/BlogManagePage.jsx";
+import BlogManagePage from "./pages/Admin/BlogManagePage.jsx";
 import ConsultantManagePage from "./pages/Manager/ConsultantManagePage.jsx";
 import ManagerDashboardPage from "./pages/Manager/DashboardPage.jsx";
 import FeedbackPage from "./pages/Manager/FeedbackPage.jsx";
@@ -129,6 +129,7 @@ function App() {
           <Route path="profile" element={<AdminProfilePage />} />
           <Route path="accept-doctor" element={<AcceptDoctor />} />
           <Route path="report-history" element={<ReportHistoryPage />} />
+          <Route path="blog" element={<BlogManagePage />} />
         </Route>
       </Routes>
       <ChatWidget />

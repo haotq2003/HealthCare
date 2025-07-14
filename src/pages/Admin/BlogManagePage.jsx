@@ -167,7 +167,7 @@ const BlogManagePage = () => {
           />
 
           <ImageUploader onImageUploaded={setImageUrl} />
-          {imageUrl && <img src={imageUrl} alt="Uploaded" style={{ width: 120, marginTop: 8 }} />}
+          {/* {imageUrl && <img src={''} alt="Uploaded" style={{ width: 120, marginTop: 8 }} />} */}
 
           <Typography variant="h6" style={{ marginTop: 16 }}>Nội dung chi tiết</Typography>
           {contents.map((c, idx) => (

@@ -59,6 +59,14 @@ const AdminLayout = () => {
             >
               Lịch sử xuất file
             </NavLink>
+            <NavLink
+              to="/admin/blog"
+              className={({ isActive }) =>
+                isActive ? `${styles.link} active` : styles.link
+              }
+            >
+              Blog
+            </NavLink>
           </nav>
         </div>
         <button className={styles.logoutBtn} onClick={handleLogout}>

@@ -98,9 +98,9 @@ const [consultant, setConsultant] = useState(null);
             </div>
 
             <div className="consultant-booking-confirm-consultant-card">
-              <div className="consultant-booking-confirm-consultant-avatar">
+              {/* <div className="consultant-booking-confirm-consultant-avatar">
                 {consultant?.fullName}
-              </div>
+              </div> */}
               <div className="consultant-booking-confirm-consultant-details">
                 <h4 className="consultant-booking-confirm-consultant-name">{consultant?.fullName}</h4>
                 <p className="consultant-booking-confirm-consultant-specialty">{consultant?.bio}</p>

@@ -92,75 +92,9 @@ const ConsultantHeader = ({ toggleSidebar, isSidebarOpen }) => {
         {/* Right side */}
         <div className="flex items-center space-x-4">
           {/* Quick actions */}
-          <div className="hidden md:flex items-center space-x-2">
-            <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition duration-200" title="Tạo lịch nhanh">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-            </button>
-            <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition duration-200" title="Video call">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-            </button>
-          </div>
-
+        
           {/* Notifications */}
-          <div className="relative">
-            <button
-              onClick={() => setShowNotifications(!showNotifications)}
-              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition duration-200 relative"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM10.07 2.82a3 3 0 00-4.24 0L2.82 5.83a3 3 0 000 4.24l4.95 4.95a3 3 0 004.24 0l2.01-2.01a3 3 0 000-4.24L10.07 2.82z" />
-              </svg>
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {unreadCount}
-                </span>
-              )}
-            </button>
-
-            {/* Notifications dropdown */}
-            {showNotifications && (
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                <div className="p-4 border-b border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900">Thông báo</h3>
-                    <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                      Đánh dấu đã đọc
-                    </button>
-                  </div>
-                </div>
-                <div className="max-h-96 overflow-y-auto">
-                  {notifications.map((notification) => (
-                    <div
-                      key={notification.id}
-                      className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${
-                        notification.unread ? 'bg-blue-50' : ''
-                      }`}
-                    >
-                      <div className="flex items-start space-x-3">
-                        <div className={`w-2 h-2 rounded-full mt-2 ${
-                          notification.unread ? 'bg-blue-500' : 'bg-gray-300'
-                        }`}></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">{notification.title}</p>
-                          <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
-                          <p className="text-xs text-gray-500 mt-2">{notification.time}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="p-4 border-t border-gray-200">
-                  <button className="w-full text-center text-blue-600 hover:text-blue-700 text-sm font-medium">
-                    Xem tất cả thông báo
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+       
 
           {/* Profile dropdown */}
           <div className="relative">
