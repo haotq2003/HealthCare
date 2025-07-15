@@ -4,6 +4,7 @@ import { formatVietnameseCurrencyVND } from '../../utils/currencyFormatter';
 import './TestBookingManagePage.scss';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import ImageUploader from '../../common/ImageUploader';
 const MySwal = withReactContent(Swal);
 
 const FIXED_RESULT_URL = "https://w7zbytrd10.ufs.sh/f/fnkloM7shIMipeBT8s4Lo9fDNC7QxjEYURZ8n2SbTa5isgWd";
@@ -59,47 +60,54 @@ const TestBookingManagePage = () => {
                   <td>{item.healthTestName}</td>
                   <td>{formatVietnameseCurrencyVND(item.healthTestPrice)}</td>
                   <td>{item.testDate ? new Date(item.testDate).toLocaleDateString('vi-VN') : ''}</td>
-                  <td>
-                    {item.resultUrl ? (
-                      <button onClick={() => window.open(item.resultUrl, '_blank')}>Xem kết quả</button>
-                    ) : (
-                      <button
-                        disabled={updatingId === item.id}
-                        onClick={async () => {
-                          setUpdatingId(item.id);
-                          try {
-                            const accessToken = localStorage.getItem('accessToken');
-                            const res = await fetch(`${API_URL}/api/TestBookings/${item.id}/result-url`, {
-                              method: 'PATCH',
-                              headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${accessToken}`,
-                                'accept': '*/*',
-                              },
-                              body: JSON.stringify({ resultUrl: FIXED_RESULT_URL }),
-                            });
-                            if (!res.ok) throw new Error('Cập nhật thất bại');
-                            MySwal.fire({
-                              icon: 'success',
-                              title: 'Thành công',
-                              text: 'Đã cập nhật kết quả xét nghiệm!',
-                              timer: 2000,
-                              showConfirmButton: false,
-                            });
-                            setBookings(prev => prev.map(b => b.id === item.id ? { ...b, resultUrl: FIXED_RESULT_URL } : b));
-                          } catch {
-                            MySwal.fire({
-                              icon: 'error',
-                              title: 'Lỗi',
-                              text: 'Không thể cập nhật kết quả!',
-                            });
-                          } finally {
-                            setUpdatingId(null);
-                          }
-                        }}
-                      >Tải kết quả</button>
-                    )}
-                  </td>
+                 <td>
+  {item.resultUrl ? (
+    <button onClick={() => window.open(item.resultUrl, '_blank')}>Xem kết quả</button>
+  ) : (
+    updatingId === item.id ? (
+      <span>Đang tải...</span>
+    ) : (
+      <ImageUploader
+        onImageUploaded={async (secureUrl) => {
+          setUpdatingId(item.id);
+          try {
+            const accessToken = localStorage.getItem('accessToken');
+            const res = await fetch(`${API_URL}/api/TestBookings/${item.id}/result-url`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+              },
+              body: JSON.stringify({ resultUrl: secureUrl }),
+            });
+            if (!res.ok) throw new Error('Cập nhật thất bại');
+
+            MySwal.fire({
+              icon: 'success',
+              title: 'Thành công',
+              text: 'Đã cập nhật kết quả xét nghiệm!',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+
+            setBookings(prev =>
+              prev.map(b => b.id === item.id ? { ...b, resultUrl: secureUrl } : b)
+            );
+          } catch (error) {
+            MySwal.fire({
+              icon: 'error',
+              title: 'Lỗi',
+              text: 'Không thể cập nhật kết quả!',
+            });
+          } finally {
+            setUpdatingId(null);
+          }
+        }}
+      />
+    )
+  )}
+</td>
+
                 </tr>
               ))
             )}
