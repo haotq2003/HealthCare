@@ -312,6 +312,21 @@ const ChatWidget = () => {
   // Helper to get first letter of name
   const getInitial = (name) => name ? name.trim().charAt(0).toUpperCase() : '?';
 
+  // Auto update selected when customerList changes (for staff in chat view)
+  useEffect(() => {
+    if (isStaff && view === 'chat' && selected && customerList.length > 0) {
+      const updated = customerList.find(c => c.customerId === selected.customerId);
+      if (updated) {
+        // So sánh sâu, nếu threads khác thì cập nhật
+        const oldThreadIds = (selected.threads || []).map(t => t.id + (t.answer || ''));
+        const newThreadIds = (updated.threads || []).map(t => t.id + (t.answer || ''));
+        if (oldThreadIds.join(',') !== newThreadIds.join(',')) {
+          setSelected(updated);
+        }
+      }
+    }
+  }, [customerList, selected, isStaff, view]);
+
   return (
     <>
       <div className="chat-float-btn" style={{position:'fixed'}} onClick={() => { setOpen(!open); setView('list'); }}>
